@@ -5,6 +5,8 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
+
+
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
@@ -63,6 +65,25 @@ app.on('ready', async () => {
     }
   }
   createWindow()
+
+  
+  // CORS 에러 해결
+  const win = new BrowserWindow();
+
+  win.webContents.session.webRequest.onBeforeSendHeaders(
+      (details, callback) => {
+        callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } });
+      },
+    );
+
+    win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+      callback({
+        responseHeaders: {
+          'Access-Control-Allow-Origin': ['*'],
+          ...details.responseHeaders,
+        },
+      });
+    });
 })
 
 // Exit cleanly on request from parent process in development mode.
@@ -79,3 +100,4 @@ if (isDevelopment) {
     })
   }
 }
+
