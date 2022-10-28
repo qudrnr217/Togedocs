@@ -1,26 +1,20 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <router-view />
+    <router-link :to="{ name: 'home' }"> <div>홈</div></router-link>
+    <router-link :to="{ name: 'select' }">
+      <div>프로젝트 선택</div></router-link
+    >
+    <router-link :to="{ name: 'docs' }"> <div>공유 api 문서</div></router-link>
+    <router-link :to="{ name: 'test' }"> <div>api test</div></router-link>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  name: "App",
+  components: {},
+};
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<style></style>
