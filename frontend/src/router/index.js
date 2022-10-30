@@ -3,6 +3,7 @@ import HomeView from "@/views/HomeView.vue";
 import ApiDocs from "@/views/ApiDocs.vue";
 import ApiTest from "@/views/ApiTest.vue";
 import ProjectSelect from "@/views/ProjectSelect.vue";
+import WebSocket from "@/views/WebSocket.vue";
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path: "/select",
     name: "select",
     component: ProjectSelect,
+  },
+  {
+    path: "/ws",
+    name: "ws",
+    component: WebSocket,
   },
   //   {
   //     path: "/404",
