@@ -1,4 +1,4 @@
-package com.ssapidocs.backend.domain.entity;
+package com.togedocs.backend.domain.entity;
 
 import lombok.Data;
 

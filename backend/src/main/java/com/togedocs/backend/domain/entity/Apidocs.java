@@ -1,4 +1,4 @@
-package com.ssapidocs.backend.domain.entity;
+package com.togedocs.backend.domain.entity;
 
 import lombok.Getter;
 import org.bson.types.ObjectId;
@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Document(collection = "apidocs")
 @Getter

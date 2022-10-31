@@ -1,4 +1,4 @@
-package com.ssapidocs.backend;
+package com.togedocs.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

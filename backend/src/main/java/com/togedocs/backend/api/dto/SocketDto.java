@@ -1,4 +1,4 @@
-package com.ssapidocs.backend.api.dto;
+package com.togedocs.backend.api.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

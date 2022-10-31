@@ -1,4 +1,4 @@
-package com.ssapidocs.backend.config;
+package com.togedocs.backend.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

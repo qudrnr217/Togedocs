@@ -1,14 +1,13 @@
-package com.ssapidocs.backend;
+package com.togedocs.backend;
 
-import com.ssapidocs.backend.domain.entity.Apidocs;
-import com.ssapidocs.backend.domain.entity.ColDto;
-import com.ssapidocs.backend.domain.repository.ApidocsRepository;
+import com.togedocs.backend.domain.entity.Apidocs;
+import com.togedocs.backend.domain.entity.ColDto;
+import com.togedocs.backend.domain.repository.ApidocsRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
 import java.util.Map;
 
 @SpringBootTest

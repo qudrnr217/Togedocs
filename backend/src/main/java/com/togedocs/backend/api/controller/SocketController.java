@@ -1,6 +1,6 @@
-package com.ssapidocs.backend.api.controller;
+package com.togedocs.backend.api.controller;
 
-import com.ssapidocs.backend.api.dto.SocketDto;
+import com.togedocs.backend.api.dto.SocketDto;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;

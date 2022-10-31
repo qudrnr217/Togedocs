@@ -1,6 +1,6 @@
-package com.ssapidocs.backend.domain.repository;
+package com.togedocs.backend.domain.repository;
 
-import com.ssapidocs.backend.domain.entity.Apidocs;
+import com.togedocs.backend.domain.entity.Apidocs;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
