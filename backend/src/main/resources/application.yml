@@ -73,7 +73,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: sapiens
     password: sapiens
-    url: jdbc:mysql://localhost:3306/ssapidocs?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
+    url: jdbc:mysql://localhost:3306/togedocs?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
   data:
     mongodb:
       user: sapiens
