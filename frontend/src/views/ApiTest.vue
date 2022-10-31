@@ -1,7 +1,8 @@
 <template>
   <div class="asdf">
 
-    <h2>기본 URL : {{apiURL}}</h2>
+    <h2>기본 URL :</h2>
+    <input id="apiURL" v-model="apiURL" />
     
     <p>Method Type</p>
     <input v-model="methodType"/>
@@ -68,7 +69,12 @@ export default {
       PathVariablebtn(){
 
         var URL = this.apiURL + this.apinextURL + this.PathVariable;
-        var HeaderJson = JSON.parse(this.Header);
+        var HeaderJson; 
+        try{
+          HeaderJson = JSON.parse(this.Header);
+        } catch{
+          HeaderJson = '{}';
+        }
 
         if (this.methodType == "GET"){
           axios.get(URL, {headers : HeaderJson}).then((data)=>{this.responsedata = data}).catch((error) => {this.responsedata = error});
@@ -79,8 +85,19 @@ export default {
       },
       Paramsbtn(){
         var URL = this.apiURL + this.apinextURL;
-        var paramJson = JSON.parse(this.Params);
-        var HeaderJson = JSON.parse(this.Header);
+        var paramJson;
+        try{
+          paramJson = JSON.parse(this.Params);
+        }catch{
+          this.res = 'Params JSON error';
+        }
+
+        var HeaderJson; 
+        try{
+          HeaderJson = JSON.parse(this.Header);
+        } catch{
+          HeaderJson = '{}';
+        }
 
         if (this.methodType == "GET"){
           axios.get(URL, {params : paramJson,
@@ -96,9 +113,18 @@ export default {
       Bodybtn(){
 
         var URL = this.apiURL + this.apinextURL;
-        var PostJson = JSON.parse(this.Body);
-
-        var HeaderJson = JSON.parse(this.Header);
+        var PostJson;
+        try{
+          PostJson = JSON.parse(this.Body);
+        }catch{
+          this.res = 'Body JSON error';
+        }
+        var HeaderJson;
+        try{
+          HeaderJson = JSON.parse(this.Header);
+        } catch{
+          HeaderJson = '{}';
+        }
 
         if (this.methodType == "POST"){
           axios.post(URL, PostJson, {headers : HeaderJson})
