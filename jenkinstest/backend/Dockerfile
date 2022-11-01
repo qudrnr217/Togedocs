@@ -7,4 +7,6 @@ COPY . .
 
 RUN gradle clean build --no-daemon
 
-CMD java -jar build/libs/Stamper-1.2.1-SNAPSHOT.jar
+EXPOSE 8010
+
+CMD ["java", "-jar", "build/libs/Stamper-1.2.1-SNAPSHOT.jar"]
