@@ -3,14 +3,15 @@
     {{ userName }}
     <button @click="refreshReq()">SEND</button>
     <br />
-    <input type="text" v-model="focus.row" /> <br />
-    <input type="text" v-model="focus.col" /> <br />
+    <input type="text" v-model="focus.rowId" /> <br />
+    <input type="text" v-model="focus.colId" /> <br />
     <button @click="focusChange()">FOCUS</button>
   </div>
 </template>
 
 <script>
 import { ref } from "vue";
+import { BASEURL } from "@/api/index.js";
 
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
@@ -23,13 +24,13 @@ export default {
 
       project_id: ref("20221031001"), // 프로젝트 선택 구현 후 가져올 것.
       userName: ref(null), // 로그인 구현 후 가져올 것.
-      focus: ref({ row: "r", col: "c" }),
+      focus: ref({ rowId: "r", colId: "c" }),
     };
   },
-  created() {
+  mounted() {
     this.userName = Math.round(Math.random() * 1000);
 
-    this.socket = new SockJS("http://localhost:8081/api/v1/ws");
+    this.socket = new SockJS(BASEURL + "/ws");
     this.stompClient = Stomp.over(this.socket);
     this.stompClient.connect({}, () => {
       this.stompClient.subscribe(
@@ -42,7 +43,6 @@ export default {
 
           // TODO: Refresh
           console.log("다른 사용자가 REFRESH 요청을 보냈습니다.");
-          console.log(res.content);
           // --
         }
       );
@@ -67,9 +67,12 @@ export default {
       );
     });
   },
+  beforeUnmount() {
+    this.stompClient.disconnect();
+  },
   methods: {
     refreshReq() {
-      const req = { userName: this.userName, content: "refresh" };
+      const req = { userName: this.userName, content: null };
       this.stompClient.send(
         "/pub/" + this.project_id + "/refresh",
         {},
