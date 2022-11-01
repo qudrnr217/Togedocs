@@ -1,6 +1,5 @@
 package com.togedocs.backend;
 
-import com.mongodb.client.MongoClient;
 import com.togedocs.backend.domain.entity.Apidocs;
 import com.togedocs.backend.domain.entity.ColDto;
 import com.togedocs.backend.domain.repository.ApidocsRepository;
@@ -68,13 +67,14 @@ public class ApidocsTest {
 
     @Test
     public void test2(){
-        Query query = new Query().addCriteria(Criteria.where("projectId").is(2L));
+        Query query = new Query().addCriteria(Criteria.where("projectId").is(1L));
         Update update = new Update();
         // 행 추가
         String rowId = "third2";
         update.push("rows", rowId);
         update.set("data.third2", new Document());
 
-        mongoTemplate.updateFirst(query, update, "apidocs");
+        Object sth = mongoTemplate.updateFirst(query, update, "apidocs");
+        System.out.println(sth);
     }
 }
