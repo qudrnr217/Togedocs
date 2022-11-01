@@ -1,48 +1,62 @@
 <template>
-  <div class="asdf">
+  <div class="All">
 
-    <h2>기본 URL :</h2>
-    <input id="apiURL" v-model="apiURL" />
-    
-    <p>Method Type</p>
-    <input v-model="methodType"/>
-    <br>
+    <div class="Top">
 
+      <h2>프로젝트 이름1</h2>
+      
+    </div>
+    <div class="Maincontainer">
+      <div class="Left">
+        <h2>left</h2>
+      </div>
+      <div class="Main">
+        <div class="apiName" style="height:5%">
+          <h2 style="text-align:left"> 회원가입</h2>
+        </div>
 
-    <p>추가 URL</p>
-    <input id="apinextURL" v-model="apinextURL" />
+        <div class="TypeURL">
+          <textarea class="RequestType" v-model="methodType"/>
+          <input class="apiURL" v-model="apiURL" />
+          <button class="testbtn" @click="Test">Test</button>
+        </div>
 
-    <br>
-    <select v-model="typeSelect">
-      <option value="Path">PathVariable</option>
-      <option value="Param">Params</option>
-      <option value="Body">RequestBody</option>
-    </select>
-
-    <button @click="Test">Test</button>
-
-
-    <p>Header</p>
-    <textarea id="Header" v-model="Header"/>
-  
-
-    <p>PathVariable</p>
-    <input id="PathVariableInput" v-model="PathVariable"/>
-
-
-
-    <p>Params</p>
-    <textarea id="ParamsInput" v-model="Params"/>
+      <div class="Request">
+          <br>
+          <select v-model="typeSelect">
+            <option value="Path">PathVariable</option>
+            <option value="Param">Params</option>
+            <option value="Body">RequestBody</option>
+          </select>
 
 
 
-    <div>Body</div>
-    <textarea id="BodyInput" v-model="Body"/>
+          <p>Header</p>
+          <textarea id="Header" v-model="Header"/>
+        
 
-    <div>Response</div>
-    <div>{{res}}</div>
+          <p>PathVariable</p>
+          <input id="PathVariableInput" v-model="PathVariable"/>
 
 
+
+          <p>Params</p>
+          <textarea id="ParamsInput" v-model="Params"/>
+
+
+
+          <div>Body</div>
+          <textarea id="BodyInput" v-model="Body"/>
+      </div>
+
+        <div>Response</div>
+        <div>{{res}}</div>
+      </div>
+
+      <div class="Right">
+        <h2>right</h2>
+      </div>
+    </div>
     
   </div>
 </template>
@@ -188,9 +202,9 @@ export default {
   "Authorization" : "token"
 }`;
     this.methodType = "GET";
-    this.apinextURL = '/api/book';
+    //this.apinextURL = '/api/book';
     this.PathVariable = '/{userSeq}';
-    this.apiURL = 'http://localhost:8080';
+    this.apiURL = 'https://k7a404.p.ssafy.io/api/book';
 
   }
 
@@ -215,21 +229,69 @@ a {
   color: #42b983;
 }
 #postInput{
-  width : 300px;
+  width : 20%;
   height: 150px;
 }
 #ParamsInput{
-  width: 300px;
-  height: 100px;
+  width: 95%;
+  height: 15%;
 }
 #BodyInput{
-  width: 300px;
-  height: 150px;
+  width: 95%;
+  height: 20%;
 }
 #Header{
-  width: 300px;
-  height: 75px;
+  width: 95%;
+  height: 10%;
 }
-
+.All{
+  width:95vw;
+  height:100vh;
+}
+.Maincontainer{
+  width:95vw;
+  height:100vh;
+  display: flex;
+}
+.Top{
+  height: 5%;
+  background-color: #ffffff;
+}
+.TypeURL{
+  height: 6%;
+  display: flex;
+}
+.RequestType{
+  text-align: center;
+  flex:1;
+}
+.apiURL{
+  flex: 8;
+}
+.testbtn{
+  flex: 1;
+}
+.Request{
+  height: 50%;
+  background-color: #F3F3F3;
+}
+.Left{
+  width: 13%;
+  height: 100vh;
+  background-color:#e7e7e7;
+  flex: 1;
+}
+.Main{
+  width: 70%;
+  background-color: #ffffff;
+  flex: 4;
+  text-align: center;
+}
+.Right{
+  width: 15%;
+  height:100vh;
+  background-color: #e7e7e7;
+  flex: 1;
+}
 
 </style>
