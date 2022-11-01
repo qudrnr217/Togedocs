@@ -1,4 +1,4 @@
-FROM node:current-slim
+FROM node:current-slim as build-stage
 
 WORKDIR /frontend
 # root 다음 Test을 지정 즉 호스트 디렉토리
@@ -18,7 +18,8 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY . /etc/nginx/conf.d/nginx.conf
 COPY --from=build-stage ./frontend/dist /usr/share/nginx/html
 
+EXPOSE 80 443
+
 CMD ["nginx", "-g", "daemon off;"]
 
-EXPOSE 80 443
 
