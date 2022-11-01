@@ -81,3 +81,4 @@ spring:
       host: localhost
       port: 27017
       database: togedocs
+      uri: mongodb://localhost:27017/togedocs
