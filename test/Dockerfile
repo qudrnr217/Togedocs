@@ -15,3 +15,5 @@ EXPOSE 8001
 
 
 CMD ["npm","start"]
+
+
