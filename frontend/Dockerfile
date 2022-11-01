@@ -12,9 +12,9 @@ RUN npm run build
 
 CMD ["npm","start"]
 
-FROM nginx:stable-alpine as production-stage
+FROM nginx:latest
 
-#RUN rm /etc/nginx/conf.d/default.conf
+RUN rm /etc/nginx/conf.d/default.conf
 COPY ./nginx.conf /etc/nginx/conf.d/nginx.conf
 COPY --from=build-stage ./frontend/dist /usr/share/nginx/html
 
