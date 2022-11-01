@@ -11,8 +11,8 @@
         <h2>left</h2>
       </div>
       <div class="Main">
-        <div class="apiName" style="height:5%">
-          <h2 style="text-align:left"> 회원가입</h2>
+        <div class="apiName" style="height:3%">
+          <div style="text-align:left">회원가입</div>
         </div>
 
         <div class="TypeURL">
@@ -21,8 +21,7 @@
           <button class="testbtn" @click="Test">Test</button>
         </div>
 
-      <div class="Request">
-          <br>
+      <div class="RequestBox">
           <select v-model="typeSelect">
             <option value="Path">PathVariable</option>
             <option value="Param">Params</option>
@@ -31,16 +30,16 @@
 
 
 
-          <p>Header</p>
+          <div>Header</div>
           <textarea id="Header" v-model="Header"/>
         
 
-          <p>PathVariable</p>
+          <div>PathVariable</div>
           <input id="PathVariableInput" v-model="PathVariable"/>
 
 
 
-          <p>Params</p>
+          <div>Params</div>
           <textarea id="ParamsInput" v-model="Params"/>
 
 
@@ -48,9 +47,13 @@
           <div>Body</div>
           <textarea id="BodyInput" v-model="Body"/>
       </div>
+      <div style="height: 1%">
+      </div>  
 
-        <div>Response</div>
-        <div>{{res}}</div>
+      <div class="ResponseBox">
+          <div>Response</div>
+          <div>{{res}}</div>
+        </div>
       </div>
 
       <div class="Right">
@@ -238,7 +241,7 @@ a {
 }
 #BodyInput{
   width: 95%;
-  height: 20%;
+  height: 30%;
 }
 #Header{
   width: 95%;
@@ -260,6 +263,8 @@ a {
 .TypeURL{
   height: 6%;
   display: flex;
+  width:99%;
+  margin:0 auto; 
 }
 .RequestType{
   text-align: center;
@@ -271,24 +276,29 @@ a {
 .testbtn{
   flex: 1;
 }
-.Request{
+.RequestBox{
   height: 50%;
+  width:99%;
+  margin:0 auto; 
   background-color: #F3F3F3;
+  overflow-y:scroll;
+}
+.ResponseBox{
+  height:50%;
+  width:99%;
+  margin:0 auto; 
+  background-color: #D9D9D9;
 }
 .Left{
-  width: 13%;
   height: 100vh;
   background-color:#e7e7e7;
   flex: 1;
 }
 .Main{
-  width: 70%;
   background-color: #ffffff;
-  flex: 4;
-  text-align: center;
+  flex: 5;
 }
 .Right{
-  width: 15%;
   height:100vh;
   background-color: #e7e7e7;
   flex: 1;
