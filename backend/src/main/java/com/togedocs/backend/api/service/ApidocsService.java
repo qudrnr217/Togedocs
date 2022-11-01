@@ -5,6 +5,9 @@ import com.togedocs.backend.api.dto.ApidocsResponse;
 import com.togedocs.backend.domain.entity.Apidocs;
 import com.togedocs.backend.domain.repository.ApidocsRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,10 +31,15 @@ public class ApidocsService {
 
     }
 
-    public ApidocsResponse.OnlyId deleteRow(Long projectId, String rowId){
+    public ApidocsResponse.Ids deleteRow(Long projectId, String rowId){
+        Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
+        Update update = new Update();
+
+        update.pull("rows",rowId);
+//        update.set("data."+)
         Apidocs apidocs = apidocsRepository.findByProjectId(projectId);
 
-        return ApidocsResponse.OnlyId.build(apidocs);
+        return ApidocsResponse.Ids.build(projectId,rowId,null);
     }
 
     public void deleteCol(Long projectId, String colId){
@@ -42,9 +50,9 @@ public class ApidocsService {
 
     }
 
-    public ApidocsResponse.GetOne getDocs(Long projectId){
+    public ApidocsResponse.Apidocs getDocs(Long projectId){
         Apidocs apidocs = apidocsRepository.findByProjectId(projectId);
-        return ApidocsResponse.GetOne.build(apidocs);
+        return ApidocsResponse.Apidocs.build(apidocs);
     }
 
 }
