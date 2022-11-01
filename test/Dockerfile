@@ -1,5 +1,8 @@
 FROM node:current-slim
 
+
+RUN mkdir -p /test
+
 WORKDIR /test
 # root 다음 Test을 지정 즉 호스트 디렉토리
 
