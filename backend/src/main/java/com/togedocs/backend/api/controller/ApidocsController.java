@@ -1,6 +1,9 @@
 package com.togedocs.backend.api.controller;
 
 import com.togedocs.backend.api.dto.ApidocsRequest;
+import com.togedocs.backend.api.dto.ApidocsResponse;
+import com.togedocs.backend.api.service.ApidocsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/docs")
 public class ApidocsController {
+
+    @Autowired
+    private ApidocsService apidocsService;
 
     @PostMapping("/{projectId}/rows")
     public ResponseEntity<?> addRow(@PathVariable Long projectId){
@@ -45,7 +51,8 @@ public class ApidocsController {
     }
 
     @GetMapping("/{projectId}")
-    public ResponseEntity<?> getDocs(@PathVariable Long projectId){
-        return null;
+    public ResponseEntity<ApidocsResponse.Apidocs> getDocs(@PathVariable Long projectId){
+        ApidocsResponse.Apidocs response = apidocsService.getDocs(projectId);
+        return ResponseEntity.ok().body(response);
     }
 }

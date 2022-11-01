@@ -3,10 +3,9 @@ package com.togedocs.backend.api.service;
 import com.togedocs.backend.api.dto.ApidocsRequest;
 import com.togedocs.backend.api.dto.ApidocsResponse;
 import com.togedocs.backend.domain.entity.Apidocs;
-import com.togedocs.backend.domain.repository.ApidocsRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.MongoExpression;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -19,7 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ApidocsService {
 
-    @Autowired
     private MongoTemplate mongoTemplate;
 
     public void addRow(Long projectId) {
@@ -75,7 +73,7 @@ public class ApidocsService {
 
     public ApidocsResponse.Apidocs getDocs(Long projectId) {
         Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
-        Apidocs apidocs = mongoTemplate.findOne(query, Apidocs.class);
+        Apidocs apidocs = mongoTemplate.findOne(query, Apidocs.class, "apidocs");
         return ApidocsResponse.Apidocs.build(apidocs);
     }
 
