@@ -1,8 +1,10 @@
 import axios from "axios";
 
+const BASEURL = "http://localhost:8081/api/v1";
+
 function apiInstance() {
   const instance = axios.create({
-    baseURL: "http://localhost:8081/api/v1",
+    baseURL: BASEURL,
     headers: {
       "Content-type": "application/json",
     },
@@ -10,4 +12,4 @@ function apiInstance() {
   return instance;
 }
 
-export { apiInstance };
+export { BASEURL, apiInstance };
