@@ -1,5 +1,6 @@
 package com.togedocs.backend;
 
+import com.togedocs.backend.api.dto.ApidocsResponse;
 import com.togedocs.backend.domain.entity.Apidocs;
 import com.togedocs.backend.domain.entity.ColDto;
 import com.togedocs.backend.domain.repository.ApidocsRepository;
@@ -8,6 +9,7 @@ import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.MongoExpression;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -30,13 +32,13 @@ public class ApidocsTest {
     private MongoTemplate mongoTemplate;
 
     @Test
-    public void printDB(){
-        Apidocs result = apidocsRepository.findByProjectId(2L);
+    public void printDB() {
+        Apidocs result = apidocsRepository.findByProjectId(1L);
         System.out.println(result.getRows());
         System.out.println(result.getCols());
-        for (String row: result.getRows()) {
+        for (String row : result.getRows()) {
             Map<String, String> apiDto = result.getData().get(row);
-            for(ColDto col : result.getCols()){
+            for (ColDto col : result.getCols()) {
                 System.out.print(apiDto.get(col.getUuid()) + "\t");
             }
             System.out.println();
@@ -45,7 +47,7 @@ public class ApidocsTest {
 
 
     @Test
-    public void testTemplate(){
+    public void testTemplate() {
         List<String> rows = new ArrayList<>();
         rows.add("first2");
         rows.add("second2");
@@ -66,7 +68,7 @@ public class ApidocsTest {
     }
 
     @Test
-    public void test2(){
+    public void test2() {
         Query query = new Query().addCriteria(Criteria.where("projectId").is(1L));
         Update update = new Update();
         // 행 추가
@@ -76,5 +78,22 @@ public class ApidocsTest {
 
         Object sth = mongoTemplate.updateFirst(query, update, "apidocs");
         System.out.println(sth);
+    }
+
+    @Test
+    public void testsw() {
+        Long projectId = 1l;
+        String colId = "one";
+
+        Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
+        Update update = new Update();
+        update.pull("cols", Query.query(Criteria.where("uuid").is(colId)));
+
+        List<String> rows = mongoTemplate.findDistinct(query, "rows", "apidocs", String.class);
+        for (String rowId : rows) {
+            update.unset("data." + rowId + "." + colId);
+        }
+        mongoTemplate.updateFirst(query,update,"apidocs");
+
     }
 }
