@@ -12,10 +12,10 @@ RUN npm run build
 
 CMD ["npm","start"]
 
-FROM nginx:latest
+FROM nginx:stable-alpine as production-stage
 
 RUN rm /etc/nginx/conf.d/default.conf
-COPY ./nginx.conf /etc/nginx/conf.d/nginx.conf
+COPY . /etc/nginx/conf.d/nginx.conf
 COPY --from=build-stage ./frontend/dist /usr/share/nginx/html
 
 CMD ["nginx", "-g", "daemon off;"]
