@@ -22,7 +22,7 @@ public class ApidocsService {
 
     private MongoTemplate mongoTemplate;
 
-    public ApidocsResponse.Ids addRow(Long projectId)  {
+    public ApidocsResponse.Ids addRow(Long projectId) {
         Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
         Update update = new Update();
         String rowId = UUID.randomUUID().toString();
@@ -33,7 +33,7 @@ public class ApidocsService {
         return ApidocsResponse.Ids.build(projectId, rowId, null);
     }
 
-    public ApidocsResponse.Ids addCol(Long projectId, ApidocsRequest.AddColRequest request)  {
+    public ApidocsResponse.Ids addCol(Long projectId, ApidocsRequest.AddColRequest request) {
         Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
         Update update = new Update();
         String colId = UUID.randomUUID().toString();
@@ -44,7 +44,7 @@ public class ApidocsService {
         return ApidocsResponse.Ids.build(projectId, null, colId);
     }
 
-    public ApidocsResponse.Ids moveRow(Long projectId, ApidocsRequest.MoveItemRequest request)  {
+    public ApidocsResponse.Ids moveRow(Long projectId, ApidocsRequest.MoveItemRequest request) {
         Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
         Update update = new Update();
         // rowId를 배열에서 제거
@@ -66,8 +66,8 @@ public class ApidocsService {
         Apidocs apidocs = mongoTemplate.findAndModify(query, update, Apidocs.class);
         List<ColDto> colDtos = apidocs.getCols();
         ColDto targetCol = new ColDto();
-        for (ColDto colDto: colDtos) {
-            if(colDto.getUuid().equals(request.getFromId())){
+        for (ColDto colDto : colDtos) {
+            if (colDto.getUuid().equals(request.getFromId())) {
                 targetCol = colDto;
             }
         }
@@ -102,7 +102,7 @@ public class ApidocsService {
             update.unset("data." + rowId + "." + colId);
         }
         // #1, #2 실행
-        mongoTemplate.updateFirst(query,update,"apidocs");
+        mongoTemplate.updateFirst(query, update, "apidocs");
 
         return ApidocsResponse.Ids.build(projectId, null, colId);
     }
@@ -112,6 +112,7 @@ public class ApidocsService {
         Update update = new Update();
         update.set("data." + request.getRowId() + "." + request.getColId(), request.getContent());
         mongoTemplate.updateFirst(query, update, "apidocs");
+        return ApidocsResponse.Ids.build(projectId, request.getRowId(), request.getColId());
     }
 
     public ApidocsResponse.Apidocs getDocs(Long projectId) {
