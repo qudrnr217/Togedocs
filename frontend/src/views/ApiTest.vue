@@ -3,7 +3,7 @@
 
     <div class="Top">
 
-      <h2>프로젝트 이름1</h2>
+      <div>프로젝트 이름1</div>
       
     </div>
     <div class="Maincontainer">
@@ -11,51 +11,64 @@
         <h2>left</h2>
       </div>
       <div class="Main">
-        <div class="apiName" style="height:5%">
-          <h2 style="text-align:left"> 회원가입</h2>
+        <div class="apiName">
+          <div style="text-align:left">회원가입</div>
         </div>
 
         <div class="TypeURL">
-          <textarea class="RequestType" v-model="methodType"/>
+          <select class="RequestType" v-model="methodType">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="PATCH">PATCH</option>
+            <option value="DELETE">DELETE</option>
+          </select>
+          <div class="empty"></div>
           <input class="apiURL" v-model="apiURL" />
-          <button class="testbtn" @click="Test">Test</button>
+          <div class="empty"></div>
+          <button class="testbtn" @click="Test">Send</button>
         </div>
 
-      <div class="Request">
-          <br>
-          <select v-model="typeSelect">
-            <option value="Path">PathVariable</option>
-            <option value="Param">Params</option>
-            <option value="Body">RequestBody</option>
-          </select>
+      <div class="RequestBox">
+        <div class="RequestOptions">
+          <div :class="{'underbar': typeSelect == 'RequestHeader' }" id="ReqeustOptionsDetail" @click="OptionSelect('RequestHeader')">Header</div>
+          <div :class="{'underbar': typeSelect == 'PathVariable' }" id="ReqeustOptionsDetail" @click="OptionSelect('PathVariable')" >PathVariable</div>
+          <div :class="{'underbar': typeSelect == 'Params' }" id="ReqeustOptionsDetail" @click="OptionSelect('Params')" >Params</div>
+          <div :class="{'underbar': typeSelect == 'Body' }" id="ReqeustOptionsDetail" @click="OptionSelect('Body')" >RequestBody</div>
+        </div>
 
-
-
-          <p>Header</p>
-          <textarea id="Header" v-model="Header"/>
+        <div class="RequestParent">
+          <textarea id="HeaderArea" v-show="typeSelect == 'RequestHeader'" v-model="Header"/>
         
-
-          <p>PathVariable</p>
-          <input id="PathVariableInput" v-model="PathVariable"/>
+          <textarea id="PathVariableInput" v-show="typeSelect == 'PathVariable'" v-model="PathVariable"/>
 
 
+          <textarea id="ParamsInput" v-show="typeSelect == 'Params'" v-model="Params"/>
 
-          <p>Params</p>
-          <textarea id="ParamsInput" v-model="Params"/>
+          <textarea id="BodyInput" v-show="typeSelect == 'Body'" v-model="Body"/>
+        </div>
+   
+      </div>
+      <div style="height: 1%">
+      </div>  
 
-
-
-          <div>Body</div>
-          <textarea id="BodyInput" v-model="Body"/>
+      <div class="ResponseBox">
+        <div class="ResponseBoxTop">Response</div>
+        <div class="ResponseOptions">
+          <div :class="{'underbar': ResponseTypeSelect == 'Body' }" id="ResponseOptionsDetail" @click="ResponseOptionSelect('Body')">Body</div>
+          <div :class="{'underbar': ResponseTypeSelect == 'Cookie' }" id="ResponseOptionsDetail" @click="ResponseOptionSelect('Cookie')" >Cookie</div>
+          <div :class="{'underbar': ResponseTypeSelect == 'Header' }" id="ResponseOptionsDetail" @click="ResponseOptionSelect('Header')" >Header</div>
+        </div>
+          <div class="ResponseParent">
+            <textarea readonly v-show="ResponseTypeSelect == 'Body'" id="ResponseContent" v-model="res"></textarea>
+          </div>
+        </div>
       </div>
 
-        <div>Response</div>
-        <div>{{res}}</div>
-      </div>
-
-      <div class="Right">
-        <h2>right</h2>
-      </div>
+      <details class="Right">
+        <summary>호출 로그</summary>
+        <div class="tpt">details 과 summary 그리고 css까지 적용</div>
+      </details>
     </div>
     
   </div>
@@ -76,8 +89,8 @@ export default {
         //   URL
         // ).then((data)=>{this.responsedata = data});
       
-        if (this.typeSelect == "Path") this.PathVariablebtn();
-        else if (this.typeSelect == "Param") this.Paramsbtn();
+        if (this.typeSelect == "PathVariable") this.PathVariablebtn();
+        else if (this.typeSelect == "Params") this.Paramsbtn();
         else if (this.typeSelect == "Body") this.Bodybtn();
       },
       PathVariablebtn(){
@@ -161,6 +174,12 @@ export default {
         // console.log(URL);
         // console.log(this.PostValue);
       },
+      OptionSelect(data){
+        this.typeSelect = data;
+      },
+      ResponseOptionSelect(data){
+        this.ResponseTypeSelect=data;
+      }
 
   },
 
@@ -175,7 +194,8 @@ export default {
       Body: '',
       Header: '',
       responsedata: '',
-      res:''
+      res:'',
+      ResponseTypeSelect: '',
     }
   },
   watch: {
@@ -183,6 +203,9 @@ export default {
      // console.log(newdata.data);
       this.res = newdata.data;
       if (newdata.data == null) this.res = newdata;
+
+      this.res = JSON.stringify(this.res);
+      console.log(newdata);
     }
   },
   mounted(){
@@ -204,7 +227,9 @@ export default {
     this.methodType = "GET";
     //this.apinextURL = '/api/book';
     this.PathVariable = '/{userSeq}';
+    this.typeSelect = 'PathVariable';
     this.apiURL = 'https://k7a404.p.ssafy.io/api/book';
+    this.ResponseTypeSelect = "Body"
 
   }
 
@@ -228,70 +253,135 @@ li {
 a {
   color: #42b983;
 }
-#postInput{
-  width : 20%;
-  height: 150px;
+#PathVariableInput{
+  width:98%;
+  height:100%;
+  resize: none;
 }
 #ParamsInput{
-  width: 95%;
-  height: 15%;
+  width:98%;
+  height:100%;
+  resize: none;
 }
 #BodyInput{
-  width: 95%;
-  height: 20%;
+  width:98%;
+  height:100%;
+  resize: none;
 }
-#Header{
-  width: 95%;
-  height: 10%;
+#HeaderArea{
+  width:98%;
+  height:100%;
+  resize: none;
 }
 .All{
   width:95vw;
-  height:100vh;
+  height:83vh;
 }
 .Maincontainer{
   width:95vw;
-  height:100vh;
+  height:83vh;
   display: flex;
 }
 .Top{
   height: 5%;
   background-color: #ffffff;
 }
+.apiName{
+  height: 4%;
+}
 .TypeURL{
   height: 6%;
   display: flex;
+  width:99%;
+  margin:0 auto; 
 }
 .RequestType{
   text-align: center;
-  flex:1;
-}
-.apiURL{
-  flex: 8;
-}
-.testbtn{
-  flex: 1;
-}
-.Request{
-  height: 50%;
+  flex:8;
   background-color: #F3F3F3;
 }
+.apiURL{
+  flex: 64;
+  background-color: #F3F3F3;
+}
+.empty{
+  flex:1;
+}
+.testbtn{
+  flex: 8;
+  background-color: #F3F3F3;
+}
+.RequestBox{
+  height: 40%;
+  width:99%;
+  margin:0 auto; 
+  background-color: #F3F3F3;
+}
+.ResponseBox{
+  height:50%;
+  width:99%;
+  margin:0 auto; 
+  background-color: #D9D9D9;
+}
+.ResponseBoxTop{
+  height: 8%;
+}
+.ResponseParent{
+  width:100%;
+  height: 70%;
+  display: flex;
+  justify-content: center;
+}
+#ResponseContent{
+  width:98%;
+  height:100%;
+  background-color: #ffffff;
+  resize: none;
+}
+.RequestOptions{
+  height: 12%;
+  display: flex;
+  background-color: #F3F3F3;
+}
+#ReqeustOptionsDetail{
+  margin-right: 3%;
+  cursor: pointer;
+  text-align: left;
+  line-height: 240%;
+}
+.ResponseOptions{
+  height: 12%;
+  display: flex;
+}
+#ResponseOptionsDetail{
+  margin-right: 3%;
+  cursor: pointer;
+  text-align: left;
+  line-height: 240%;
+}
+.RequestParent{
+  width:100%;
+  height: 70%;
+  display: flex;
+  justify-content: center;
+}
+.underbar{
+  border-bottom: solid 3px red;
+}
 .Left{
-  width: 13%;
-  height: 100vh;
-  background-color:#e7e7e7;
-  flex: 1;
+  width: 10%;
+  height: 83vh;
+  background-color:#e7e7e7; 
+  resize: horizontal;
+  overflow: auto;
 }
 .Main{
-  width: 70%;
   background-color: #ffffff;
-  flex: 4;
-  text-align: center;
+  flex: 5;
 }
 .Right{
-  width: 15%;
-  height:100vh;
+  height:83vh;
   background-color: #e7e7e7;
-  flex: 1;
 }
 
 </style>
