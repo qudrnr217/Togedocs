@@ -16,23 +16,27 @@ public class ApidocsController {
     private ApidocsService apidocsService;
 
     @PostMapping("/{projectId}/rows")
-    public ResponseEntity<?> addRow(@PathVariable Long projectId){
-        return null;
+    public ResponseEntity<ApidocsResponse.Ids> addRow(@PathVariable Long projectId){
+        ApidocsResponse.Ids response = apidocsService.addRow(projectId);
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/{projectId}/cols")
     public ResponseEntity<?> addCol(@PathVariable Long projectId, @RequestBody ApidocsRequest.AddColRequest request){
-        return null;
+        ApidocsResponse.Ids response = apidocsService.addCol(projectId, request);
+        return ResponseEntity.ok().body(response);
     }
 
     @PatchMapping("/{projectId}/rows")
     public ResponseEntity<?> moveRow(@PathVariable Long projectId, @RequestBody ApidocsRequest.MoveItemRequest request){
-        return null;
+        ApidocsResponse.Ids response = apidocsService.moveRow(projectId, request);
+        return ResponseEntity.ok().body(response);
     }
 
     @PatchMapping("/{projectId}/cols")
     public ResponseEntity<?> moveCol(@PathVariable Long projectId, @RequestBody ApidocsRequest.MoveItemRequest request){
-        return null;
+        ApidocsResponse.Ids response = apidocsService.moveCol(projectId, request);
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/{projectId}/rows/{rowId}")
