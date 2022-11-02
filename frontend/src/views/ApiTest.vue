@@ -260,11 +260,11 @@ a {
 }
 .All{
   width:95vw;
-  height:100vh;
+  height:85vh;
 }
 .Maincontainer{
   width:95vw;
-  height:100vh;
+  height:85vh;
   display: flex;
 }
 .Top{
@@ -339,7 +339,7 @@ a {
   border-bottom: solid 3px red;
 }
 .Left{
-  height: 100vh;
+  height: 85vh;
   background-color:#e7e7e7;
   flex: 1;
 }
@@ -348,7 +348,7 @@ a {
   flex: 5;
 }
 .Right{
-  height:100vh;
+  height:85vh;
   background-color: #e7e7e7;
   flex: 1;
 }
