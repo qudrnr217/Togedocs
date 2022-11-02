@@ -107,7 +107,7 @@ public class ApidocsService {
         return ApidocsResponse.Ids.build(projectId, null, colId);
     }
 
-    public void updateCell(Long projectId, ApidocsRequest.UpdateCellRequest request) {
+    public ApidocsResponse.Ids updateCell(Long projectId, ApidocsRequest.UpdateCellRequest request) {
         Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
         Update update = new Update();
         update.set("data." + request.getRowId() + "." + request.getColId(), request.getContent());
