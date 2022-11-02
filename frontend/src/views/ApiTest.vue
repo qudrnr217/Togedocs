@@ -3,7 +3,7 @@
 
     <div class="Top">
 
-      <h2>프로젝트 이름1</h2>
+      <div>프로젝트 이름1</div>
       
     </div>
     <div class="Maincontainer">
@@ -26,7 +26,7 @@
           <div class="empty"></div>
           <input class="apiURL" v-model="apiURL" />
           <div class="empty"></div>
-          <button class="testbtn" @click="Test">Test</button>
+          <button class="testbtn" @click="Test">Send</button>
         </div>
 
       <div class="RequestBox">
@@ -37,29 +37,38 @@
           <div :class="{'underbar': typeSelect == 'Body' }" id="ReqeustOptionsDetail" @click="OptionSelect('Body')" >RequestBody</div>
         </div>
 
+        <div class="RequestParent">
           <textarea id="HeaderArea" v-show="typeSelect == 'RequestHeader'" v-model="Header"/>
         
-          <input id="PathVariableInput" v-show="typeSelect == 'PathVariable'" v-model="PathVariable"/>
+          <textarea id="PathVariableInput" v-show="typeSelect == 'PathVariable'" v-model="PathVariable"/>
 
 
           <textarea id="ParamsInput" v-show="typeSelect == 'Params'" v-model="Params"/>
 
           <textarea id="BodyInput" v-show="typeSelect == 'Body'" v-model="Body"/>
+        </div>
+   
       </div>
       <div style="height: 1%">
       </div>  
 
       <div class="ResponseBox">
-          <div class="ResponseBoxTop">Response</div>
+        <div class="ResponseBoxTop">Response</div>
+        <div class="ResponseOptions">
+          <div :class="{'underbar': ResponseTypeSelect == 'Body' }" id="ResponseOptionsDetail" @click="ResponseOptionSelect('Body')">Body</div>
+          <div :class="{'underbar': ResponseTypeSelect == 'Cookie' }" id="ResponseOptionsDetail" @click="ResponseOptionSelect('Cookie')" >Cookie</div>
+          <div :class="{'underbar': ResponseTypeSelect == 'Header' }" id="ResponseOptionsDetail" @click="ResponseOptionSelect('Header')" >Header</div>
+        </div>
           <div class="ResponseParent">
-            <textarea readonly class="ResponseContent" v-model="res"></textarea>
+            <textarea readonly v-show="ResponseTypeSelect == 'Body'" id="ResponseContent" v-model="res"></textarea>
           </div>
         </div>
       </div>
 
-      <div class="Right">
-        <h2>호출 로그</h2>
-      </div>
+      <details class="Right">
+        <summary>호출 로그</summary>
+        <div class="tpt">details 과 summary 그리고 css까지 적용</div>
+      </details>
     </div>
     
   </div>
@@ -168,6 +177,9 @@ export default {
       OptionSelect(data){
         this.typeSelect = data;
       },
+      ResponseOptionSelect(data){
+        this.ResponseTypeSelect=data;
+      }
 
   },
 
@@ -182,7 +194,8 @@ export default {
       Body: '',
       Header: '',
       responsedata: '',
-      res:''
+      res:'',
+      ResponseTypeSelect: '',
     }
   },
   watch: {
@@ -192,7 +205,7 @@ export default {
       if (newdata.data == null) this.res = newdata;
 
       this.res = JSON.stringify(this.res);
-      console.log(this.res);
+      console.log(newdata);
     }
   },
   mounted(){
@@ -216,6 +229,7 @@ export default {
     this.PathVariable = '/{userSeq}';
     this.typeSelect = 'PathVariable';
     this.apiURL = 'https://k7a404.p.ssafy.io/api/book';
+    this.ResponseTypeSelect = "Body"
 
   }
 
@@ -239,32 +253,33 @@ li {
 a {
   color: #42b983;
 }
-#postInput{
-  width : 20%;
-  height: 150px;
+#PathVariableInput{
+  width:98%;
+  height:100%;
+  resize: none;
 }
 #ParamsInput{
-  width: 99%;
-  height: 70%;
+  width:98%;
+  height:100%;
   resize: none;
 }
 #BodyInput{
-  width: 99%;
-  height: 70%;
+  width:98%;
+  height:100%;
   resize: none;
 }
 #HeaderArea{
-  width: 99%;
-  height: 70%;
+  width:98%;
+  height:100%;
   resize: none;
 }
 .All{
   width:95vw;
-  height:85vh;
+  height:83vh;
 }
 .Maincontainer{
   width:95vw;
-  height:85vh;
+  height:83vh;
   display: flex;
 }
 .Top{
@@ -272,7 +287,7 @@ a {
   background-color: #ffffff;
 }
 .apiName{
-  height: 3%;
+  height: 4%;
 }
 .TypeURL{
   height: 6%;
@@ -315,10 +330,9 @@ a {
   width:100%;
   height: 70%;
   display: flex;
-  align-items: center;
   justify-content: center;
 }
-.ResponseContent{
+#ResponseContent{
   width:98%;
   height:100%;
   background-color: #ffffff;
@@ -335,22 +349,39 @@ a {
   text-align: left;
   line-height: 240%;
 }
+.ResponseOptions{
+  height: 12%;
+  display: flex;
+}
+#ResponseOptionsDetail{
+  margin-right: 3%;
+  cursor: pointer;
+  text-align: left;
+  line-height: 240%;
+}
+.RequestParent{
+  width:100%;
+  height: 70%;
+  display: flex;
+  justify-content: center;
+}
 .underbar{
   border-bottom: solid 3px red;
 }
 .Left{
-  height: 85vh;
-  background-color:#e7e7e7;
-  flex: 1;
+  width: 10%;
+  height: 83vh;
+  background-color:#e7e7e7; 
+  resize: horizontal;
+  overflow: auto;
 }
 .Main{
   background-color: #ffffff;
   flex: 5;
 }
 .Right{
-  height:85vh;
+  height:83vh;
   background-color: #e7e7e7;
-  flex: 1;
 }
 
 </style>
