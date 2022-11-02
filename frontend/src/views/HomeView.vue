@@ -27,14 +27,14 @@
             padding: 8px;
             gap: 8px;
           ">
-          <img src="@/assets/Cat.png" alt="" />
+          <img src="@/assets/dogs.jpg" alt="" style="width: 25vw" />
           <div
             style="
-              font-size: 5.5rem;
+              font-size: 8vw;
 
               color: #000000;
             ">
-            TogeDOGs
+            TogeDocs
           </div>
         </div>
         <router-link :to="{ name: 'select' }">
@@ -56,6 +56,7 @@
         </router-link>
       </div>
     </div>
+    <router-link :to="{ name: 'testjh' }">To test jh</router-link>
   </div>
 </template>
 
@@ -68,7 +69,7 @@ export default {};
   height: 10vh;
 }
 .login {
-  font-size: 3rem;
+  font-size: 5vw;
 }
 .spacing {
   display: flex;
