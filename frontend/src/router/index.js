@@ -4,6 +4,7 @@ import ApiDocs from "@/views/ApiDocs.vue";
 import ApiTest from "@/views/ApiTest.vue";
 import ProjectSelect from "@/views/ProjectSelect.vue";
 import WebSocket from "@/views/WebSocket.vue";
+import TestJh from "@/components/ProjectCard.vue";
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: "/ws",
     name: "ws",
     component: WebSocket,
+  },
+  {
+    path: "/testjh",
+    name: "testjh",
+    component: TestJh,
   },
   //   {
   //     path: "/404",
