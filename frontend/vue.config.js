@@ -1,7 +1,9 @@
 const { defineConfig } = require('@vue/cli-service')
 
 module.exports = defineConfig({
-  transpileDependencies: true,
+  transpileDependencies: [
+    'quasar'
+  ],
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
@@ -9,6 +11,10 @@ module.exports = defineConfig({
           icon: './Cat.png'
         }
       }
+    },
+    quasar: {
+      importStrategy: 'kebab',
+      rtlSupport: false
     }
   }
 })
