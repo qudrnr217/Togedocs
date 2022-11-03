@@ -2,6 +2,8 @@ package com.togedocs.backend.api.controller;
 
 import com.togedocs.backend.api.dto.ApidocsRequest;
 import com.togedocs.backend.api.dto.ApidocsResponse;
+import com.togedocs.backend.api.exception.NotEnoughArgsException;
+import com.togedocs.backend.api.exception.IdNotFoundException;
 import com.togedocs.backend.api.service.ApidocsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,62 +17,147 @@ public class ApidocsController {
     private ApidocsService apidocsService;
 
     @PostMapping("/{projectId}/rows")
-    public ResponseEntity<ApidocsResponse.Ids> addRow(@PathVariable Long projectId) {
-        ApidocsResponse.Ids response = apidocsService.addRow(projectId);
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<?> addRow(@PathVariable Long projectId) {
+        ApidocsResponse.Ids response;
+        try {
+            response = apidocsService.addRow(projectId);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
+        }
+        return ResponseEntity.status(201).body(response);
     }
 
     @PostMapping("/{projectId}/cols")
-    public ResponseEntity<ApidocsResponse.Ids> addCol(@PathVariable Long projectId, @RequestBody ApidocsRequest.AddColRequest request) {
-        ApidocsResponse.Ids response = apidocsService.addCol(projectId, request);
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<?> addCol(@PathVariable Long projectId, @RequestBody ApidocsRequest.AddColRequest request) {
+        ApidocsResponse.Ids response;
+        try {
+            response = apidocsService.addCol(projectId, request);
+        } catch (NotEnoughArgsException e) {
+            return ResponseEntity.status(500).body(request);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
+        }
+        return ResponseEntity.status(201).body(response);
     }
 
     @PatchMapping("/{projectId}/rows")
-    public ResponseEntity<ApidocsResponse.Ids> moveRow(@PathVariable Long projectId, @RequestBody ApidocsRequest.MoveItemRequest request) {
-        ApidocsResponse.Ids response = apidocsService.moveRow(projectId, request);
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<?> moveRow(@PathVariable Long projectId, @RequestBody ApidocsRequest.MoveItemRequest request) {
+        ApidocsResponse.Ids response;
+        try {
+            response = apidocsService.moveRow(projectId, request);
+        } catch (NotEnoughArgsException e) {
+            return ResponseEntity.status(500).body(request);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
+        }
+        return ResponseEntity.status(200).body(response);
     }
 
     @PatchMapping("/{projectId}/cols")
-    public ResponseEntity<ApidocsResponse.Ids> moveCol(@PathVariable Long projectId, @RequestBody ApidocsRequest.MoveItemRequest request) {
-        ApidocsResponse.Ids response = apidocsService.moveCol(projectId, request);
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<?> moveCol(@PathVariable Long projectId, @RequestBody ApidocsRequest.MoveItemRequest request) {
+        ApidocsResponse.Ids response;
+        try {
+            response = apidocsService.moveCol(projectId, request);
+        } catch (NotEnoughArgsException e) {
+            return ResponseEntity.status(500).body(request);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+        return ResponseEntity.status(200).body(response);
     }
 
     @DeleteMapping("/{projectId}/rows/{rowId}")
-    public ResponseEntity<ApidocsResponse.Ids> deleteRow(@PathVariable Long projectId, @PathVariable String rowId) {
-        ApidocsResponse.Ids response = apidocsService.deleteRow(projectId, rowId);
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<?> deleteRow(@PathVariable Long projectId, @PathVariable String rowId) {
+        ApidocsResponse.Ids response;
+        try {
+            response = apidocsService.deleteRow(projectId, rowId);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+        return ResponseEntity.status(204).body(response);
     }
 
     @DeleteMapping("/{projectId}/cols/{colId}")
-    public ResponseEntity<ApidocsResponse.Ids> deleteCol(@PathVariable Long projectId, @PathVariable String colId) {
-        ApidocsResponse.Ids response = apidocsService.deleteCol(projectId, colId);
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<?> deleteCol(@PathVariable Long projectId, @PathVariable String colId) {
+        ApidocsResponse.Ids response;
+        try {
+            response = apidocsService.deleteCol(projectId, colId);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+        return ResponseEntity.status(204).body(response);
     }
 
     @PatchMapping("/{projectId}/cell")
-    public ResponseEntity<ApidocsResponse.Ids> updateCell(@PathVariable Long projectId, @RequestBody ApidocsRequest.UpdateCellRequest request) {
-        ApidocsResponse.Ids response = apidocsService.updateCell(projectId, request);
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<?> updateCell(@PathVariable Long projectId, @RequestBody ApidocsRequest.UpdateCellRequest request) {
+        ApidocsResponse.Ids response;
+        try {
+            response = apidocsService.updateCell(projectId, request);
+        } catch (NotEnoughArgsException e) {
+            return ResponseEntity.status(500).body(request);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+        return ResponseEntity.status(200).body(response);
     }
 
     @GetMapping("/{projectId}")
-    public ResponseEntity<ApidocsResponse.Apidocs> getDocs(@PathVariable Long projectId) {
-        ApidocsResponse.Apidocs response = apidocsService.getDocs(projectId);
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<?> getDocs(@PathVariable Long projectId) {
+        ApidocsResponse.Apidocs response;
+        try {
+            response = apidocsService.getDocs(projectId);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+        return ResponseEntity.status(200).body(response);
     }
 
     @PatchMapping("/{projectId}")
-    public ResponseEntity<ApidocsResponse.ProjectInfo> updateProjectInfo(@PathVariable Long projectId, @RequestBody ApidocsRequest.UpdateProjectInfoRequest request) {
-        ApidocsResponse.ProjectInfo response = apidocsService.updateProjectInfo(projectId, request);
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<?> updateProjectInfo(@PathVariable Long projectId, @RequestBody ApidocsRequest.UpdateProjectInfoRequest request) {
+        ApidocsResponse.ProjectInfo response;
+        try {
+            response = apidocsService.updateProjectInfo(projectId, request);
+        } catch (NotEnoughArgsException e) {
+            return ResponseEntity.status(500).body(request);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+        return ResponseEntity.status(200).body(response);
     }
 
     @PatchMapping("/{projectId}/cols/{colId}")
-    public ResponseEntity<ApidocsResponse.Ids> updateCol(@PathVariable Long projectId, @PathVariable String colId, @RequestBody ApidocsRequest.UpdateColRequest request) {
-        ApidocsResponse.Ids response = apidocsService.updateCol(projectId, colId, request);
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<?> updateCol(@PathVariable Long projectId, @PathVariable String colId, @RequestBody ApidocsRequest.UpdateColRequest request) {
+        ApidocsResponse.Ids response;
+        try {
+            response = apidocsService.updateCol(projectId, colId, request);
+        } catch (NotEnoughArgsException e) {
+            return ResponseEntity.status(500).body(request);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+        return ResponseEntity.status(200).body(response);
     }
 }
