@@ -14,12 +14,14 @@ public class ColDto {
     private String uuid;
     private String name;
     private String type;
+    private int width;
 
-    public static ColDto build(String uuid, String name, String type){
+    public static ColDto build(String uuid, String name, String type, int width){
         return ColDto.builder()
                 .uuid(uuid)
                 .name(name)
                 .type(type)
+                .width(width)
                 .build();
     }
 
