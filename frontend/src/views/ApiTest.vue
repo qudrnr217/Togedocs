@@ -8,8 +8,12 @@
     </div>
     <div class="Maincontainer">
       <div class="Left">
-        <h2>left</h2>
+        <api-list></api-list>
       </div>
+
+
+
+
       <div class="Main">
         <div class="apiName">
           <div style="text-align:left">회원가입</div>
@@ -76,7 +80,9 @@
 
 <script>
 import axios from "axios";
+import apiList from '@/components/apiTest/apiList.vue';
 export default {
+  components: { apiList },
   name: 'HelloWorld', 
   props: {
     msg: String
@@ -374,6 +380,13 @@ a {
   background-color:#e7e7e7; 
   resize: horizontal;
   overflow: auto;
+}
+.Left::-webkit-resizer {
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent orangered orangered transparent;
+
+
 }
 .Main{
   background-color: #ffffff;
