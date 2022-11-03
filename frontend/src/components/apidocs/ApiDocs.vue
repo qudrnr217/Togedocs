@@ -29,8 +29,8 @@
           />
           <q-btn
             color="primary"
-            label="Del row"
-            @click="callDeleteRow(rowId)"
+            label="Open"
+            @click="openSideDrawer(rowId)"
           />
         </td>
 
@@ -56,18 +56,18 @@
         bordered
         class="bg-grey-3"
       >
-        <q-list>
-          <q-item v-for="i in 5" :key="i" v-ripple>
-            <q-item-section> Menu item {{ i }} </q-item-section>
-          </q-item>
-          <tr v-for="(row, rowId) in document.data" :key="rowId">
-            <td>
-              <strong>{{ rowId }}</strong>
-            </td>
-
-            <td v-for="(col, colId) in row" :key="colId">{{ col }}</td>
-          </tr>
-        </q-list>
+      <q-btn flat @click="drawer = !drawer" round dense icon="menu">
+      </q-btn>
+      <q-markup-table>
+      <tr v-for="(value, key) in document.data.first" :key="key">
+        <td>
+          <strong>{{ key }}</strong>
+        </td>
+        <td>
+          {{value}}
+        </td>
+      </tr>
+      </q-markup-table>
         <div
           v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeDrawer"
           class="q-drawer__resizer"
@@ -120,7 +120,6 @@ export default {
   setup() {
     let initialDrawerWidth;
     const drawerWidth = ref(300);
-
     return {
       // TODO: 나중에 자동으로 받아와서 채우는 걸로 변경
       projectId: ref(1),
@@ -320,7 +319,7 @@ export default {
       );
     },
     openSideDrawer(rowId) {
-      rowId;
+      console.log(rowId);
     },
   },
 };
