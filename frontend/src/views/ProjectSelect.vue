@@ -1,22 +1,5 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-header elevated class="bg-primary text-white" height-hint="98">
-      <q-toolbar>
-        <q-toolbar-title>
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
-          </q-avatar>
-          Title
-        </q-toolbar-title>
-      </q-toolbar>
-
-      <q-tabs align="left">
-        <q-route-tab to="/page1" label="Page One" />
-        <q-route-tab to="/page2" label="Page Two" />
-        <q-route-tab to="/page3" label="Page Three" />
-      </q-tabs>
-    </q-header>
-
     <q-page-container>
       <div class="project-list column justify-around items-center">
         <div class="column">
@@ -29,7 +12,8 @@
           />
         </div>
         <div class="col" v-for="projectItem in projectItems" :key="projectItem">
-          <q-card class="project-item items-center justify-between row">
+          <project-card></project-card>
+          <!-- <q-card class="project-item items-center justify-between row">
             <q-card-section horizontal>
               <q-item>
                 <q-item-section avatar>
@@ -61,26 +45,19 @@
               color="primary"
               label="이동"
             />
-          </q-card>
+          </q-card> -->
         </div>
       </div>
     </q-page-container>
-
-    <q-footer elevated class="bg-grey-8 text-white">
-      <q-toolbar>
-        <q-toolbar-title>
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
-          </q-avatar>
-          <div>Title</div>
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-footer>
   </q-layout>
 </template>
 
 <script>
+import ProjectCard from "@/components/ProjectCard.vue";
 export default {
+  components: {
+    ProjectCard,
+  },
   data() {
     return {
       projectItems: [
