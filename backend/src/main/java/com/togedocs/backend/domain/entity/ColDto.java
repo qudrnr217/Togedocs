@@ -25,4 +25,13 @@ public class ColDto {
                 .build();
     }
 
+    @Override
+    public String toString() {
+        return "ColDto{" +
+                "uuid='" + uuid + '\'' +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", width=" + width +
+                '}';
+    }
 }

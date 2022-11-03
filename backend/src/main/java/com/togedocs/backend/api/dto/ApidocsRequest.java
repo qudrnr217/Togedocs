@@ -19,7 +19,7 @@ public class ApidocsRequest {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class MoveItemRequest {
         private String fromId;
-        private int toIndex;
+        private Integer toIndex;
     }
 
     @Getter
@@ -48,7 +48,7 @@ public class ApidocsRequest {
     public static class UpdateColRequest {
         private String name;
         private String type;
-        private int width;
+        private Integer width;
     }
 
 }
