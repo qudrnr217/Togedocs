@@ -53,6 +53,28 @@
     <div>rows: {{ document.rows }}</div>
     <div>cols: {{ document.cols }}</div>
     <div>data: {{ document.data }}</div>
+
+    <br />
+    <br />
+    <!--  -->
+    <draggable
+      v-model="rowData"
+      group="people"
+      @start="drag = true"
+      @end="drag = false"
+      item-key="id"
+    >
+      <template #item="{ element }">
+        <q-card class="q-pa-xs row">
+          <template v-for="(cell, index) in element" :key="index">
+            <q-card class="q-pa-sm" :style="{ width: cell.width + 'px' }">
+              {{ cell.content }}
+            </q-card>
+          </template>
+        </q-card>
+      </template>
+    </draggable>
+    <!--  -->
   </div>
 </template>
 
@@ -62,7 +84,7 @@ import { BASEURL } from "@/api/index.js";
 
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-// import draggable from "vuedraggable";
+import draggable from "vuedraggable";
 
 import {
   getDocs,
@@ -79,7 +101,7 @@ moveCol;
 
 export default {
   components: {
-    // draggable,
+    draggable,
   },
   setup() {
     return {
@@ -91,6 +113,8 @@ export default {
         cols: [],
         data: {},
       }),
+
+      rowData: ref([]),
     };
   },
   mounted() {
@@ -154,8 +178,21 @@ export default {
           },
         },
         (response) => {
-          console.log(response);
-          this.document = response.data;
+          let res_doc = response.data;
+          this.document = res_doc;
+
+          res_doc.rows.forEach((rowId) => {
+            let this_row = [];
+            res_doc.cols.forEach((col) => {
+              let colId = col.uuid;
+              let colWidth = col.width;
+              this_row.push({
+                content: res_doc.data[rowId][colId],
+                width: colWidth,
+              });
+            });
+            this.rowData.push(this_row);
+          });
         },
         (error) => {
           console.warn(error);
