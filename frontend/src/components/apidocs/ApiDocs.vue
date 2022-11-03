@@ -27,6 +27,11 @@
             label="Del row"
             @click="callDeleteRow(rowId)"
           />
+          <q-btn
+            color="primary"
+            label="Del row"
+            @click="callDeleteRow(rowId)"
+          />
         </td>
 
         <td v-for="(col, colId) in row" :key="colId">{{ col }}</td>
@@ -34,20 +39,51 @@
     </q-markup-table>
     <q-btn color="primary" label="Add row" @click="callAddRow()" />
     <q-btn color="primary" label="Add col" @click="callAddCol()" />
-    <!-- <table>
-      <tr>
-        <td></td>
-        <td v-for="(col, colId) in document.cols" :key="colId">
-          <strong>{{ col.name }}</strong>
-        </td>
-      </tr>
-      <tr v-for="(row, rowId) in document.data" :key="rowId">
-        <td>
-          <strong>{{ rowId }}</strong>
-        </td>
-        <td v-for="(col, colId) in row" :key="colId">{{ col }}</td>
-      </tr>
-    </table> -->
+    <q-layout
+      view="hHh Lpr lff"
+      container
+      style="height: 300px"
+      class="shadow-2 rounded-borders"
+    >
+      <q-btn flat @click="drawer = !drawer" round dense icon="menu"></q-btn>
+      <q-drawer
+        v-model="drawer"
+        side="right"
+        overlay
+        show-if-above
+        :width="drawerWidth"
+        :breakpoint="0"
+        bordered
+        class="bg-grey-3"
+      >
+        <q-list>
+          <q-item v-for="i in 5" :key="i" v-ripple>
+            <q-item-section> Menu item {{ i }} </q-item-section>
+          </q-item>
+          <tr v-for="(row, rowId) in document.data" :key="rowId">
+            <td>
+              <strong>{{ rowId }}</strong>
+            </td>
+
+            <td v-for="(col, colId) in row" :key="colId">{{ col }}</td>
+          </tr>
+        </q-list>
+        <div
+          v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeDrawer"
+          class="q-drawer__resizer"
+        ></div>
+      </q-drawer>
+      <q-page-container>
+        <q-page padding>
+          <p v-for="n in 15" :key="n">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit nihil
+            praesentium molestias a adipisci, dolore vitae odit, quidem
+            consequatur optio voluptates asperiores pariatur eos numquam rerum
+            delectus commodi perferendis voluptate?
+          </p>
+        </q-page>
+      </q-page-container>
+    </q-layout>
     <br />
     <!-- 개발자용 보기 -->
     <div>rows: {{ document.rows }}</div>
@@ -82,6 +118,9 @@ export default {
     // draggable,
   },
   setup() {
+    let initialDrawerWidth;
+    const drawerWidth = ref(300);
+
     return {
       // TODO: 나중에 자동으로 받아와서 채우는 걸로 변경
       projectId: ref(1),
@@ -91,6 +130,14 @@ export default {
         cols: [],
         data: {},
       }),
+      drawer: ref(false),
+      drawerWidth,
+      resizeDrawer(ev) {
+        if (ev.isFirst === true) {
+          initialDrawerWidth = drawerWidth.value;
+        }
+        drawerWidth.value = initialDrawerWidth - ev.offset.x;
+      },
     };
   },
   mounted() {
@@ -272,6 +319,9 @@ export default {
         }
       );
     },
+    openSideDrawer(rowId) {
+      rowId;
+    },
   },
 };
 </script>
@@ -280,5 +330,14 @@ export default {
 td {
   width: 100px;
   border: 1px solid black;
+}
+.q-drawer__resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -2px;
+  width: 4px;
+  background-color: red;
+  cursor: ew-resize;
 }
 </style>
