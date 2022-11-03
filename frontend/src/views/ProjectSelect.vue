@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh lpR fFf">
     <q-page-container>
-      <div class="project-list column justify-around items-center">
+      <div class="project-list column items-center">
         <div class="column">
           <q-btn
             stack
@@ -11,7 +11,11 @@
             class="create-project-btn"
           />
         </div>
-        <div class="col" v-for="projectItem in projectItems" :key="projectItem">
+        <div
+          class="col-4 project-item"
+          v-for="projectItem in projectItems"
+          :key="projectItem"
+        >
           <project-card></project-card>
           <!-- <q-card class="project-item items-center justify-between row">
             <q-card-section horizontal>
@@ -80,8 +84,8 @@ export default {
 <style scoped>
 .project-item {
   min-width: 80vw;
-  min-height: 20vh;
-  padding: 2rem;
+  max-height: 1vh;
+  /* padding: 2rem; */
 }
 .project-list {
   height: 80vh;
