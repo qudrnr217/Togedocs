@@ -1,5 +1,6 @@
 <template>
   <div>
+    <input type="text-area" />
     <br />
     projectId: {{ document.projectId }}
     <table>

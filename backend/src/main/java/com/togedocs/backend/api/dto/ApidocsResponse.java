@@ -33,6 +33,8 @@ public class ApidocsResponse {
     public static class Apidocs {
         private ObjectId id;
         private Long projectId;
+        private String title;
+        private String desc;
         private List<String> rows;
         private List<ColDto> cols;
         private Map<String, Map<String, String>> data;
@@ -41,9 +43,28 @@ public class ApidocsResponse {
             return Apidocs.builder()
                     .id(apidocs.getId())
                     .projectId(apidocs.getProjectId())
+                    .title(apidocs.getTitle())
+                    .desc(apidocs.getDesc())
                     .rows(apidocs.getRows())
                     .cols(apidocs.getCols())
                     .data(apidocs.getData())
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class ProjectInfo {
+        private Long projectId;
+        private String title;
+        private String desc;
+
+        public static ApidocsResponse.ProjectInfo build(Long projectId, String title, String desc) {
+            return ProjectInfo.builder()
+                    .projectId(projectId)
+                    .title(title).desc(desc)
                     .build();
         }
     }
