@@ -2,9 +2,6 @@
   <div>
     <div class="navbar">
       <div class="navbar-pages">
-        <router-link :to="{ name: 'home' }">
-          <div class="navbartext">홈</div></router-link
-        >
         <router-link :to="{ name: 'select' }">
           <div>프로젝트 선택</div></router-link
         >

@@ -5,6 +5,9 @@
       <div class="title">{프로젝트타이틀}</div>
       <div class="title-detail">{참여자}</div>
     </div>
+    <router-link :to="{ path: 'projectview/docs' }"
+      ><button>프로젝트로</button>
+    </router-link>
   </div>
 </template>
 
