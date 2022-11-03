@@ -2,14 +2,11 @@ import axios from "axios";
 
 const BASEURL = "http://localhost:8081/api/";
 
-function apiInstance() {
-  const instance = axios.create({
-    baseURL: BASEURL,
-    headers: {
-      "Content-type": "application/json",
-    },
-  });
-  return instance;
-}
+const api = axios.create({
+  baseURL: BASEURL,
+  headers: {
+    "Contents-type": "application/json",
+  },
+});
 
-export { BASEURL, apiInstance };
+export { BASEURL, api };
