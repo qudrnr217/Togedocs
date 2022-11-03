@@ -1,46 +1,81 @@
 <template>
-  <div class="All">
+  <div id="All">
 
-    <div class="Top">
+    <div id="Top">
 
       <div>프로젝트 이름1</div>
       
     </div>
-    <div class="Maincontainer">
-      <div class="Left">
-        <h2>left</h2>
+    <div id="Maincontainer">
+      <div id="Left">
+          <div id="apiListAll">
+            <div>api 목록</div>
+            
+            <div v-for="(item, index) in $store.state.apiStoreList" v-bind:key="index">
+              <q-item clickable @click="apiListDetail(index)" :active="index === nowIndex" v-ripple>
+                <q-item-section avatar>
+                  {{item.type}}
+                </q-item-section>
+                <q-item-section>
+                  {{ item.name }}
+                </q-item-section>
+              </q-item>
+ 
+
+            </div>
+
+        
+        </div>
       </div>
-      <div class="Main">
-        <div class="apiName">
-          <div style="text-align:left">회원가입</div>
+
+
+      <div id="Main">
+        <div id="apiName">
+          <div style="text-align:left">{{apiName}}</div>
         </div>
 
-        <div class="TypeURL">
-          <select class="RequestType" v-model="methodType">
+        <div id="TypeURL">
+          <select id="RequestType" v-model="methodType">
             <option value="GET">GET</option>
             <option value="POST">POST</option>
             <option value="PUT">PUT</option>
             <option value="PATCH">PATCH</option>
             <option value="DELETE">DELETE</option>
           </select>
-          <div class="empty"></div>
-          <input class="apiURL" v-model="apiURL" />
-          <div class="empty"></div>
-          <button class="testbtn" @click="Test">Send</button>
+          <div id="empty"></div>
+          <input id="apiURL" v-model="apiURL" />
+          <div id="empty"></div>
+          <q-btn color="primary" id="testbtn" @click="Test">Send</q-btn>
         </div>
 
-      <div class="RequestBox">
-        <div class="RequestOptions">
-          <div :class="{'underbar': typeSelect == 'RequestHeader' }" id="ReqeustOptionsDetail" @click="OptionSelect('RequestHeader')">Header</div>
-          <div :class="{'underbar': typeSelect == 'PathVariable' }" id="ReqeustOptionsDetail" @click="OptionSelect('PathVariable')" >PathVariable</div>
-          <div :class="{'underbar': typeSelect == 'Params' }" id="ReqeustOptionsDetail" @click="OptionSelect('Params')" >Params</div>
-          <div :class="{'underbar': typeSelect == 'Body' }" id="ReqeustOptionsDetail" @click="OptionSelect('Body')" >RequestBody</div>
-        </div>
+      <div id="RequestBox">
+        <q-tabs id="RequestOptions"
+        dense
+        no-caps
+        align="left">
+          <q-tab id="ReqeustOptionsDetail" @click="OptionSelect('RequestHeader')">Header</q-tab>
+          <q-tab id="ReqeustOptionsDetail" @click="OptionSelect('PathVariable')" >PathVariable</q-tab>
+          <q-tab id="ReqeustOptionsDetail" @click="OptionSelect('Params')" >Params</q-tab>
+          <q-tab id="ReqeustOptionsDetail" @click="OptionSelect('Body')" >RequestBody</q-tab>
+        </q-tabs>
 
-        <div class="RequestParent">
+        <div id="RequestParent">
           <textarea id="HeaderArea" v-show="typeSelect == 'RequestHeader'" v-model="Header"/>
         
-          <textarea id="PathVariableInput" v-show="typeSelect == 'PathVariable'" v-model="PathVariable"/>
+          <div id="PathVariableInput" v-show="typeSelect == 'PathVariable'">
+            <q-markup-table dense id="PathVariableTable">
+              <thead>
+                <tr>
+                  <th class="text-left">key</th>
+                  <th class="text-left">PathVariable</th>
+                </tr>
+              </thead>
+              <tbody v-for="(item, index) in PathVariables" v-bind:key="index">
+                <td>{{item.key}}</td>
+                <td><q-input dense outlined id= "PathVariableTableInput" v-model="item.value"></q-input></td>
+              </tbody>
+            </q-markup-table>
+          </div>
 
 
           <textarea id="ParamsInput" v-show="typeSelect == 'Params'" v-model="Params"/>
@@ -52,22 +87,30 @@
       <div style="height: 1%">
       </div>  
 
-      <div class="ResponseBox">
-        <div class="ResponseBoxTop">Response</div>
-        <div class="ResponseOptions">
-          <div :class="{'underbar': ResponseTypeSelect == 'Body' }" id="ResponseOptionsDetail" @click="ResponseOptionSelect('Body')">Body</div>
-          <div :class="{'underbar': ResponseTypeSelect == 'Cookie' }" id="ResponseOptionsDetail" @click="ResponseOptionSelect('Cookie')" >Cookie</div>
-          <div :class="{'underbar': ResponseTypeSelect == 'Header' }" id="ResponseOptionsDetail" @click="ResponseOptionSelect('Header')" >Header</div>
+      <div id="ResponseBox">
+        <div id="ResponseBoxTop">
+          <div style="flex:1">Response</div>
+          <div style="flex:10"></div>
+          <div style="flex:2">Status : {{statusCode}}</div>
         </div>
-          <div class="ResponseParent">
+        <q-tabs id="ResponseOptions"
+        dense
+        no-caps
+        align="left">
+          <q-tab id="ResponseOptionsDetail" @click="ResponseOptionSelect('Body')">Body</q-tab>
+          <q-tab id="ResponseOptionsDetail" @click="ResponseOptionSelect('Cookie')" >Cookie</q-tab>
+          <q-tab id="ResponseOptionsDetail" @click="ResponseOptionSelect('Header')" >Header</q-tab>
+        </q-tabs>
+          <div id="ResponseParent">
             <textarea readonly v-show="ResponseTypeSelect == 'Body'" id="ResponseContent" v-model="res"></textarea>
           </div>
         </div>
       </div>
 
-      <details class="Right">
+      <details id="Right">
         <summary>호출 로그</summary>
-        <div class="tpt">details 과 summary 그리고 css까지 적용</div>
+         <div class="tpt">details 과 summary 그리고 css까지 적용</div>
+        
       </details>
     </div>
     
@@ -77,25 +120,31 @@
 <script>
 import axios from "axios";
 export default {
-  name: 'HelloWorld', 
+  components: { }, 
   props: {
     msg: String
   },
   methods:{
       Test(){
-
-        // var URL = "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev?serviceKey=hMlb8qO%2FdgkfNg5%2BiWHftA4WzS0Jj0dSbzyx5o4A3%2BM59BudkGG0DnEPK9aCbbay%2BrHppszUbsesl6hRLZ8N6Q%3D%3D&pageNo=1&numOfRows=10&LAWD_CD=11110&DEAL_YMD=201512";
-        // axios.get(
-        //   URL
-        // ).then((data)=>{this.responsedata = data});
-      
-        if (this.typeSelect == "PathVariable") this.PathVariablebtn();
-        else if (this.typeSelect == "Params") this.Paramsbtn();
-        else if (this.typeSelect == "Body") this.Bodybtn();
+        
+        // Request의 값에 따라 다른 함수 실행(axios)
+        // 다른 부분을 활성화한 채 테스트 버튼을 클릭했을 경우 PathVariable, Params, Body의 값을 보고 실행
+        if (this.PathVariables.length != 0) this.PathVariablebtn();
+        else if (this.Params != '') this.Paramsbtn();
+        else this.Bodybtn();
+        
       },
       PathVariablebtn(){
+        //PathVariable 버튼
+        var URL = this.apiURL + this.apinextURL;
 
-        var URL = this.apiURL + this.apinextURL + this.PathVariable;
+        //PathVariable에 맞춰서 URL 수정
+        for (let pv of this.PathVariables){
+          URL += "/";
+          URL += pv.value;
+        }
+
+        //Header 설정. Json 오류날 경우 {}로 초기화
         var HeaderJson; 
         try{
           HeaderJson = JSON.parse(this.Header);
@@ -103,6 +152,7 @@ export default {
           HeaderJson = '{}';
         }
 
+        //axios 동작
         if (this.methodType == "GET"){
           axios.get(URL, {headers : HeaderJson}).then((data)=>{this.responsedata = data}).catch((error) => {this.responsedata = error});
         } else if (this.methodType == "DELETE"){
@@ -111,7 +161,10 @@ export default {
 
       },
       Paramsbtn(){
+        //Params 버튼
         var URL = this.apiURL + this.apinextURL;
+
+        //Params JSON 에러 시 에러메시지 출력
         var paramJson;
         try{
           paramJson = JSON.parse(this.Params);
@@ -119,6 +172,7 @@ export default {
           this.res = 'Params JSON error';
         }
 
+        //Header 설정. Json 오류날 경우 {}로 초기화
         var HeaderJson; 
         try{
           HeaderJson = JSON.parse(this.Header);
@@ -126,6 +180,7 @@ export default {
           HeaderJson = '{}';
         }
 
+        //axios 동작
         if (this.methodType == "GET"){
           axios.get(URL, {params : paramJson,
           headers : HeaderJson
@@ -139,13 +194,18 @@ export default {
       },
       Bodybtn(){
 
+        //Body 버튼
         var URL = this.apiURL + this.apinextURL;
+
+        //Body JSON 세팅
         var PostJson;
         try{
           PostJson = JSON.parse(this.Body);
         }catch{
           this.res = 'Body JSON error';
         }
+        
+        //Header Json 세팅. 오류나면 {}로 초기화함
         var HeaderJson;
         try{
           HeaderJson = JSON.parse(this.Header);
@@ -153,6 +213,7 @@ export default {
           HeaderJson = '{}';
         }
 
+        //axios 동작
         if (this.methodType == "POST"){
           axios.post(URL, PostJson, {headers : HeaderJson})
           .then(data => {
@@ -175,12 +236,21 @@ export default {
         // console.log(this.PostValue);
       },
       OptionSelect(data){
+        //Request의 타입을 설정
         this.typeSelect = data;
       },
       ResponseOptionSelect(data){
+        //Response의 타입을 설정
+        //현재(2022.11.03) Body 제외 미완성
         this.ResponseTypeSelect=data;
-      }
+      },
+      apiListDetail(index){
+        //api 클릭시 중앙에 나타남
+        this.nowIndex = index;
+        this.res = '';
+        this.index = index;
 
+      },
   },
 
   data(){
@@ -196,20 +266,118 @@ export default {
       responsedata: '',
       res:'',
       ResponseTypeSelect: '',
+      index: '',
+      apiList:[],
+      apiName: '',
+      beforetype: '',
+      PathVariables : [],
+      nowIndex: 0,
+      statusCode: '',
     }
   },
   watch: {
     responsedata(newdata){
-     // console.log(newdata.data);
-      this.res = newdata.data;
-      if (newdata.data == null) this.res = newdata;
 
+      //responsedata가 변경됐을 경우 작동
+      //성공했을 경우의 response 처리
+      this.res = newdata.data;
       this.res = JSON.stringify(this.res);
-      console.log(newdata);
-    }
+      this.statusCode = newdata.status;
+      
+      //실패했을 경우(ex : 404)의 response 처리
+      if (newdata.data == null) {
+        this.res = newdata;
+        this.res = JSON.stringify(this.res);
+        
+        this.statusCode = newdata.response.status;
+
+      }
+
+    },
+    index(newindex){
+      //다른 api 선택했을 경우 그거에 맞춰서 전부 초기화
+      this.Body=this.$store.state.apiStoreList[newindex].RequestBody;
+      this.Params = this.$store.state.apiStoreList[newindex].Params;
+      this.Header=this.$store.state.apiStoreList[newindex].Header;
+      this.methodType = this.$store.state.apiStoreList[newindex].type;
+      this.PathVariable = this.$store.state.apiStoreList[newindex].PathVariable;
+      this.apiURL = this.$store.state.apiStoreList[newindex].RequestURL;
+      this.apiName = this.$store.state.apiStoreList[newindex].name;
+      this.statusCode = '';
+
+      var URLtemp = this.apiURL;
+      var newURL = '';
+      var temp = '';
+      var start = false;
+      this.PathVariables = [];
+
+      //PathVariable 세팅을 위한 문자열 처리 '{}'를 인식함
+      for (var i=0; i<URLtemp.length; i++){
+        if (URLtemp[i] == "{") {
+            start = true;
+            newURL = newURL.slice(0, -1);
+        }
+        if (!start) newURL += URLtemp[i];
+        if (URLtemp[i] == "}") {
+          start = false;
+          var keytemp = new Object();
+          keytemp.key = temp;
+          keytemp.value = '';
+          this.PathVariables.push(keytemp);
+
+          temp = '';
+        }
+        if (start && URLtemp[i] != "{"){
+          temp += URLtemp[i];
+        }
+        if (URLtemp[i] == "{") {
+          start = true;
+        }
+        
+      }
+      this.apiURL = newURL;
+      }
+
   },
   mounted(){
-    this.Body=`{
+
+    //Item 1, 2, 3, 4는 강제설정 데이터
+    //DB 및 BE 구현되면 받아와야 함
+    var Item1 = new Object();
+    Item1.type = "POST";
+    Item1.name = "로그인";
+    Item1.Header=`{
+
+}`;
+    Item1.PathVariable='';
+    Item1.Params = '';
+    Item1.RequestBody = `{
+  "userId": "String",
+  "userPassword": "String"
+}`
+    Item1.RequestURL = 'https://k7a404.p.ssafy.io/api/auth/login';
+
+
+    var Item2 = new Object();
+    Item2.type = "GET";
+    Item2.name = "book 조회";
+    Item2.Header=`{
+
+}`;
+    Item2.PathVariable='';
+    Item2.Params = '';
+    Item2.RequestBody = '';
+    Item2.RequestURL = 'https://k7a404.p.ssafy.io/api/book/{bookseq}';
+    
+    var Item3 = new Object();
+    Item3.type = "POST";
+    Item3.name = "회원가입";
+    Item3.Header=`{
+
+}`;
+    Item3.PathVariable='';
+    Item3.Params = '';
+    Item3.RequestBody = `{
   "userEmail": "string",
   "userId": "string",
   "userName": "string",
@@ -217,18 +385,67 @@ export default {
   "userPassword": "string",
   "userPhone": "string"
 }`;
-    this.Params = `{
-  "userSeq" : int,
-  "bookSeq" : int
+    Item3.RequestURL = 'https://k7a404.p.ssafy.io/api/user/signup';
+
+
+    var Item4 = new Object();
+    Item4.type = "GET";
+    Item4.name = "개별 랜드마크 조회";
+    Item4.Header=`{
+
 }`;
-    this.Header=`{
-  "Authorization" : "token"
-}`;
-    this.methodType = "GET";
-    //this.apinextURL = '/api/book';
-    this.PathVariable = '/{userSeq}';
+    Item4.PathVariable='';
+    Item4.Params = '';
+    Item4.RequestBody = ``;
+    Item4.RequestURL = 'https://k7a404.p.ssafy.io/api/book/{userSeq}/{bookSeq}';
+    
+
+    this.apiList = [Item4, Item1, Item2, Item3];
+    this.$store.state.apiStoreList = this.apiList;
+    this.index = 0;
+
+    //처음 페이지 로드 시 (index값 변화했을때와 같음)
+    this.Body=this.$store.state.apiStoreList[this.index].RequestBody;
+    this.Params = this.$store.state.apiStoreList[this.index].Params;
+    this.Header=this.$store.state.apiStoreList[this.index].Header;
+    this.methodType = this.$store.state.apiStoreList[this.index].type;
+    this.PathVariable = this.$store.state.apiStoreList[this.index].PathVariable;
     this.typeSelect = 'PathVariable';
-    this.apiURL = 'https://k7a404.p.ssafy.io/api/book';
+    this.apiURL = this.$store.state.apiStoreList[this.index].RequestURL;
+    this.apiName = this.$store.state.apiStoreList[this.index].name;
+    this.beforetype = 'PathVariable';
+
+    var URLtemp = this.apiURL;
+      var newURL = '';
+      var temp = '';
+      var start = false;
+      this.PathVariables = [];
+      for (var i=0; i<URLtemp.length; i++){
+        if (URLtemp[i] == "{") {
+            start = true;
+            newURL = newURL.slice(0, -1);
+        }
+        if (!start) newURL += URLtemp[i];
+        if (URLtemp[i] == "}") {
+          start = false;
+          var keytemp = new Object();
+          keytemp.key = temp;
+          keytemp.value = '';
+          this.PathVariables.push(keytemp);
+
+          temp = '';
+        }
+        if (start && URLtemp[i] != "{"){
+          temp += URLtemp[i];
+        }
+        if (URLtemp[i] == "{") {
+          start = true;
+        }
+        
+      }
+      this.apiURL = newURL;
+
+
     this.ResponseTypeSelect = "Body"
 
   }
@@ -257,6 +474,13 @@ a {
   width:98%;
   height:100%;
   resize: none;
+  background-color: #ffffff;
+  overflow-y: auto;
+  border: 1px solid #000000;
+  margin: 0px auto;
+}
+#PathVariableTable{
+  height: 100%;
 }
 #ParamsInput{
   width:98%;
@@ -273,60 +497,63 @@ a {
   height:100%;
   resize: none;
 }
-.All{
+#All{
   width:95vw;
   height:83vh;
 }
-.Maincontainer{
+#Maincontainer{
   width:95vw;
   height:83vh;
   display: flex;
 }
-.Top{
+#Top{
   height: 5%;
   background-color: #ffffff;
 }
-.apiName{
+#apiName{
   height: 4%;
 }
-.TypeURL{
+#TypeURL{
   height: 6%;
   display: flex;
   width:99%;
   margin:0 auto; 
 }
-.RequestType{
+#RequestType{
   text-align: center;
   flex:8;
   background-color: #F3F3F3;
 }
-.apiURL{
+#apiURL{
   flex: 64;
   background-color: #F3F3F3;
 }
-.empty{
+#empty{
   flex:1;
 }
-.testbtn{
+#testbtn{
   flex: 8;
+  height: 80%;
   background-color: #F3F3F3;
 }
-.RequestBox{
+#RequestBox{
   height: 40%;
   width:99%;
   margin:0 auto; 
   background-color: #F3F3F3;
 }
-.ResponseBox{
+#ResponseBox{
   height:50%;
   width:99%;
   margin:0 auto; 
   background-color: #D9D9D9;
 }
-.ResponseBoxTop{
+#ResponseBoxTop{
   height: 8%;
+  width: 100%;
+  display: flex;
 }
-.ResponseParent{
+#ResponseParent{
   width:100%;
   height: 70%;
   display: flex;
@@ -338,9 +565,8 @@ a {
   background-color: #ffffff;
   resize: none;
 }
-.RequestOptions{
-  height: 12%;
-  display: flex;
+#RequestOptions{
+  height: 15%;
   background-color: #F3F3F3;
 }
 #ReqeustOptionsDetail{
@@ -349,7 +575,7 @@ a {
   text-align: left;
   line-height: 240%;
 }
-.ResponseOptions{
+#ResponseOptions{
   height: 12%;
   display: flex;
 }
@@ -359,29 +585,44 @@ a {
   text-align: left;
   line-height: 240%;
 }
-.RequestParent{
+#RequestParent{
   width:100%;
   height: 70%;
   display: flex;
   justify-content: center;
-}
-.underbar{
+} 
+/* .underbar{
   border-bottom: solid 3px red;
-}
-.Left{
+} */
+#Left{
   width: 10%;
   height: 83vh;
   background-color:#e7e7e7; 
   resize: horizontal;
-  overflow: auto;
+  overflow: hidden;
+  overflow-y: auto;
 }
-.Main{
+#Left::-webkit-resizer {
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent orangered orangered transparent;
+
+
+}
+#Main{
   background-color: #ffffff;
   flex: 5;
 }
-.Right{
+#Right{
   height:83vh;
   background-color: #e7e7e7;
 }
+#apiListAll{
+    white-space:nowrap;
+}
+#apiListDetail{
+    cursor: pointer;
+}
+
 
 </style>
