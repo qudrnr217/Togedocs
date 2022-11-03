@@ -51,6 +51,7 @@
       <div id="RequestBox">
         <q-tabs id="RequestOptions"
         dense
+        no-caps
         align="left">
           <q-tab id="ReqeustOptionsDetail" @click="OptionSelect('RequestHeader')">Header</q-tab>
           <q-tab id="ReqeustOptionsDetail" @click="OptionSelect('PathVariable')" >PathVariable</q-tab>
@@ -71,7 +72,7 @@
               </thead>
               <tbody v-for="(item, index) in PathVariables" v-bind:key="index">
                 <td>{{item.key}}</td>
-                <td><q-input outlined id= "PathVariableTableInput" v-model="item.value"></q-input></td>
+                <td><q-input dense outlined id= "PathVariableTableInput" v-model="item.value"></q-input></td>
               </tbody>
             </q-markup-table>
           </div>
@@ -87,9 +88,14 @@
       </div>  
 
       <div id="ResponseBox">
-        <div id="ResponseBoxTop">Response</div>
+        <div id="ResponseBoxTop">
+          <div style="flex:1">Response</div>
+          <div style="flex:10"></div>
+          <div style="flex:2">Status : {{statusCode}}</div>
+        </div>
         <q-tabs id="ResponseOptions"
         dense
+        no-caps
         align="left">
           <q-tab id="ResponseOptionsDetail" @click="ResponseOptionSelect('Body')">Body</q-tab>
           <q-tab id="ResponseOptionsDetail" @click="ResponseOptionSelect('Cookie')" >Cookie</q-tab>
@@ -102,7 +108,8 @@
       </div>
 
       <details id="Right">
-        <api-logs></api-logs>
+        <summary>호출 로그</summary>
+         <div class="tpt">details 과 summary 그리고 css까지 적용</div>
         
       </details>
     </div>
@@ -112,33 +119,32 @@
 
 <script>
 import axios from "axios";
-import apiLogs from '@/components/apiTest/apiLogs.vue';
 export default {
-  components: { apiLogs }, 
+  components: { }, 
   props: {
     msg: String
   },
   methods:{
       Test(){
         
-        //typeSelect값에 따라 다른 함수 실행(axios)
-        if (this.typeSelect == "PathVariable") this.PathVariablebtn();
-        else if (this.typeSelect == "Params") this.Paramsbtn();
-        else if (this.typeSelect == "Body") this.Bodybtn();
-        else {
-          // Header를 활성화한 채 테스트 버튼을 클릭했을 경우 PathVariable, Params, Body의 값을 보고 실행
-          if (this.PathVariables.length != 0) this.PathVariablebtn();
-          else if (this.Params != '') this.Paramsbtn();
-          else this.Bodybtn();
-        }
+        // Request의 값에 따라 다른 함수 실행(axios)
+        // 다른 부분을 활성화한 채 테스트 버튼을 클릭했을 경우 PathVariable, Params, Body의 값을 보고 실행
+        if (this.PathVariables.length != 0) this.PathVariablebtn();
+        else if (this.Params != '') this.Paramsbtn();
+        else this.Bodybtn();
+        
       },
       PathVariablebtn(){
-
+        //PathVariable 버튼
         var URL = this.apiURL + this.apinextURL;
+
+        //PathVariable에 맞춰서 URL 수정
         for (let pv of this.PathVariables){
           URL += "/";
           URL += pv.value;
         }
+
+        //Header 설정. Json 오류날 경우 {}로 초기화
         var HeaderJson; 
         try{
           HeaderJson = JSON.parse(this.Header);
@@ -146,6 +152,7 @@ export default {
           HeaderJson = '{}';
         }
 
+        //axios 동작
         if (this.methodType == "GET"){
           axios.get(URL, {headers : HeaderJson}).then((data)=>{this.responsedata = data}).catch((error) => {this.responsedata = error});
         } else if (this.methodType == "DELETE"){
@@ -154,7 +161,10 @@ export default {
 
       },
       Paramsbtn(){
+        //Params 버튼
         var URL = this.apiURL + this.apinextURL;
+
+        //Params JSON 에러 시 에러메시지 출력
         var paramJson;
         try{
           paramJson = JSON.parse(this.Params);
@@ -162,6 +172,7 @@ export default {
           this.res = 'Params JSON error';
         }
 
+        //Header 설정. Json 오류날 경우 {}로 초기화
         var HeaderJson; 
         try{
           HeaderJson = JSON.parse(this.Header);
@@ -169,6 +180,7 @@ export default {
           HeaderJson = '{}';
         }
 
+        //axios 동작
         if (this.methodType == "GET"){
           axios.get(URL, {params : paramJson,
           headers : HeaderJson
@@ -182,13 +194,18 @@ export default {
       },
       Bodybtn(){
 
+        //Body 버튼
         var URL = this.apiURL + this.apinextURL;
+
+        //Body JSON 세팅
         var PostJson;
         try{
           PostJson = JSON.parse(this.Body);
         }catch{
           this.res = 'Body JSON error';
         }
+        
+        //Header Json 세팅. 오류나면 {}로 초기화함
         var HeaderJson;
         try{
           HeaderJson = JSON.parse(this.Header);
@@ -196,6 +213,7 @@ export default {
           HeaderJson = '{}';
         }
 
+        //axios 동작
         if (this.methodType == "POST"){
           axios.post(URL, PostJson, {headers : HeaderJson})
           .then(data => {
@@ -218,22 +236,20 @@ export default {
         // console.log(this.PostValue);
       },
       OptionSelect(data){
+        //Request의 타입을 설정
         this.typeSelect = data;
-        console.log(data);
-        if (data != "RequestHeader") this.beforetype = data;
-        console.log(this.beforetype);
       },
       ResponseOptionSelect(data){
+        //Response의 타입을 설정
+        //현재(2022.11.03) Body 제외 미완성
         this.ResponseTypeSelect=data;
       },
       apiListDetail(index){
-        console.log(this.$store.state.apiStoreList[index]);
+        //api 클릭시 중앙에 나타남
         this.nowIndex = index;
         this.res = '';
         this.index = index;
-      },
-      PathVariableDetect(URL){
-        console.log(URL);
+
       },
   },
 
@@ -256,33 +272,46 @@ export default {
       beforetype: '',
       PathVariables : [],
       nowIndex: 0,
+      statusCode: '',
     }
   },
   watch: {
     responsedata(newdata){
-     // console.log(newdata.data);
-      this.res = newdata.data;
-      if (newdata.data == null) this.res = newdata;
 
+      //responsedata가 변경됐을 경우 작동
+      //성공했을 경우의 response 처리
+      this.res = newdata.data;
       this.res = JSON.stringify(this.res);
+      this.statusCode = newdata.status;
       
-      console.log(newdata);
+      //실패했을 경우(ex : 404)의 response 처리
+      if (newdata.data == null) {
+        this.res = newdata;
+        this.res = JSON.stringify(this.res);
+        
+        this.statusCode = newdata.response.status;
+
+      }
+
     },
     index(newindex){
+      //다른 api 선택했을 경우 그거에 맞춰서 전부 초기화
       this.Body=this.$store.state.apiStoreList[newindex].RequestBody;
       this.Params = this.$store.state.apiStoreList[newindex].Params;
       this.Header=this.$store.state.apiStoreList[newindex].Header;
       this.methodType = this.$store.state.apiStoreList[newindex].type;
       this.PathVariable = this.$store.state.apiStoreList[newindex].PathVariable;
-      this.typeSelect = 'PathVariable';
       this.apiURL = this.$store.state.apiStoreList[newindex].RequestURL;
       this.apiName = this.$store.state.apiStoreList[newindex].name;
+      this.statusCode = '';
 
       var URLtemp = this.apiURL;
       var newURL = '';
       var temp = '';
       var start = false;
       this.PathVariables = [];
+
+      //PathVariable 세팅을 위한 문자열 처리 '{}'를 인식함
       for (var i=0; i<URLtemp.length; i++){
         if (URLtemp[i] == "{") {
             start = true;
@@ -307,12 +336,14 @@ export default {
         
       }
       this.apiURL = newURL;
-      console.log(this.PathVariables);
       }
 
   },
   mounted(){
-  var Item1 = new Object();
+
+    //Item 1, 2, 3, 4는 강제설정 데이터
+    //DB 및 BE 구현되면 받아와야 함
+    var Item1 = new Object();
     Item1.type = "POST";
     Item1.name = "로그인";
     Item1.Header=`{
@@ -373,7 +404,7 @@ export default {
     this.$store.state.apiStoreList = this.apiList;
     this.index = 0;
 
-
+    //처음 페이지 로드 시 (index값 변화했을때와 같음)
     this.Body=this.$store.state.apiStoreList[this.index].RequestBody;
     this.Params = this.$store.state.apiStoreList[this.index].Params;
     this.Header=this.$store.state.apiStoreList[this.index].Header;
@@ -413,7 +444,6 @@ export default {
         
       }
       this.apiURL = newURL;
-      console.log(this.PathVariables);
 
 
     this.ResponseTypeSelect = "Body"
@@ -520,6 +550,8 @@ a {
 }
 #ResponseBoxTop{
   height: 8%;
+  width: 100%;
+  display: flex;
 }
 #ResponseParent{
   width:100%;
@@ -568,6 +600,7 @@ a {
   background-color:#e7e7e7; 
   resize: horizontal;
   overflow: hidden;
+  overflow-y: auto;
 }
 #Left::-webkit-resizer {
   border-width: 8px;
