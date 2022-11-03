@@ -52,8 +52,8 @@ public class ApidocsTest {
         rows.add("first2");
         rows.add("second2");
         List<ColDto> cols = new ArrayList<>();
-        cols.add(new ColDto("one2", "url", "text"));
-        cols.add(new ColDto("two2", "method", "text"));
+//        cols.add(new ColDto("one2", "url", "text"));
+//        cols.add(new ColDto("two2", "method", "text"));
         Map<String, Map<String, String>> data = new HashMap<>();
         Map<String, String> row1 = new HashMap<>();
         row1.put("one2", "/login");
@@ -63,8 +63,8 @@ public class ApidocsTest {
         row2.put("two2", "get");
         data.put("first2", row1);
         data.put("second2", row2);
-        Apidocs apidocs = new Apidocs(new ObjectId("635f773e6f2df42ec88ef693"), 2L, rows, cols, data);
-        mongoTemplate.insert(apidocs, "apidocs");
+//        Apidocs apidocs = new Apidocs(new ObjectId("635f773e6f2df42ec88ef693"), 2L, rows, cols, data);
+//        mongoTemplate.insert(apidocs, "apidocs");
     }
 
     @Test
@@ -82,18 +82,30 @@ public class ApidocsTest {
 
     @Test
     public void testsw() {
+        final String APIDOCS = "apidocs";
+
         Long projectId = 1l;
         String colId = "one";
+
+        String name = "url";
+        String type = "int";
+        int width = 123;
 
         Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
         Update update = new Update();
         update.pull("cols", Query.query(Criteria.where("uuid").is(colId)));
-
-        List<String> rows = mongoTemplate.findDistinct(query, "rows", "apidocs", String.class);
-        for (String rowId : rows) {
-            update.unset("data." + rowId + "." + colId);
+        Apidocs apidocs = mongoTemplate.findAndModify(query, update, Apidocs.class);
+        List<ColDto> colDtos = apidocs.getCols();
+        int size = colDtos.size();
+        int targetIndex = 0;
+        for (int i = 0; i < size; i++) {
+            if (colDtos.get(i).getUuid().equals(colId)) {
+                targetIndex = i;
+            }
         }
-        mongoTemplate.updateFirst(query,update,"apidocs");
-
+        ColDto updatedCol = ColDto.build(colId, name, type, width);
+        update = new Update();
+        update.push("cols").atPosition(targetIndex).value(updatedCol);
+        mongoTemplate.updateFirst(query, update, APIDOCS);
     }
 }

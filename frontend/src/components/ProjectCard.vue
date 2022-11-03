@@ -1,22 +1,13 @@
 <template>
-  <div>
-    <div class="container">
-      <img src="@/assets/Cat.png" alt="" />
-      <div>
-        <div class="title">{프로젝트타이틀}</div>
-        <div class="title-detail">{참여자}</div>
-      </div>
-      <div>
-        <div class="startdate">
-          <div>시작일</div>
-          <b>2022.11.02</b>
-        </div>
-        <div class="enddate">
-          <div>종료일</div>
-          <b>2022.11.28</b>
-        </div>
-      </div>
+  <div class="container">
+    <img src="@/assets/Cat.png" alt="" />
+    <div>
+      <div class="title">{프로젝트타이틀}</div>
+      <div class="title-detail">{참여자}</div>
     </div>
+    <router-link :to="{ path: 'projectview/docs' }"
+      ><button>프로젝트로</button>
+    </router-link>
   </div>
 </template>
 
@@ -27,11 +18,11 @@ export default {};
 <style scoped>
 .container {
   width: 80vw;
-  height: 15vh;
+  height: 20vh;
   background-color: #c3cad4;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  margin: 1rem 0 1rem 0;
   border-radius: 8px;
 }
 img {
