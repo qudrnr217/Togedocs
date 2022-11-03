@@ -25,6 +25,7 @@
     "store-js": "^2.0.4",
     "vue": "^3.2.13",
     "vue-router": "^4.1.6",
+    "vuedraggable": "^4.1.0",
     "vuex": "^4.1.0"
   },
   "devDependencies": {
