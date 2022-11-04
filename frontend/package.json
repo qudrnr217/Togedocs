@@ -25,8 +25,13 @@
     "store-js": "^2.0.4",
     "vue": "^3.2.13",
     "vue-router": "^4.1.6",
+<<<<<<< HEAD
     "vuex": "^4.1.0",
     "vuex-persistedstate": "^4.1.0"
+=======
+    "vuedraggable": "^4.1.0",
+    "vuex": "^4.1.0"
+>>>>>>> 0da39286d4bb92bcc141d75bde0dee1c5c7f59bf
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

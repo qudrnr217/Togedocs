@@ -4,7 +4,9 @@ import createPersistedState from "vuex-persistedstate";
 import projectStore from "@/store/modules/projectStore.js";
 
 export default createStore({
-  state: {},
+  state: {
+    apiStoreList: [],
+  },
   getters: {},
   mutations: {},
   actions: {},

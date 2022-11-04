@@ -33,6 +33,9 @@
         @click="goToApiDocs"
       />
     </div>
+    <router-link :to="{ path: 'projectview/docs' }"
+      ><button>프로젝트로</button>
+    </router-link>
   </div>
 </template>
 <script>

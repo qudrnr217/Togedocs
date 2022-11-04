@@ -2,16 +2,14 @@ import axios from "axios";
 import userStore from "@/store/modules/userStore";
 const BASEURL = "https://k7a404.p.ssafy.io/api/";
 
-function apiInstance() {
-  const instance = axios.create({
-    baseURL: BASEURL,
-    headers: {
-      "Content-type": "application/json",
-    },
-  });
-  return instance;
-}
+const api = axios.create({
+  baseURL: BASEURL,
+  headers: {
+    "Contents-type": "application/json",
+  },
+});
 
+<<<<<<< HEAD
 function apiInstanceWithAuthorization() {
   const instance = axios.create({
     baseURL: BASEURL,
@@ -25,3 +23,6 @@ function apiInstanceWithAuthorization() {
 }
 
 export { BASEURL, apiInstance, apiInstanceWithAuthorization };
+=======
+export { BASEURL, api };
+>>>>>>> 0da39286d4bb92bcc141d75bde0dee1c5c7f59bf
