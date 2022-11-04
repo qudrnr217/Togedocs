@@ -28,6 +28,25 @@
                 :style="{ width: element.width + 'px' }"
               >
                 {{ element.name }}
+                <q-popup-proxy
+                  context-menu
+                  @before-hide="callUpdateCol(element)"
+                >
+                  <q-banner>
+                    <q-input
+                      filled
+                      v-model="element.name"
+                      dense
+                      @keydown.enter.prevent="callUpdateCol(element)"
+                      @blur="callUpdateCol(element)"
+                    />
+                    <q-btn
+                      color="primary"
+                      label="Del Col"
+                      @click="callDeleteCol(element.uuid)"
+                    />
+                  </q-banner>
+                </q-popup-proxy>
               </div>
               <div style="position: relative">
                 <div
@@ -188,6 +207,8 @@ export default {
         cols: [],
         data: {},
       }),
+
+      addColName: ref(""),
 
       handling_item: ref({
         index: null,
