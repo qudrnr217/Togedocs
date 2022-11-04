@@ -7,75 +7,180 @@
             stack
             icon="add"
             color="primary"
-            label="새 프로젝트"
             class="create-project-btn"
-          />
+            @click="createNewProjectBtnClicked = true"
+            ><q-tooltip class="bg-positive"
+              >새로운 프로젝트를 생성합니다</q-tooltip
+            ></q-btn
+          >
         </div>
         <div
           class="col-4 project-item"
-          v-for="projectItem in projectItems"
-          :key="projectItem"
+          v-for="(project, idx) in projects"
+          :key="idx"
         >
-          <project-card></project-card>
-          <!-- <q-card class="project-item items-center justify-between row">
-            <q-card-section horizontal>
-              <q-item>
-                <q-item-section avatar>
-                  <q-avatar>
-                    <img
-                      src="https://secure.gravatar.com/avatar/20bbf5d322e0760a476480837f6cc85e?s=180&d=identicon"
-                    />
-                  </q-avatar>
-                </q-item-section>
-              </q-item>
-              <q-item class="column">
-                <div class="text-h5 q-mt-sm q-mb-xs col">
-                  {{ projectItem.name }}
-                </div>
-                <div class="project-desc col">
-                  {{ projectItem.desc }} | {{ projectItem.members.join(", ") }}
-                </div>
-              </q-item>
-              <q-item class="row text-caption text-grey items-center"
-                ><div class="col project-period">
-                  2022.10.24 ~ 2022.11.23
-                </div></q-item
-              >
-            </q-card-section>
-            <q-btn
-              class="go-to-project-btn"
-              outline
-              rounded
-              color="primary"
-              label="이동"
-            />
-          </q-card> -->
+          <project-card :projectItem="project"></project-card>
         </div>
       </div>
     </q-page-container>
+    <q-dialog v-model="createNewProjectBtnClicked">
+      <q-card class="createNewProjectDialog">
+        <q-card-section>
+          <div class="text-h6">새 프로젝트 생성</div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section class="scroll">
+          <div class="q-gutter-y-md column">
+            <q-input
+              class="col"
+              clearable
+              filled
+              type="url"
+              v-model="newProject.title"
+              label="프로젝트 이름"
+            />
+            <q-input
+              class="col"
+              clearable
+              filled
+              v-model="newProject.url"
+              label="프로젝트 URL"
+            />
+            <q-input
+              class="col"
+              clearable
+              filled
+              autogrow
+              v-model="newProject.desc"
+              label="프로젝트 설명"
+            />
+            <div class="row justify-between">
+              <q-input
+                class="col-5"
+                clearable
+                filled
+                v-model="newProject.date.from"
+                mask="date"
+                :rules="['date']"
+                label="프로젝트 시작일"
+              >
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy
+                      cover
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-date minimal v-model="newProject.date.from">
+                        <div class="row items-center justify-end">
+                          <q-btn
+                            v-close-popup
+                            label="Close"
+                            color="primary"
+                            flat
+                          />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+              <q-icon name="arrow_right_alt" size="3.5rem" color="grey-6" />
+              <q-input
+                class="col-5"
+                clearable
+                filled
+                v-model="newProject.date.to"
+                mask="date"
+                :rules="['date']"
+                label="프로젝트 종료일"
+              >
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy
+                      cover
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-date minimal v-model="newProject.date.to">
+                        <div class="row items-center justify-end">
+                          <q-btn
+                            v-close-popup
+                            label="Close"
+                            color="primary"
+                            flat
+                          />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            label="취소"
+            color="primary"
+            v-close-popup
+            @click="resetCreateNewProjectDialog"
+          />
+          <q-btn
+            flat
+            label="생성"
+            color="primary"
+            v-close-popup
+            @click="createNewProject"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-layout>
 </template>
 
 <script>
 import ProjectCard from "@/components/ProjectCard.vue";
+import { postNewProject } from "@/api/project";
+import { mapState, mapActions } from "vuex";
 export default {
   components: {
     ProjectCard,
   },
+  mounted() {
+    // this.FETCH_PROJECTS();
+  },
+  computed: {
+    ...mapState("projectStore", ["projects"]),
+  },
+  methods: {
+    ...mapActions("projectStore", ["FETCH_PROJECTS"]),
+    createNewProject() {
+      postNewProject(this.newProject);
+    },
+    resetCreateNewProjectDialog() {
+      this.newProject = {
+        title: null,
+        url: null,
+        desc: null,
+        date: { from: null, to: null },
+      };
+    },
+  },
+
   data() {
     return {
-      projectItems: [
-        {
-          name: "1",
-          members: ["황재완", "홍인호", "강병국"],
-          desc: "1번 프로젝트",
-        },
-        {
-          name: "1",
-          members: ["황재완", "홍인호", "강병국"],
-          desc: "2번 프로젝트",
-        },
-      ],
+      createNewProjectBtnClicked: false,
+      newProject: {
+        title: null,
+        url: null,
+        desc: null,
+        date: { from: null, to: null },
+      },
     };
   },
 };
@@ -100,5 +205,8 @@ export default {
 .project-period {
   font-size: 1rem;
   margin-left: 10rem;
+}
+.createNewProjectDialog {
+  min-width: 40vw;
 }
 </style>
