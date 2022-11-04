@@ -8,6 +8,9 @@
 export default {
   name: "App",
   components: {},
+  mounted(){
+    this.$router.push('/home')
+  },
 };
 </script>
 

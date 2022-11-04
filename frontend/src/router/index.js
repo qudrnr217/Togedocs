@@ -10,6 +10,11 @@ import ProjectView from "@/views/ProjectView.vue";
 const routes = [
   {
     path: "/",
+    name: "home1",
+    component: HomeView,
+  },
+  {
+    path: "/home",
     name: "home",
     component: HomeView,
   },

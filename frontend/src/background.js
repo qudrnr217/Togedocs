@@ -21,6 +21,7 @@ async function createWindow() {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
     },
+    autoHideMenuBar: true,
   });
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
