@@ -3,6 +3,55 @@
     <input type="text-area" />
     <br />
     projectId: {{ document.projectId }}
+
+    <q-card class="q-pa-xs row">
+      <q-card class="q-pa-sm q-ma-xs cell cell-no"> </q-card>
+      <draggable
+        class="row"
+        v-model="document.cols"
+        @start="dragCol = true"
+        @end="dragCol = false"
+        item-key="id_col"
+        @change="onColChange"
+      >
+        <template #item="{ element }">
+          <div
+            class="q-pa-sm q-ma-xs cell"
+            :style="{ width: element.width + 'px' }"
+          >
+            {{ element.name }}
+          </div>
+        </template>
+      </draggable>
+    </q-card>
+    <!--  -->
+    <draggable
+      v-model="rowData"
+      @start="dragRow = true"
+      @end="dragRow = false"
+      item-key="id_row"
+      @change="onRowChange"
+    >
+      <template #item="{ element, index }">
+        <q-card class="q-pa-xs row">
+          <q-card class="q-pa-sm q-ma-xs cell cell-no">
+            {{ index + 1 }}
+          </q-card>
+          <template v-for="(cell, index) in element" :key="index">
+            <div
+              class="q-pa-sm q-ma-xs cell"
+              :style="{ width: cell.width + 'px' }"
+            >
+              {{ cell.content }}
+            </div>
+          </template>
+        </q-card>
+      </template>
+    </draggable>
+    <!--  -->
+
+    <br /><br />
+
     <q-markup-table>
       <tr>
         <td></td>
@@ -56,25 +105,6 @@
 
     <br />
     <br />
-    <!--  -->
-    <draggable
-      v-model="rowData"
-      group="people"
-      @start="drag = true"
-      @end="drag = false"
-      item-key="id"
-    >
-      <template #item="{ element }">
-        <q-card class="q-pa-xs row">
-          <template v-for="(cell, index) in element" :key="index">
-            <q-card class="q-pa-sm" :style="{ width: cell.width + 'px' }">
-              {{ cell.content }}
-            </q-card>
-          </template>
-        </q-card>
-      </template>
-    </draggable>
-    <!--  -->
   </div>
 </template>
 
@@ -162,6 +192,12 @@ export default {
     this.stompClient.disconnect();
   },
   methods: {
+    onColChange: function (evt) {
+      this.callMoveCol(evt.moved.element.uuid, evt.moved.newIndex);
+    },
+    onRowChange: function (evt) {
+      this.callMoveRow(evt.moved.element[0].rowId, evt.moved.newIndex);
+    },
     refreshReq() {
       const req = { userName: this.userName, content: null };
       this.stompClient.send(
@@ -180,13 +216,14 @@ export default {
         (response) => {
           let res_doc = response.data;
           this.document = res_doc;
-
+          this.rowData = [];
           res_doc.rows.forEach((rowId) => {
             let this_row = [];
             res_doc.cols.forEach((col) => {
               let colId = col.uuid;
               let colWidth = col.width;
               this_row.push({
+                rowId: rowId,
                 content: res_doc.data[rowId][colId],
                 width: colWidth,
               });
@@ -236,6 +273,7 @@ export default {
       );
     },
     callMoveRow(fromId, toIndex) {
+      console.log(fromId, toIndex);
       moveRow(
         {
           pathVariable: {
@@ -314,8 +352,11 @@ export default {
 </script>
 
 <style scoped>
-td {
-  width: 100px;
-  border: 1px solid black;
+.cell {
+  background: whitesmoke;
+}
+.cell-no {
+  width: 30px;
+  text-align: right;
 }
 </style>
