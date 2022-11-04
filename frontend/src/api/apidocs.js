@@ -12,7 +12,6 @@ function addCol(payload, success, fail) {
   let projectId = payload.pathVariable.projectId;
   let data = payload.requestBody;
 
-  console.log(payload);
   return api
     .post("/docs/" + projectId + "/cols", { name: data.name, type: data.type })
     .then(success)
@@ -62,6 +61,16 @@ function getDocs(payload, success, fail) {
     .then(success)
     .catch(fail);
 }
+function updateCol(payload, success, fail) {
+  let projectId = payload.pathVariable.projectId;
+  let colId = payload.pathVariable.colId;
+  let data = payload.requestBody;
+
+  return api
+    .patch("/docs/" + projectId + "/cols/" + colId, { name: data.name, type: data.type, width: data.width })
+    .then(success)
+    .catch(fail);
+}
 
 export {
   addRow,
@@ -72,4 +81,5 @@ export {
   deleteCol,
   updateCell,
   getDocs,
+  updateCol
 };

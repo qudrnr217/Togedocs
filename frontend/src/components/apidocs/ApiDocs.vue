@@ -63,6 +63,29 @@
             </div>
           </template>
         </draggable>
+
+        <q-card class="q-pa-sm q-ma-xs cell cell-no">
+          <q-icon name="add" />
+          <q-popup-proxy>
+            <q-banner>
+              <q-input filled dense v-model="addColName" />
+              <q-btn
+                color="primary"
+                label="Add Col"
+                @click="callAddCol(addColName, 'text')"
+              />
+            </q-banner>
+          </q-popup-proxy>
+        </q-card>
+        <q-dialog v-model="dialog" position="top">
+          <q-card style="width: 350px">
+            <q-card-section class="row items-center no-wrap">
+              <div>속성 이름을 입력해주세요!</div>
+
+              <q-space />
+            </q-card-section>
+          </q-card>
+        </q-dialog>
       </q-card>
       <!--  -->
       <draggable
@@ -87,6 +110,16 @@
                 {{ cell.content }}
               </div>
             </template>
+
+            <q-popup-proxy context-menu>
+              <q-banner>
+                <q-btn
+                  color="primary"
+                  label="Del Row"
+                  @click="callDeleteRow(document.rows[index])"
+                />
+              </q-banner>
+            </q-popup-proxy>
           </q-card>
         </template>
       </draggable>
@@ -184,6 +217,7 @@ import {
   moveCol,
   deleteRow,
   deleteCol,
+  updateCol,
 } from "@/api/apidocs.js";
 
 moveRow;
@@ -194,6 +228,8 @@ export default {
     draggable,
   },
   setup() {
+    const dialog = ref(false);
+
     let initialDrawerWidth;
     const drawerWidth = ref(300);
     const drawerRowId = ref(null);
@@ -221,13 +257,14 @@ export default {
       rowData: ref([]),
       drawer: ref(false),
       drawerWidth,
+      drawerRowId,
       resizeDrawer(ev) {
         if (ev.isFirst) {
           initialDrawerWidth = drawerWidth.value;
         }
         drawerWidth.value = initialDrawerWidth - ev.offset.x;
       },
-      drawerRowId,
+      dialog,
     };
   },
   mounted() {
@@ -352,15 +389,19 @@ export default {
         }
       );
     },
-    callAddCol() {
+    callAddCol(name, type) {
+      if (name.length == 0) {
+        this.addColWarning();
+        return;
+      }
       addCol(
         {
           pathVariable: {
             projectId: this.projectId,
           },
           requestBody: {
-            name: "temp",
-            type: "text",
+            name: name,
+            type: type,
           },
         },
         (response) => {
@@ -447,9 +488,36 @@ export default {
         }
       );
     },
+    callUpdateCol(element) {
+      updateCol(
+        {
+          pathVariable: {
+            projectId: this.projectId,
+            colId: element.uuid,
+          },
+          requestBody: {
+            name: element.name,
+            type: element.type,
+            width: element.width,
+          },
+        },
+        (response) => {
+          console.log(response);
+          this.refreshReq();
+        },
+        (error) => {
+          console.warn(error);
+        }
+      );
+    },
     openSideDrawer(rowId) {
       this.drawer = true;
       this.drawerRowId = rowId;
+    },
+
+    addColWarning() {
+      this.dialog = true;
+      console.log(this.addColName);
     },
   },
 };
