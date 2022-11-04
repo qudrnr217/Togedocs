@@ -19,13 +19,28 @@
           @end="dragCol = false"
           item-key="id_col"
           @change="onColChange"
+          handle=".handle-col"
         >
           <template #item="{ element }">
-            <div
-              class="q-pa-sm q-ma-xs cell"
-              :style="{ width: element.width + 'px' }"
-            >
-              {{ element.name }}
+            <div class="row q-pa-xs">
+              <div
+                class="q-pa-sm cell row handle-col"
+                :style="{ width: element.width + 'px' }"
+              >
+                {{ element.name }}
+              </div>
+              <div style="position: relative">
+                <div
+                  class="col-width-handle"
+                  v-touch-pan.preserveCursor.prevent.mouse.horizontal="
+                    resizeCol
+                  "
+                  @mousedown="setHandlingItem(element.uuid)"
+                >
+                  <p class="hidden">{{ element.uuid }}</p>
+                  <div class="handling"></div>
+                </div>
+              </div>
             </div>
           </template>
         </draggable>
@@ -37,11 +52,13 @@
         @end="dragRow = false"
         item-key="id_row"
         @change="onRowChange"
+        handle=".handle-row"
       >
         <template #item="{ element, index }">
           <q-card class="q-pa-xs row">
-            <q-card class="q-pa-sm q-ma-xs cell cell-no">
+            <q-card class="q-pa-sm q-ma-xs cell cell-no handle-row">
               {{ index + 1 }}
+              <!-- <q-icon name="drag_indicator" class="handle-row" size="20px" /> -->
             </q-card>
             <template v-for="(cell, index) in element" :key="index">
               <div
@@ -172,11 +189,19 @@ export default {
         data: {},
       }),
 
+      handling_item: ref({
+        index: null,
+        uuid: null,
+        name: null,
+        type: null,
+        width: null,
+      }),
+
       rowData: ref([]),
       drawer: ref(false),
       drawerWidth,
       resizeDrawer(ev) {
-        if (ev.isFirst === true) {
+        if (ev.isFirst) {
           initialDrawerWidth = drawerWidth.value;
         }
         drawerWidth.value = initialDrawerWidth - ev.offset.x;
@@ -235,6 +260,22 @@ export default {
     onRowChange: function (evt) {
       this.callMoveRow(evt.moved.element[0].rowId, evt.moved.newIndex);
     },
+    setHandlingItem(uuid) {
+      this.handling_item.uuid = uuid;
+      let temp = this.document.cols;
+      for (let i = 0; i < temp.length; i++)
+        if (temp[i].uuid == uuid) {
+          this.handling_item.index = i;
+          this.handling_item.width = temp[i].width;
+        }
+    },
+    resizeCol(ev) {
+      this.document.cols[this.handling_item.index].width =
+        this.handling_item.width + ev.offset.x;
+      if (ev.isFinal) {
+        // this.callUpdateCol(this.handling_item.uuid,{name:this.handling_item.name, type:handling_item.type, width: handling_item.width})
+      }
+    },
     refreshReq() {
       const req = { userName: this.userName, content: null };
       this.stompClient.send(
@@ -255,17 +296,18 @@ export default {
           this.document = res_doc;
           this.rowData = [];
           res_doc.rows.forEach((rowId) => {
-            let this_row = [];
+            let ith_row = [];
             res_doc.cols.forEach((col) => {
               let colId = col.uuid;
               let colWidth = col.width;
-              this_row.push({
+              ith_row.push({
                 rowId: rowId,
+                colId: colId,
                 content: res_doc.data[rowId][colId],
                 width: colWidth,
               });
             });
-            this.rowData.push(this_row);
+            this.rowData.push(ith_row);
           });
         },
         (error) => {
@@ -399,6 +441,24 @@ export default {
 .cell-no {
   width: 30px;
   text-align: right;
+}
+.col-width-handle {
+  position: absolute;
+  right: 0px;
+  top: 0;
+  bottom: 0;
+  width: 15px;
+  cursor: ew-resize;
+}
+.handling {
+  position: absolute;
+
+  border-left: 0.5px solid black;
+  border-right: 0.5px solid black;
+  top: 8px;
+  bottom: 8px;
+  right: 5px;
+  width: 4px;
 }
 
 .q-drawer__resizer {
