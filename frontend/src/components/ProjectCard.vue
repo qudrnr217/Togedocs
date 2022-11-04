@@ -1,57 +1,18 @@
 <template>
-  <div class="container row justify-around">
+  <div class="container">
+    <img src="@/assets/Cat.png" alt="" />
     <div>
-      <q-avatar class="col-md-2" size="7vw">
-        <img
-          src="https://secure.gravatar.com/avatar/20bbf5d322e0760a476480837f6cc85e?s=180&d=identicon"
-        />
-      </q-avatar>
-    </div>
-    <div class="col-md-5">
-      <div class="column">
-        <div class="title">{{ projectItem.title }}</div>
-        <div class="title-detail">
-          {{ projectItem.desc }} | {{ projectItem.members.join(", ") }}
-        </div>
-      </div>
-    </div>
-    <div class="col-md-2 column justify-around">
-      <q-btn
-        class="col q-ma-md"
-        outline
-        rounded
-        color="secondary"
-        label="프로젝트 이동"
-        @click="goToProjectUrl"
-      />
-      <q-btn
-        class="col q-ma-md"
-        outline
-        rounded
-        color="primary"
-        label="API 문서 이동"
-        @click="goToApiDocs"
-      />
+      <div class="title">{프로젝트타이틀}</div>
+      <div class="title-detail">{참여자}</div>
     </div>
     <router-link :to="{ path: 'projectview/docs' }"
       ><button>프로젝트로</button>
     </router-link>
   </div>
 </template>
+
 <script>
-export default {
-  props: {
-    projectItem: Object,
-  },
-  methods: {
-    goToProjectUrl() {
-      window.location.href = this.projectItem.url;
-    },
-    goToApiDocs() {
-      this.$router.push({ name: "docs" });
-    },
-  },
-};
+export default {};
 </script>
 
 <style scoped>
