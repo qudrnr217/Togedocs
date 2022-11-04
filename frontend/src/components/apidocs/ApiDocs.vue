@@ -1,111 +1,135 @@
 <template>
-  <div>
-    <input type="text-area" />
-    <br />
-    projectId: {{ document.projectId }}
+  <q-layout
+    view="hHh Lpr lff"
+    container
+    style="height: 500px"
+    class="shadow-2 rounded-borders"
+  >
+    <div>
+      <input type="text-area" />
+      <br />
+      projectId: {{ document.projectId }}
 
-    <q-card class="q-pa-xs row">
-      <q-card class="q-pa-sm q-ma-xs cell cell-no"> </q-card>
-      <draggable
-        class="row"
-        v-model="document.cols"
-        @start="dragCol = true"
-        @end="dragCol = false"
-        item-key="id_col"
-        @change="onColChange"
-      >
-        <template #item="{ element }">
-          <div
-            class="q-pa-sm q-ma-xs cell"
-            :style="{ width: element.width + 'px' }"
-          >
-            {{ element.name }}
-          </div>
-        </template>
-      </draggable>
-    </q-card>
-    <!--  -->
-    <draggable
-      v-model="rowData"
-      @start="dragRow = true"
-      @end="dragRow = false"
-      item-key="id_row"
-      @change="onRowChange"
-    >
-      <template #item="{ element, index }">
-        <q-card class="q-pa-xs row">
-          <q-card class="q-pa-sm q-ma-xs cell cell-no">
-            {{ index + 1 }}
-          </q-card>
-          <template v-for="(cell, index) in element" :key="index">
+      <q-card class="q-pa-xs row">
+        <q-card class="q-pa-sm q-ma-xs cell cell-no"> </q-card>
+        <draggable
+          class="row"
+          v-model="document.cols"
+          @start="dragCol = true"
+          @end="dragCol = false"
+          item-key="id_col"
+          @change="onColChange"
+        >
+          <template #item="{ element }">
             <div
               class="q-pa-sm q-ma-xs cell"
-              :style="{ width: cell.width + 'px' }"
+              :style="{ width: element.width + 'px' }"
             >
-              {{ cell.content }}
+              {{ element.name }}
             </div>
           </template>
-        </q-card>
-      </template>
-    </draggable>
-    <!--  -->
+        </draggable>
+      </q-card>
+      <!--  -->
+      <draggable
+        v-model="rowData"
+        @start="dragRow = true"
+        @end="dragRow = false"
+        item-key="id_row"
+        @change="onRowChange"
+      >
+        <template #item="{ element, index }">
+          <q-card class="q-pa-xs row">
+            <q-card class="q-pa-sm q-ma-xs cell cell-no">
+              {{ index + 1 }}
+            </q-card>
+            <template v-for="(cell, index) in element" :key="index">
+              <div
+                class="q-pa-sm q-ma-xs cell"
+                :style="{ width: cell.width + 'px' }"
+              >
+                {{ cell.content }}
+              </div>
+            </template>
+          </q-card>
+        </template>
+      </draggable>
+      <!--  -->
 
-    <br /><br />
+      <br /><br />
 
-    <q-markup-table>
-      <tr>
-        <td></td>
-        <td></td>
-        <td v-for="(col, colId) in document.cols" :key="colId">
-          <strong>{{ col.name }}</strong>
-          <q-btn
-            color="primary"
-            label="Del Col"
-            @click="callDeleteCol(col.uuid)"
-          />
-        </td>
-      </tr>
-      <tr v-for="(row, rowId) in document.data" :key="rowId">
-        <td>
-          <q-icon name="drag_handle" />
-        </td>
-        <td>
-          <strong>{{ rowId }}</strong>
-          <q-btn
-            color="primary"
-            label="Del row"
-            @click="callDeleteRow(rowId)"
-          />
-        </td>
+      <q-markup-table>
+        <tr>
+          <td></td>
+          <td></td>
+          <td v-for="(col, colId) in document.cols" :key="colId">
+            <strong>{{ col.name }}</strong>
+            <q-btn
+              color="primary"
+              label="Del Col"
+              @click="callDeleteCol(col.uuid)"
+            />
+          </td>
+        </tr>
+        <tr v-for="(row, rowId) in document.data" :key="rowId">
+          <td>
+            <q-icon name="drag_handle" />
+          </td>
+          <td>
+            <strong>{{ rowId }}</strong>
+            <q-btn
+              color="primary"
+              label="Del row"
+              @click="callDeleteRow(rowId)"
+            />
+            <q-btn
+              color="primary"
+              label="Open"
+              @click="openSideDrawer(rowId)"
+            />
+          </td>
 
-        <td v-for="(col, colId) in row" :key="colId">{{ col }}</td>
-      </tr>
-    </q-markup-table>
-    <q-btn color="primary" label="Add row" @click="callAddRow()" />
-    <q-btn color="primary" label="Add col" @click="callAddCol()" />
-    <!-- <table>
-      <tr>
-        <td></td>
-        <td v-for="(col, colId) in document.cols" :key="colId">
-          <strong>{{ col.name }}</strong>
-        </td>
-      </tr>
-      <tr v-for="(row, rowId) in document.data" :key="rowId">
-        <td>
-          <strong>{{ rowId }}</strong>
-        </td>
-        <td v-for="(col, colId) in row" :key="colId">{{ col }}</td>
-      </tr>
-    </table> -->
-    <br />
-    <!-- 개발자용 보기 -->
-    <div>rows: {{ document.rows }}</div>
-    <div>cols: {{ document.cols }}</div>
-    <div>data: {{ document.data }}</div>
+          <td v-for="(col, colId) in row" :key="colId">{{ col }}</td>
+        </tr>
+      </q-markup-table>
+      <q-btn color="primary" label="Add row" @click="callAddRow()" />
+      <q-btn color="primary" label="Add col" @click="callAddCol()" />
 
-    <br />
-    <br />
-  </div>
+      <q-drawer
+        v-model="drawer"
+        side="right"
+        overlay
+        :width="drawerWidth"
+        :breakpoint="0"
+        bordered
+        class="bg-grey-3"
+      >
+        <q-btn flat @click="drawer = !drawer" round dense label="close">
+        </q-btn>
+        <br />
+        <q-markup-table>
+          <tr v-for="(value, key) in document.data[drawerRowId]" :key="key">
+            <td>
+              <strong>{{ key }}</strong>
+            </td>
+            <td>
+              {{ value }}
+            </td>
+          </tr>
+        </q-markup-table>
+        <div
+          v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeDrawer"
+          class="q-drawer__resizer"
+        ></div>
+      </q-drawer>
+
+      <br />
+      <!-- 개발자용 보기 -->
+      <div>rows: {{ document.rows }}</div>
+      <div>cols: {{ document.cols }}</div>
+      <div>data: {{ document.data }}</div>
+    </div>
+  </q-layout>
 </template>
 
 <script>
@@ -134,6 +158,10 @@ export default {
     draggable,
   },
   setup() {
+    let initialDrawerWidth;
+    const drawerWidth = ref(300);
+    const drawerRowId = ref(null);
+
     return {
       // TODO: 나중에 자동으로 받아와서 채우는 걸로 변경
       projectId: ref(1),
@@ -145,6 +173,15 @@ export default {
       }),
 
       rowData: ref([]),
+      drawer: ref(false),
+      drawerWidth,
+      resizeDrawer(ev) {
+        if (ev.isFirst === true) {
+          initialDrawerWidth = drawerWidth.value;
+        }
+        drawerWidth.value = initialDrawerWidth - ev.offset.x;
+      },
+      drawerRowId,
     };
   },
   mounted() {
@@ -347,6 +384,10 @@ export default {
         }
       );
     },
+    openSideDrawer(rowId) {
+      this.drawer = true;
+      this.drawerRowId = rowId;
+    },
   },
 };
 </script>
@@ -358,5 +399,15 @@ export default {
 .cell-no {
   width: 30px;
   text-align: right;
+}
+
+.q-drawer__resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -2px;
+  width: 4px;
+  background-color: red;
+  cursor: ew-resize;
 }
 </style>
