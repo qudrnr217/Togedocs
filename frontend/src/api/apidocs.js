@@ -1,6 +1,5 @@
 import { api } from "./index.js";
 
-
 function addRow(payload, success, fail) {
   let projectId = payload.pathVariable.projectId;
   return api
@@ -67,7 +66,11 @@ function updateCol(payload, success, fail) {
   let data = payload.requestBody;
 
   return api
-    .patch("/docs/" + projectId + "/cols/" + colId, { name: data.name, type: data.type, width: data.width })
+    .patch("/docs/" + projectId + "/cols/" + colId, {
+      name: data.name,
+      type: data.type,
+      width: data.width,
+    })
     .then(success)
     .catch(fail);
 }
@@ -81,5 +84,5 @@ export {
   deleteCol,
   updateCell,
   getDocs,
-  updateCol
+  updateCol,
 };
