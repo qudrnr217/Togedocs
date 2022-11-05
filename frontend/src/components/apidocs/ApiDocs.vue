@@ -10,8 +10,11 @@
       <br />
       projectId: {{ document.projectId }}
 
+      <!-- Columns -->
       <q-card class="q-pa-xs row">
-        <q-card class="q-pa-sm q-ma-xs cell cell-no"> </q-card>
+        <!-- blank -->
+        <q-card class="q-pa-sm q-ma-xs cell cell-no" />
+        <!-- cols -->
         <draggable
           class="row"
           v-model="document.cols"
@@ -54,18 +57,22 @@
                   v-touch-pan.preserveCursor.prevent.mouse.horizontal="
                     resizeCol
                   "
+                  @mouseover="element.active = true"
+                  @mouseleave="element.active = false"
                   @mousedown="setHandlingItem(element.uuid)"
                 >
-                  <p class="hidden">{{ element.uuid }}</p>
-                  <div class="handling"></div>
+                  <div class="handling">
+                    <q-icon v-show="element.active" name="drag_indicator" />
+                  </div>
                 </div>
               </div>
             </div>
           </template>
         </draggable>
 
-        <q-card class="q-pa-sm q-ma-xs cell cell-no">
-          <q-icon name="add" />
+        <!-- "+" btn -->
+        <q-card class="q-pa-sm q-my-xs">
+          <q-icon class="addBtn shadow-1 cursor-pointer" name="add" />
           <q-popup-proxy>
             <q-banner>
               <q-input filled dense v-model="addColName" />
@@ -88,6 +95,7 @@
         </q-dialog>
       </q-card>
       <!--  -->
+      <!-- Rows -->
       <draggable
         v-model="rowData"
         @start="dragRow = true"
@@ -98,7 +106,7 @@
       >
         <template #item="{ element, index }">
           <q-card class="q-pa-xs row">
-            <q-card class="q-pa-sm q-ma-xs cell cell-no handle-row">
+            <q-card class="q-pa-sm q-ma-xs cell text-right cell-no handle-row">
               {{ index + 1 }}
               <!-- <q-icon name="drag_indicator" class="handle-row" size="20px" /> -->
             </q-card>
@@ -127,6 +135,7 @@
 
       <br /><br />
 
+      <!-- TEST... -->
       <q-markup-table>
         <tr>
           <td></td>
@@ -191,12 +200,6 @@
           class="q-drawer__resizer"
         ></div>
       </q-drawer>
-
-      <br />
-      <!-- 개발자용 보기 -->
-      <div>rows: {{ document.rows }}</div>
-      <div>cols: {{ document.cols }}</div>
-      <div>data: {{ document.data }}</div>
     </div>
   </q-layout>
 </template>
@@ -219,9 +222,6 @@ import {
   deleteCol,
   updateCol,
 } from "@/api/apidocs.js";
-
-moveRow;
-moveCol;
 
 export default {
   components: {
@@ -270,32 +270,28 @@ export default {
   mounted() {
     this.callGetDocs();
 
-    this.userName = Math.round(Math.random() * 1000);
+    this.userName = Math.round(Math.random() * 1000); // 나중에 유저를 token에서 가져오자.
 
-    this.socket = new SockJS(BASEURL + "ws");
+    // WEBSOCKET CONNECTION
+    this.socket = new SockJS(BASEURL + "/ws");
     this.stompClient = Stomp.over(this.socket);
     this.stompClient.connect({}, () => {
       this.stompClient.subscribe(
         "/sub/" + this.projectId + "/refresh",
         (msg) => {
           msg;
-          // var res = JSON.parse(msg.body);
-          // // 내가 보낸 메세지라면 return
-          // if (res.userName == this.userName) return;
-          // // 다른 사람이 보낸 메세지라면 계속
+          // 보낸 사람이 자신인지 확인하는 로직을 추가하려면:
+          // if ( msg.body.username == this.userName ) { ... }
 
-          // TODO: Refresh
           console.log("다른 사용자가 REFRESH 요청을 보냈습니다.");
           this.callGetDocs();
-          // --
         }
       );
       this.stompClient.subscribe("/sub/" + this.projectId + "/focus", (msg) => {
-        var res = JSON.parse(msg.body);
-        // 내가 보낸 메세지라면 return
-        if (res.userName == this.userName) return;
-        // 다른 사람이 보낸 메세지라면 계속
+        // 보낸 사람이 자신인지 확인하는 로직을 추가하려면:
+        // if ( msg.body.username == this.userName ) { ... }
 
+        var res = JSON.parse(msg.body);
         // TODO: Focus
         // 다른 사람의 포커스 위치를 옮겨줌. (내껀 내 프론트에서만 보여줌)
         console.log(
@@ -312,26 +308,32 @@ export default {
     this.stompClient.disconnect();
   },
   methods: {
-    onColChange: function (evt) {
+    onColChange(evt) {
       this.callMoveCol(evt.moved.element.uuid, evt.moved.newIndex);
     },
-    onRowChange: function (evt) {
+    onRowChange(evt) {
       this.callMoveRow(evt.moved.element[0].rowId, evt.moved.newIndex);
     },
     setHandlingItem(uuid) {
       this.handling_item.uuid = uuid;
-      let temp = this.document.cols;
-      for (let i = 0; i < temp.length; i++)
-        if (temp[i].uuid == uuid) {
+      let t_cols = this.document.cols;
+      for (let i = 0; i < t_cols.length; i++)
+        if (t_cols[i].uuid == uuid) {
+          this.handling_item = { ...t_cols[i] };
           this.handling_item.index = i;
-          this.handling_item.width = temp[i].width;
         }
     },
-    resizeCol(ev) {
+    resizeCol(evt) {
       this.document.cols[this.handling_item.index].width =
-        this.handling_item.width + ev.offset.x;
-      if (ev.isFinal) {
-        // this.callUpdateCol(this.handling_item.uuid,{name:this.handling_item.name, type:handling_item.type, width: handling_item.width})
+        this.handling_item.width + evt.offset.x;
+      if (evt.isFinal) {
+        let element = {
+          uuid: this.handling_item.uuid,
+          name: this.handling_item.name,
+          type: this.handling_item.type,
+          width: this.document.cols[this.handling_item.index].width,
+        };
+        this.callUpdateCol(element);
       }
     },
     refreshReq() {
@@ -381,8 +383,7 @@ export default {
           },
         },
         (response) => {
-          console.log(response);
-          this.refreshReq();
+          response, this.refreshReq();
         },
         (error) => {
           console.warn(error);
@@ -405,8 +406,7 @@ export default {
           },
         },
         (response) => {
-          console.log(response);
-          this.refreshReq();
+          response, this.refreshReq();
         },
         (error) => {
           console.warn(error);
@@ -414,7 +414,6 @@ export default {
       );
     },
     callMoveRow(fromId, toIndex) {
-      console.log(fromId, toIndex);
       moveRow(
         {
           pathVariable: {
@@ -426,8 +425,7 @@ export default {
           },
         },
         (response) => {
-          console.log(response);
-          this.refreshReq();
+          response, this.refreshReq();
         },
         (error) => {
           console.warn(error);
@@ -446,8 +444,7 @@ export default {
           },
         },
         (response) => {
-          console.log(response);
-          this.refreshReq();
+          response, this.refreshReq();
         },
         (error) => {
           console.warn(error);
@@ -463,8 +460,7 @@ export default {
           },
         },
         (response) => {
-          console.log(response);
-          this.refreshReq();
+          response, this.refreshReq();
         },
         (error) => {
           console.warn(error);
@@ -480,8 +476,7 @@ export default {
           },
         },
         (response) => {
-          console.log(response);
-          this.refreshReq();
+          response, this.refreshReq();
         },
         (error) => {
           console.warn(error);
@@ -502,8 +497,7 @@ export default {
           },
         },
         (response) => {
-          console.log(response);
-          this.refreshReq();
+          response, this.refreshReq();
         },
         (error) => {
           console.warn(error);
@@ -529,8 +523,11 @@ export default {
 }
 .cell-no {
   width: 30px;
-  text-align: right;
 }
+.addBtn {
+  border-radius: 7px;
+}
+
 .col-width-handle {
   position: absolute;
   right: 0px;
@@ -541,12 +538,9 @@ export default {
 }
 .handling {
   position: absolute;
-
-  border-left: 0.5px solid black;
-  border-right: 0.5px solid black;
   top: 8px;
   bottom: 8px;
-  right: 5px;
+  right: 11px;
   width: 4px;
 }
 
@@ -558,5 +552,9 @@ export default {
   width: 4px;
   background-color: red;
   cursor: ew-resize;
+}
+
+.test {
+  border: 1px solid green;
 }
 </style>
