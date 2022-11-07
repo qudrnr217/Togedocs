@@ -2,6 +2,7 @@ package com.togedocs.backend;
 
 import com.togedocs.backend.api.dto.ApidocsResponse;
 import com.togedocs.backend.domain.entity.Apidocs;
+import com.togedocs.backend.domain.entity.ColCategory;
 import com.togedocs.backend.domain.entity.ColDto;
 import com.togedocs.backend.domain.repository.ApidocsRepository;
 import org.bson.Document;
@@ -103,7 +104,7 @@ public class ApidocsTest {
                 targetIndex = i;
             }
         }
-        ColDto updatedCol = ColDto.build(colId, name, type, width);
+        ColDto updatedCol = ColDto.build(colId, name, type, width, ColCategory.ADDED);
         update = new Update();
         update.push("cols").atPosition(targetIndex).value(updatedCol);
         mongoTemplate.updateFirst(query, update, APIDOCS);
