@@ -13,6 +13,8 @@
       <!-- Columns -->
       <q-card class="q-pa-xs row">
         <!-- blank -->
+
+        <q-card class="q-pa-sm q-ma-xs cell cell-no" />
         <q-card class="q-pa-sm q-ma-xs cell cell-no" />
         <!-- cols -->
         <draggable
@@ -73,9 +75,14 @@
         <!-- "+" btn -->
         <q-card class="q-pa-sm q-my-xs">
           <q-icon class="addBtn shadow-1 cursor-pointer" name="add" />
-          <q-popup-proxy>
+          <q-popup-proxy v-model="addColPopup">
             <q-banner>
-              <q-input filled dense v-model="addColName" />
+              <q-input
+                filled
+                dense
+                v-model="addColName"
+                @keyup.enter="callAddCol(addColName, 'text')"
+              />
               <q-btn
                 color="primary"
                 label="Add Col"
@@ -84,7 +91,7 @@
             </q-banner>
           </q-popup-proxy>
         </q-card>
-        <q-dialog v-model="dialog" position="top">
+        <q-dialog v-model="addColWarningDialog" position="top">
           <q-card style="width: 350px">
             <q-card-section class="row items-center no-wrap">
               <div>속성 이름을 입력해주세요!</div>
@@ -106,6 +113,13 @@
       >
         <template #item="{ element, index }">
           <q-card class="q-pa-xs row">
+            <q-card class="q-pa-sm q-ma-xs cell">
+              <q-icon
+                class="addBtn shadow-1 cursor-pointer"
+                name="add"
+                @click="openSideDrawer(document.rows[index])"
+              />
+            </q-card>
             <q-card
               @mouseover="rowActive[index] = true"
               @mouseleave="rowActive[index] = false"
@@ -162,75 +176,51 @@
           </q-card>
         </template>
       </draggable>
-      <!--  -->
-
+      <!-- -->
+      <q-card class="q-pa-xs row">
+        <q-card class="q-pa-sm q-ma-xs">
+          <q-icon
+            class="addBtn shadow-1 cursor-pointer"
+            name="add"
+            @click="callAddRow()"
+          />
+        </q-card>
+      </q-card>
       <br /><br />
 
-      <!-- TEST... -->
-      <q-markup-table>
-        <tr>
-          <td></td>
-          <td></td>
-          <td v-for="(col, colId) in document.cols" :key="colId">
-            <strong>{{ col.name }}</strong>
-            <q-btn
-              color="primary"
-              label="Del Col"
-              @click="callDeleteCol(col.uuid)"
-            />
-          </td>
-        </tr>
-        <tr v-for="(row, rowId) in document.data" :key="rowId">
-          <td>
-            <q-icon name="drag_handle" />
-          </td>
-          <td>
-            <strong>{{ rowId }}</strong>
-            <q-btn
-              color="primary"
-              label="Del row"
-              @click="callDeleteRow(rowId)"
-            />
-            <q-btn
-              color="primary"
-              label="Open"
-              @click="openSideDrawer(rowId)"
-            />
-          </td>
+      <template v-if="drawer">
+        <q-drawer
+          v-model="drawer"
+          side="right"
+          overlay
+          :width="drawerWidth"
+          :breakpoint="0"
+          bordered
+          class="bg-grey-3"
+        >
+          <q-btn flat @click="drawer = !drawer" round dense label="close">
+          </q-btn>
+          <br />
+          <q-markup-table>
+            <tr v-for="(col, colId) in document.cols" :key="colId">
+              <td>
+                <strong>{{ col.name }}</strong>
+              </td>
+              <td>
+                <q-input
+                  dense
+                  type="text"
+                  v-model="document.data[drawerRowId][col.uuid]"
+                />
+              </td>
+            </tr>
+          </q-markup-table>
 
-          <td v-for="(col, colId) in row" :key="colId">{{ col }}</td>
-        </tr>
-      </q-markup-table>
-      <q-btn color="primary" label="Add row" @click="callAddRow()" />
-      <q-btn color="primary" label="Add col" @click="callAddCol()" />
-
-      <q-drawer
-        v-model="drawer"
-        side="right"
-        overlay
-        :width="drawerWidth"
-        :breakpoint="0"
-        bordered
-        class="bg-grey-3"
-      >
-        <q-btn flat @click="drawer = !drawer" round dense label="close">
-        </q-btn>
-        <br />
-        <q-markup-table>
-          <tr v-for="(value, key) in document.data[drawerRowId]" :key="key">
-            <td>
-              <strong>{{ key }}</strong>
-            </td>
-            <td>
-              {{ value }}
-            </td>
-          </tr>
-        </q-markup-table>
-        <div
-          v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeDrawer"
-          class="q-drawer__resizer"
-        ></div>
-      </q-drawer>
+          <div
+            v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeDrawer"
+            class="q-drawer__resizer"
+          ></div> </q-drawer
+      ></template>
     </div>
   </q-layout>
 </template>
@@ -260,8 +250,8 @@ export default {
     draggable,
   },
   setup() {
-    const dialog = ref(false);
-
+    const addColWarningDialog = ref(false);
+    const addColPopup = ref(false);
     let initialDrawerWidth;
     const drawerWidth = ref(300);
     const drawerRowId = ref(null);
@@ -299,7 +289,8 @@ export default {
         }
         drawerWidth.value = initialDrawerWidth - ev.offset.x;
       },
-      dialog,
+      addColWarningDialog,
+      addColPopup,
     };
   },
   mounted() {
@@ -446,6 +437,8 @@ export default {
         this.addColWarning();
         return;
       }
+      this.addColPopup = false;
+      this.addColName = "";
       addCol(
         {
           pathVariable: {
@@ -503,6 +496,13 @@ export default {
       );
     },
     callDeleteRow(rowId) {
+      if (this.drawerRowId == rowId) {
+        this.drawer = false;
+        this.drawerRowId = null;
+      }
+      if (this.focus.isFocusing && this.focus.rowId == rowId) {
+        this.focus.isFocusing = false;
+      }
       deleteRow(
         {
           pathVariable: {
@@ -519,6 +519,9 @@ export default {
       );
     },
     callDeleteCol(colId) {
+      if (this.focus.isFocusing && this.focus.colId == colId) {
+        this.focus.isFocusing = false;
+      }
       deleteCol(
         {
           pathVariable: {
@@ -584,7 +587,7 @@ export default {
     },
 
     addColWarning() {
-      this.dialog = true;
+      this.addColWarningDialog = true;
       console.log(this.addColName);
     },
   },
