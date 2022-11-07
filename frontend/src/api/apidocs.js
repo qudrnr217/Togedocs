@@ -49,7 +49,7 @@ function deleteCol(payload, success, fail) {
 function updateCell(payload, success, fail) {
   let projectId = payload.pathVariable.projectId;
   return api
-    .patch("/docs/" + projectId, payload.requestBody)
+    .patch("/docs/" + projectId + "/cell", payload.requestBody)
     .then(success)
     .catch(fail);
 }
