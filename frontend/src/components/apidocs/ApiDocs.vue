@@ -147,14 +147,7 @@
                   v-model="document.data[cell.rowId][cell.colId]"
                   :class="index + '_' + col_idx"
                   @focus="editFocus(cell)"
-                  @keypress.enter="
-                    callUpdateCell(
-                      cell.rowId,
-                      cell.colId,
-                      document.data[cell.rowId][cell.colId]
-                    ),
-                      focusNextLine(index, col_idx)
-                  "
+                  @keypress.enter="pressEnter($event, index, col_idx, cell)"
                   @blur="
                     callUpdateCell(
                       cell.rowId,
@@ -386,6 +379,37 @@ export default {
         row_idx + 1 + "_" + col_idx
       );
       nextLine[0].focus();
+    },
+    pressEnter(evt, row_idx, col_idx, cell) {
+      if (evt.charCode === 13) {
+        if (!evt.shiftKey) {
+          // just enter
+          if (row_idx + 1 != this.document.rows.length) {
+            // can blur
+            let nextLine = document.getElementsByClassName(
+              row_idx + 1 + "_" + col_idx
+            );
+            nextLine[0].focus();
+            return;
+          }
+        } else {
+          // shift enter
+          if (row_idx != 0) {
+            // can blur
+            let nextLine = document.getElementsByClassName(
+              row_idx - 1 + "_" + col_idx
+            );
+            nextLine[0].focus();
+            return;
+          }
+        }
+        // cannot blur, force update
+        this.callUpdateCell(
+          cell.rowId,
+          cell.colId,
+          this.document.data[cell.rowId][cell.colId]
+        );
+      }
     },
     refreshReq() {
       const req = { userName: this.userName, content: null };
@@ -636,9 +660,5 @@ export default {
   width: 4px;
   background-color: red;
   cursor: ew-resize;
-}
-
-.test {
-  border: 1px solid green;
 }
 </style>
