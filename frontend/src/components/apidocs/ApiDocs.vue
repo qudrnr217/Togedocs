@@ -106,16 +106,47 @@
       >
         <template #item="{ element, index }">
           <q-card class="q-pa-xs row">
-            <q-card class="q-pa-sm q-ma-xs cell text-right cell-no handle-row">
-              {{ index + 1 }}
+            <q-card
+              @mouseover="rowActive[index] = true"
+              @mouseleave="rowActive[index] = false"
+              class="q-pa-sm q-ma-xs cell text-right cell-no handle-row"
+            >
+              <template v-if="!rowActive[index]">
+                {{ index + 1 }}
+              </template>
+              <template v-else>
+                <q-icon name="drag_indicator" />
+              </template>
               <!-- <q-icon name="drag_indicator" class="handle-row" size="20px" /> -->
             </q-card>
             <template v-for="(cell, index) in element" :key="index">
               <div
-                class="q-pa-sm q-ma-xs cell"
+                class="q-px-sm q-ma-xs cell"
                 :style="{ width: cell.width + 'px' }"
               >
-                {{ cell.content }}
+                <q-input
+                  dense
+                  :style="{
+                    width: cell.width - 15 + 'px',
+                  }"
+                  type="text"
+                  v-model="document.data[cell.rowId][cell.colId]"
+                  @focus="editFocus(cell)"
+                  @keypress.enter="
+                    callUpdateCell(
+                      cell.rowId,
+                      cell.colId,
+                      document.data[cell.rowId][cell.colId]
+                    )
+                  "
+                  @blur="
+                    callUpdateCell(
+                      cell.rowId,
+                      cell.colId,
+                      document.data[cell.rowId][cell.colId]
+                    )
+                  "
+                />
               </div>
             </template>
 
@@ -221,6 +252,7 @@ import {
   deleteRow,
   deleteCol,
   updateCol,
+  updateCell,
 } from "@/api/apidocs.js";
 
 export default {
@@ -255,6 +287,9 @@ export default {
       }),
 
       rowData: ref([]),
+      rowActive: ref([]),
+      focus: ref({ isFocusing: false, rowId: "", colId: "" }),
+
       drawer: ref(false),
       drawerWidth,
       drawerRowId,
@@ -284,7 +319,14 @@ export default {
           // if ( msg.body.username == this.userName ) { ... }
 
           console.log("다른 사용자가 REFRESH 요청을 보냈습니다.");
+          let editing_content = "";
+          if (this.focus.isFocusing)
+            editing_content =
+              this.document.data[this.focus.rowId][this.focus.colId];
           this.callGetDocs();
+          if (this.focus.isFocusing)
+            this.document.data[this.focus.rowId][this.focus.colId] =
+              editing_content;
         }
       );
       this.stompClient.subscribe("/sub/" + this.projectId + "/focus", (msg) => {
@@ -312,7 +354,10 @@ export default {
       this.callMoveCol(evt.moved.element.uuid, evt.moved.newIndex);
     },
     onRowChange(evt) {
-      this.callMoveRow(evt.moved.element[0].rowId, evt.moved.newIndex);
+      this.callMoveRow(
+        this.document.rows[evt.moved.oldIndex],
+        evt.moved.newIndex
+      );
     },
     setHandlingItem(uuid) {
       this.handling_item.uuid = uuid;
@@ -335,6 +380,12 @@ export default {
         };
         this.callUpdateCol(element);
       }
+    },
+    editFocus(cell) {
+      // 여기서 focusrequest 보내야 함.
+      this.focus.isFocusing = true;
+      this.focus.rowId = cell.rowId;
+      this.focus.colId = cell.colIs;
     },
     refreshReq() {
       const req = { userName: this.userName, content: null };
@@ -363,11 +414,11 @@ export default {
               ith_row.push({
                 rowId: rowId,
                 colId: colId,
-                content: res_doc.data[rowId][colId],
                 width: colWidth,
               });
             });
             this.rowData.push(ith_row);
+            this.rowActive.push(false);
           });
         },
         (error) => {
@@ -494,6 +545,29 @@ export default {
             name: element.name,
             type: element.type,
             width: element.width,
+          },
+        },
+        (response) => {
+          response, this.refreshReq();
+        },
+        (error) => {
+          console.warn(error);
+        }
+      );
+    },
+    callUpdateCell(rowId, colId, content) {
+      console.log(rowId);
+      console.log(colId);
+      console.log(content);
+      updateCell(
+        {
+          pathVariable: {
+            projectId: this.projectId,
+          },
+          requestBody: {
+            rowId: rowId,
+            colId: colId,
+            content: content,
           },
         },
         (response) => {
