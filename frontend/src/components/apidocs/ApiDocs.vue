@@ -133,7 +133,7 @@
               </template>
               <!-- <q-icon name="drag_indicator" class="handle-row" size="20px" /> -->
             </q-card>
-            <template v-for="(cell, index) in element" :key="index">
+            <template v-for="(cell, col_idx) in element" :key="col_idx">
               <div
                 class="q-px-sm q-ma-xs cell"
                 :style="{ width: cell.width + 'px' }"
@@ -145,13 +145,15 @@
                   }"
                   type="text"
                   v-model="document.data[cell.rowId][cell.colId]"
+                  :class="index + '_' + col_idx"
                   @focus="editFocus(cell)"
                   @keypress.enter="
                     callUpdateCell(
                       cell.rowId,
                       cell.colId,
                       document.data[cell.rowId][cell.colId]
-                    )
+                    ),
+                      focusNextLine(index, col_idx)
                   "
                   @blur="
                     callUpdateCell(
@@ -378,6 +380,13 @@ export default {
       this.focus.rowId = cell.rowId;
       this.focus.colId = cell.colIs;
     },
+    focusNextLine(row_idx, col_idx) {
+      if (row_idx + 1 == this.document.rows.length) return;
+      let nextLine = document.getElementsByClassName(
+        row_idx + 1 + "_" + col_idx
+      );
+      nextLine[0].focus();
+    },
     refreshReq() {
       const req = { userName: this.userName, content: null };
       this.stompClient.send(
@@ -559,9 +568,7 @@ export default {
       );
     },
     callUpdateCell(rowId, colId, content) {
-      console.log(rowId);
-      console.log(colId);
-      console.log(content);
+      if (content == undefined) content = "";
       updateCell(
         {
           pathVariable: {
