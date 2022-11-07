@@ -6,6 +6,7 @@ import com.togedocs.backend.api.dto.ApidocsResponse;
 import com.togedocs.backend.api.exception.NotEnoughArgsException;
 import com.togedocs.backend.api.exception.IdNotFoundException;
 import com.togedocs.backend.domain.entity.Apidocs;
+import com.togedocs.backend.domain.entity.ColCategory;
 import com.togedocs.backend.domain.entity.ColDto;
 import lombok.AllArgsConstructor;
 import org.bson.Document;
@@ -28,6 +29,7 @@ public class ApidocsService {
     private final String APIDOCS = "apidocs";
 
     private final int DEFAULT_WIDTH = 100;
+    private final ColCategory DEFAULT_CATEGORY = ColCategory.ADDED;
 
     public ApidocsResponse.Ids addRow(Long projectId) throws IdNotFoundException {
 
@@ -49,7 +51,7 @@ public class ApidocsService {
         Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
         Update update = new Update();
         String colId = UUID.randomUUID().toString();
-        ColDto col = ColDto.build(colId, request.getName(), request.getType(), DEFAULT_WIDTH);
+        ColDto col = ColDto.build(colId, request.getName(), request.getType(), DEFAULT_WIDTH, DEFAULT_CATEGORY);
         update.push("cols", col);
         UpdateResult updateResult = mongoTemplate.updateFirst(query, update, APIDOCS);
 
@@ -196,10 +198,11 @@ public class ApidocsService {
         int size = colDtos.size();
         int targetIndex = 0;
         for (int i = 0; i < size; i++) {
-            if (colDtos.get(i).getUuid().equals(colId))
+            if (colDtos.get(i).getUuid().equals(colId)) {
                 targetIndex = i;
+            }
         }
-        ColDto updatedCol = ColDto.build(colId, request.getName(), request.getType(), request.getWidth());
+        ColDto updatedCol = ColDto.build(colId, request.getName(), request.getType(), request.getWidth(), colDtos.get(targetIndex).getCategory());
         update = new Update();
         update.push("cols").atPosition(targetIndex).value(updatedCol);
         mongoTemplate.updateFirst(query, update, APIDOCS);
