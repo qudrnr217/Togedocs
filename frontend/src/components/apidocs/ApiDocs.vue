@@ -14,6 +14,7 @@
       <q-card class="q-pa-xs row">
         <!-- blank -->
 
+        {{ focus }}
         <q-card class="q-pa-sm q-ma-xs cell cell-no" />
         <q-card class="q-pa-sm q-ma-xs cell cell-no" />
         <!-- cols -->
@@ -136,12 +137,6 @@
             <template v-for="(cell, col_idx) in element" :key="col_idx">
               <div
                 class="q-px-sm q-ma-xs cell"
-                :class="{
-                  focusing:
-                    focus.isFocusing &&
-                    cell.rowId == focus.rowId &&
-                    cell.colId == focus.colId,
-                }"
                 :style="{ width: cell.width + 'px' }"
               >
                 <q-input
@@ -163,7 +158,6 @@
                     )
                   "
                 />
-                {{ cell.focuses }}
               </div>
             </template>
 
@@ -333,16 +327,18 @@ export default {
         // 보낸 사람이 자신인지 확인하는 로직을 추가하려면:
         // if ( msg.body.username == this.userName ) { ... }
 
-        var res = JSON.parse(msg.body);
+        let res = JSON.parse(msg.body);
+        let res_content = JSON.parse(res.content);
         // TODO: Focus
         // 다른 사람의 포커스 위치를 옮겨줌. (내껀 내 프론트에서만 보여줌)
         console.log(
           res.userName,
           "사용자가 FOCUS를 ",
-          res.content,
+          res_content,
           "로 변경하였습니다."
         );
-        this.rowData[res.content.row_idx][res.content.col_idx].push(
+        console.log(this.rowData[res_content.row_idx][res_content.col_idx]);
+        this.rowData[res_content.row_idx][res_content.col_idx].focuses.push(
           res.userName
         );
         // --
@@ -445,7 +441,10 @@ export default {
     focusReq() {
       const req = {
         userName: this.userName,
-        content: { row_idx: this.focus.row_idx, col_idx: this.focus.col_idx },
+        content: JSON.stringify({
+          row_idx: this.focus.row_idx,
+          col_idx: this.focus.col_idx,
+        }),
       };
       this.stompClient.send(
         "/pub/" + this.projectId + "/focus",
@@ -695,9 +694,5 @@ export default {
   width: 4px;
   background-color: red;
   cursor: ew-resize;
-}
-
-.focusing {
-  outline: 2px solid blue;
 }
 </style>
