@@ -3,39 +3,39 @@
     <div>
       <q-avatar class="col-md-2" size="7vw">
         <img
-          src="https://secure.gravatar.com/avatar/20bbf5d322e0760a476480837f6cc85e?s=180&d=identicon"
-        />
+          src="https://secure.gravatar.com/avatar/20bbf5d322e0760a476480837f6cc85e?s=180&d=identicon" />
       </q-avatar>
     </div>
-    <div class="col-md-5">
+    <div class="col-md-6">
       <div class="column">
-        <div class="title">{{ projectItem.title }}</div>
+        <div class="title">{{ projectItem.desc }}</div>
         <div class="title-detail">
-          {{ projectItem.desc }} | {{ projectItem.members.join(", ") }}
+          {{ projectItem.members.join(", ") }}
         </div>
       </div>
     </div>
-    <div class="col-md-2 column justify-around">
-      <q-btn
-        class="col q-ma-md"
-        outline
-        rounded
-        color="secondary"
-        label="프로젝트 이동"
-        @click="goToProjectUrl"
-      />
-      <q-btn
-        class="col q-ma-md"
-        outline
-        rounded
-        color="primary"
-        label="API 문서 이동"
-        @click="goToApiDocs"
-      />
+    <div class="col-md-2 column">
+      <div class="timetable">
+        <b>시작일</b>
+        <div>{2022.11.07}</div>
+        <b>종료일</b>
+        <div>{2022.11.08}</div>
+      </div>
     </div>
-    <router-link :to="{ path: 'projectview/docs' }"
-      ><button>프로젝트로</button>
-    </router-link>
+    <div class="col-md-2 column">
+      <q-btn
+        class="col q-ma-md"
+        outline
+        rounded
+        label="프로젝트 이동"
+        @click="goToProjectUrl" />
+      <q-btn
+        class="col q-ma-md"
+        outline
+        rounded
+        label="API 문서 이동"
+        @click="goToApiDocs" />
+    </div>
   </div>
 </template>
 <script>
@@ -58,7 +58,7 @@ export default {
 .container {
   width: 80vw;
   height: 20vh;
-  background-color: #c3cad4;
+  background: linear-gradient(25deg, #b8ceef, #c0f5fb, #f8f8ba, #f17575);
   display: flex;
   align-items: center;
   margin: 1rem 0 1rem 0;
@@ -72,8 +72,18 @@ img {
 }
 .title {
   font-size: 4vh;
+  color: #000000;
+  font-weight: bolder;
 }
 .title-detail {
   font-size: 2vh;
+  color: #000000;
+  font-size: 500;
+  font-weight: bold;
+}
+.timetable {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>
