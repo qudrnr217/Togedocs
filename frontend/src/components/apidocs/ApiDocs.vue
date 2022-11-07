@@ -136,17 +136,24 @@
             <template v-for="(cell, col_idx) in element" :key="col_idx">
               <div
                 class="q-px-sm q-ma-xs cell"
+                :class="{
+                  focusing:
+                    focus.isFocusing &&
+                    cell.rowId == focus.rowId &&
+                    cell.colId == focus.colId,
+                }"
                 :style="{ width: cell.width + 'px' }"
               >
                 <q-input
                   dense
+                  borderless=""
                   :style="{
                     width: cell.width - 15 + 'px',
                   }"
                   type="text"
                   v-model="document.data[cell.rowId][cell.colId]"
                   :class="index + '_' + col_idx"
-                  @focus="editFocus(cell)"
+                  @focus="editFocus(cell, index, col_idx)"
                   @keypress.enter="pressEnter($event, index, col_idx, cell)"
                   @blur="
                     callUpdateCell(
@@ -156,6 +163,7 @@
                     )
                   "
                 />
+                {{ cell.focuses }}
               </div>
             </template>
 
@@ -273,7 +281,13 @@ export default {
 
       rowData: ref([]),
       rowActive: ref([]),
-      focus: ref({ isFocusing: false, rowId: "", colId: "" }),
+      focus: ref({
+        isFocusing: false,
+        rowId: "",
+        colId: "",
+        row_idx: "",
+        col_idx: "",
+      }),
 
       drawer: ref(false),
       drawerWidth,
@@ -328,6 +342,9 @@ export default {
           res.content,
           "로 변경하였습니다."
         );
+        this.rowData[res.content.row_idx][res.content.col_idx].push(
+          res.userName
+        );
         // --
       });
     });
@@ -367,11 +384,17 @@ export default {
         this.callUpdateCol(element);
       }
     },
-    editFocus(cell) {
+    editFocus(cell, row_idx, col_idx) {
       // 여기서 focusrequest 보내야 함.
       this.focus.isFocusing = true;
       this.focus.rowId = cell.rowId;
-      this.focus.colId = cell.colIs;
+      this.focus.colId = cell.colId;
+      this.focus.row_idx = row_idx;
+      this.focus.col_idx = col_idx;
+      this.focusReq();
+    },
+    focusHighlight(position) {
+      position;
     },
     focusNextLine(row_idx, col_idx) {
       if (row_idx + 1 == this.document.rows.length) return;
@@ -419,6 +442,17 @@ export default {
         JSON.stringify(req)
       );
     },
+    focusReq() {
+      const req = {
+        userName: this.userName,
+        content: { row_idx: this.focus.row_idx, col_idx: this.focus.col_idx },
+      };
+      this.stompClient.send(
+        "/pub/" + this.projectId + "/focus",
+        {},
+        JSON.stringify(req)
+      );
+    },
     callGetDocs() {
       getDocs(
         {
@@ -439,6 +473,7 @@ export default {
                 rowId: rowId,
                 colId: colId,
                 width: colWidth,
+                focuses: [],
               });
             });
             this.rowData.push(ith_row);
@@ -660,5 +695,9 @@ export default {
   width: 4px;
   background-color: red;
   cursor: ew-resize;
+}
+
+.focusing {
+  outline: 2px solid blue;
 }
 </style>
