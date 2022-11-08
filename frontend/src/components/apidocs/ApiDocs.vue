@@ -297,6 +297,8 @@ export default {
       addColWarningDialog,
       addColPopup,
 
+      updateColName: ref(""),
+
       userName: ref(""),
       users: ref({}),
     };
@@ -547,14 +549,16 @@ export default {
           res_doc.rows.forEach((rowId) => {
             let ith_row = [];
             res_doc.cols.forEach((col) => {
-              let colId = col.uuid;
-              let colWidth = col.width;
-              ith_row.push({
-                rowId: rowId,
-                colId: colId,
-                width: colWidth,
-                focuses: [],
-              });
+              if (col.category !== "PAYLOAD") {
+                let colId = col.uuid;
+                let colWidth = col.width;
+                ith_row.push({
+                  rowId: rowId,
+                  colId: colId,
+                  width: colWidth,
+                  focuses: [],
+                });
+              }
             });
             this.rowData.push(ith_row);
             this.rowActive.push(false);
@@ -734,8 +738,8 @@ export default {
       this.drawerRowId = rowId;
     },
 
-    addColWarning() {
-      this.addColWarningDialog = true;
+    colWarning() {
+      this.colWarningDialog = true;
     },
   },
 };
