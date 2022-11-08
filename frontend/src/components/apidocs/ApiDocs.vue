@@ -51,21 +51,35 @@
                   <q-popup-proxy
                     context-menu
                     @before-show="putColName(element)"
-                    @before-hide="callUpdateColName(element)"
                   >
-                    <q-banner>
-                      <q-input
-                        filled
-                        v-model="updateColName"
-                        dense
-                        :rules="[(val) => !!val]"
-                        @keydown.enter.prevent="callUpdateColName(element)"
-                      />
-                      <q-btn
-                        color="primary"
-                        label="Del Col"
-                        @click="callDeleteCol(element.uuid)"
-                      />
+                    <q-banner style="max-width: 250px">
+                      <div class="row items-baseline justify-between">
+                        <q-input
+                          filled
+                          dense
+                          v-model="updateColName"
+                          :rules="[(val) => !!val]"
+                          @keydown.enter.prevent="callUpdateColName(element)"
+                          class="colNameInput"
+                        />
+                        <q-icon
+                          clickable
+                          size="xs"
+                          name="keyboard_return"
+                          @click="callUpdateColName(element)"
+                        />
+                      </div>
+                      <div class="row items-baseline justify-between">
+                        <q-btn
+                          flat
+                          v-close-popup
+                          color="primary"
+                          label="열 삭제"
+                          icon="delete"
+                          size="md"
+                          @click="callDeleteCol(element.uuid)"
+                        />
+                      </div>
                     </q-banner>
                   </q-popup-proxy>
                 </div>
@@ -696,5 +710,8 @@ export default {
   width: 4px;
   background-color: red;
   cursor: ew-resize;
+}
+.colNameInput {
+  width: 190px;
 }
 </style>
