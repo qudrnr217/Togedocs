@@ -14,14 +14,16 @@
       <q-card class="q-pa-xs row">
         <!-- blank -->
 
-        <q-card class="q-pa-sm q-ma-xs cell cell-no" />
-        <q-card class="q-pa-sm q-ma-xs cell cell-no" />
+        <q-card class="q-pa-sm q-ma-xs cell-no" />
+        <q-card class="q-pa-sm q-ma-xs cell-no" />
         <!-- cols -->
         <draggable
           class="row"
           v-model="document.cols"
           @start="dragCol = true"
           @end="dragCol = false"
+          @choose="onStartTest"
+          @unchoose="onEndTest"
           item-key="id_col"
           @change="onColChange"
           handle=".handle-col"
@@ -33,7 +35,7 @@
                 element.category === 'REQUIRED' || element.category === 'ADDED'
               "
             >
-              <div>
+              <div class="drag-item">
                 <div
                   v-if="element.category === 'REQUIRED'"
                   v-on:click.right.prevent
@@ -41,6 +43,7 @@
                   :style="{ width: element.width + 'px' }"
                 >
                   {{ element.name }}
+                  <q-icon :name="biAsterisk" style="font-size: 0.5em" />
                 </div>
                 <div
                   v-else
@@ -48,10 +51,7 @@
                   :style="{ width: element.width + 'px' }"
                 >
                   {{ element.name }}
-                  <q-popup-proxy
-                    context-menu
-                    @before-show="putColName(element)"
-                  >
+                  <q-popup-proxy @before-show="putColName(element)">
                     <q-banner style="max-width: 250px">
                       <div class="row items-baseline justify-between">
                         <q-input
@@ -60,23 +60,24 @@
                           v-model="updateColName"
                           :rules="[(val) => !!val]"
                           @keydown.enter.prevent="callUpdateColName(element)"
-                          class="colNameInput"
+                          class="col-10"
                         />
                         <q-icon
-                          clickable
+                          class="cursor-pointer"
+                          v-close-popup
                           size="xs"
-                          name="keyboard_return"
+                          :name="mdiArrowLeftBottomBold"
                           @click="callUpdateColName(element)"
                         />
                       </div>
-                      <div class="row items-baseline justify-between">
+                      <div class="row">
                         <q-btn
+                          class="col-12"
                           flat
                           v-close-popup
-                          color="primary"
                           label="열 삭제"
-                          icon="delete"
-                          size="md"
+                          :icon="biTrash3"
+                          size="sm"
                           @click="callDeleteCol(element.uuid)"
                         />
                       </div>
@@ -95,7 +96,10 @@
                   @mousedown="setHandlingItem(element.uuid)"
                 >
                   <div class="handling">
-                    <q-icon v-show="element.active" name="drag_indicator" />
+                    <q-icon
+                      v-show="element.active"
+                      :name="fasGripLinesVertical"
+                    />
                   </div>
                 </div>
               </div>
@@ -105,21 +109,26 @@
 
         <!-- "+" btn -->
         <q-card class="q-pa-sm q-my-xs">
-          <q-icon class="addBtn shadow-1 cursor-pointer" name="add" />
+          <q-icon class="cursor-pointer" :name="biPlusCircle" />
           <q-popup-proxy v-model="addColPopup" @before-hide="resetAddColName">
             <q-banner>
-              <q-input
-                filled
-                dense
-                v-model="addColName"
-                :rules="[(val) => !!val]"
-                @keyup.enter="callAddCol(addColName, 'text')"
-              />
-              <q-btn
-                color="primary"
-                label="Add Col"
-                @click="callAddCol(addColName, 'text')"
-              />
+              <div class="row items-baseline justify-between">
+                <q-input
+                  filled
+                  dense
+                  v-model="addColName"
+                  :rules="[(val) => !!val]"
+                  @keyup.enter="callAddCol(addColName, 'text')"
+                  class="col-10"
+                />
+                <q-icon
+                  class="cursor-pointer"
+                  v-close-popup
+                  size="xs"
+                  :name="mdiArrowLeftBottomBold"
+                  @click="callAddCol(addColName, 'text')"
+                />
+              </div>
             </q-banner>
           </q-popup-proxy>
         </q-card>
@@ -145,17 +154,20 @@
       >
         <template #item="{ element, index }">
           <q-card class="q-pa-xs row">
-            <q-card class="q-pa-sm q-ma-xs cell">
+            <q-card class="q-pa-sm q-ma-xs">
               <q-icon
-                class="addBtn shadow-1 cursor-pointer"
-                name="add"
+                class="cursor-pointer"
+                :name="biLayoutSidebarInsetReverse"
                 @click="openSideDrawer(document.rows[index])"
               />
+              <q-tooltip anchor="bottom middle" self="bottom middle">
+                열기
+              </q-tooltip>
             </q-card>
             <q-card
               @mouseover="rowActive[index] = true"
               @mouseleave="rowActive[index] = false"
-              class="q-pa-sm q-ma-xs cell text-right cell-no handle-row"
+              class="q-pa-sm q-ma-xs text-right cell-no handle-row drag-item"
             >
               <template v-if="!rowActive[index]">
                 {{ index + 1 }}
@@ -194,8 +206,10 @@
             <q-popup-proxy context-menu>
               <q-banner>
                 <q-btn
-                  color="primary"
-                  label="Del Row"
+                  flat
+                  label="행 삭제"
+                  :icon="biTrash3"
+                  size="sm"
                   @click="callDeleteRow(document.rows[index])"
                 />
               </q-banner>
@@ -207,15 +221,15 @@
       <q-card class="q-pa-xs row">
         <q-card class="q-pa-sm q-ma-xs">
           <q-icon
-            class="addBtn shadow-1 cursor-pointer"
-            name="add"
+            class="cursor-pointer"
+            :name="biPlusCircle"
             @click="callAddRow()"
           />
         </q-card>
       </q-card>
       <br /><br />
 
-      <template v-if="drawer">
+      <template v-if="initDrawer">
         <q-drawer
           v-model="drawer"
           side="right"
@@ -225,7 +239,14 @@
           bordered
           class="bg-grey-3"
         >
-          <q-btn flat @click="drawer = !drawer" round dense label="close">
+          <q-btn
+            flat
+            @click="drawer = !drawer"
+            round
+            dense
+            :icon="fasAnglesRight"
+            size="sm"
+          >
           </q-btn>
           <br />
           <q-markup-table>
@@ -237,6 +258,13 @@
                 <q-input
                   dense
                   type="text"
+                  @blur="
+                    callUpdateCell(
+                      drawerRowId,
+                      col.uuid,
+                      document.data[drawerRowId][col.uuid]
+                    )
+                  "
                   v-model="document.data[drawerRowId][col.uuid]"
                 />
               </td>
@@ -272,6 +300,23 @@ import {
   updateCell,
 } from "@/api/apidocs.js";
 
+import {
+  biLayoutSidebarInsetReverse,
+  biTrash3,
+  biChevronDoubleRight,
+  biArrowReturnLeft,
+  biGripVertical,
+  biPlusCircle,
+  biAsterisk,
+} from "@quasar/extras/bootstrap-icons";
+import {
+  fasGripLinesVertical,
+  fasAnglesRight,
+} from "@quasar/extras/fontawesome-v6";
+import {
+  mdiDragVerticalVariant,
+  mdiArrowLeftBottomBold,
+} from "@quasar/extras/mdi-v6";
 export default {
   components: {
     draggable,
@@ -306,7 +351,7 @@ export default {
       rowData: ref([]),
       rowActive: ref([]),
       focus: ref({ isFocusing: false, rowId: "", colId: "" }),
-
+      initDrawer: ref(false),
       drawer: ref(false),
       drawerWidth,
       drawerRowId,
@@ -319,6 +364,17 @@ export default {
       colWarningDialog,
       addColPopup,
       updateColName: ref(""),
+      biLayoutSidebarInsetReverse,
+      biTrash3,
+      biChevronDoubleRight,
+      biArrowReturnLeft,
+      biGripVertical,
+      biPlusCircle,
+      biAsterisk,
+      fasGripLinesVertical,
+      fasAnglesRight,
+      mdiDragVerticalVariant,
+      mdiArrowLeftBottomBold,
     };
   },
   mounted() {
@@ -369,6 +425,21 @@ export default {
     this.stompClient.disconnect();
   },
   methods: {
+    onStartTest(e) {
+      // console.log(e.srcElement);
+      // e.srcElement.classList.add("dragging-item");
+
+      e;
+      console.log("start");
+      const html = document.getElementsByTagName("html").item(0);
+      html.classList.toggle("dragging-item", true);
+    },
+    onEndTest(e) {
+      e;
+      console.log("end");
+      const html = document.getElementsByTagName("html").item(0);
+      html.classList.toggle("dragging-item", false);
+    },
     onColChange(evt) {
       this.callMoveCol(evt.moved.element.uuid, evt.moved.newIndex);
     },
@@ -649,6 +720,7 @@ export default {
       );
     },
     openSideDrawer(rowId) {
+      this.initDrawer = true;
       this.drawer = true;
       this.drawerRowId = rowId;
     },
@@ -711,7 +783,13 @@ export default {
   background-color: red;
   cursor: ew-resize;
 }
-.colNameInput {
+.colWidth {
   width: 190px;
+}
+.drag-item {
+  cursor: grab;
+}
+.dragging-item * {
+  cursor: grabbing !important;
 }
 </style>
