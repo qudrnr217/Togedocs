@@ -5,6 +5,9 @@
     style="height: 500px"
     class="shadow-2 rounded-borders"
   >
+    <div>My Name : {{ userName }}</div>
+    <div>My Focus : {{ focus }}</div>
+    <div>Cooperators : {{ users }}</div>
     <div>
       <input type="text-area" />
       <br />
@@ -14,7 +17,6 @@
       <q-card class="q-pa-xs row">
         <!-- blank -->
 
-        {{ focus }}
         <q-card class="q-pa-sm q-ma-xs cell cell-no" />
         <q-card class="q-pa-sm q-ma-xs cell cell-no" />
         <!-- cols -->
@@ -148,16 +150,18 @@
                   type="text"
                   v-model="document.data[cell.rowId][cell.colId]"
                   :class="index + '_' + col_idx"
-                  @focus="editFocus(cell, index, col_idx)"
                   @keypress.enter="pressEnter($event, index, col_idx, cell)"
+                  @focus="setFocus(index, col_idx)"
                   @blur="
-                    callUpdateCell(
-                      cell.rowId,
-                      cell.colId,
-                      document.data[cell.rowId][cell.colId]
-                    )
+                    clearFocus(),
+                      callUpdateCell(
+                        cell.rowId,
+                        cell.colId,
+                        document.data[cell.rowId][cell.colId]
+                      )
                   "
                 />
+                {{ cell.focuses }}
               </div>
             </template>
 
@@ -277,8 +281,6 @@ export default {
       rowActive: ref([]),
       focus: ref({
         isFocusing: false,
-        rowId: "",
-        colId: "",
         row_idx: "",
         col_idx: "",
       }),
@@ -294,6 +296,9 @@ export default {
       },
       addColWarningDialog,
       addColPopup,
+
+      userName: ref(""),
+      users: ref({}),
     };
   },
   mounted() {
@@ -309,46 +314,89 @@ export default {
         "/sub/" + this.projectId + "/refresh",
         (msg) => {
           msg;
-          // 보낸 사람이 자신인지 확인하는 로직을 추가하려면:
-          // if ( msg.body.username == this.userName ) { ... }
 
-          console.log("다른 사용자가 REFRESH 요청을 보냈습니다.");
+          // TODO: refresh 해도 내가 작업중인 content는 유지될 수 있도록 하는 코드 (test 필요!!)
           let editing_content = "";
-          if (this.focus.isFocusing)
-            editing_content =
-              this.document.data[this.focus.rowId][this.focus.colId];
+          let row_id = "",
+            col_id = "";
+          if (this.focus.isFocusing) {
+            let cell_info =
+              this.rowData[this.focus.row_idx][this.focus.col_idx];
+            row_id = cell_info.rowId;
+            col_id = cell_info.colId;
+            editing_content = this.document.data[row_id][col_id];
+          }
           this.callGetDocs();
           if (this.focus.isFocusing)
-            this.document.data[this.focus.rowId][this.focus.colId] =
-              editing_content;
+            this.document.data[row_id][col_id] = editing_content;
         }
       );
       this.stompClient.subscribe("/sub/" + this.projectId + "/focus", (msg) => {
-        // 보낸 사람이 자신인지 확인하는 로직을 추가하려면:
-        // if ( msg.body.username == this.userName ) { ... }
-
         let res = JSON.parse(msg.body);
         let res_content = JSON.parse(res.content);
-        // TODO: Focus
-        // 다른 사람의 포커스 위치를 옮겨줌. (내껀 내 프론트에서만 보여줌)
-        console.log(
-          res.userName,
-          "사용자가 FOCUS를 ",
-          res_content,
-          "로 변경하였습니다."
-        );
-        console.log(this.rowData[res_content.row_idx][res_content.col_idx]);
-        this.rowData[res_content.row_idx][res_content.col_idx].focuses.push(
-          res.userName
-        );
-        // --
+
+        if (res_content == 0) {
+          // focusReq(0)를 받았으니 내 focus 정보를 focusReq(1)로 돌려준다.
+          this.focusReq(1);
+        } else if (res_content == 2) {
+          // focusReq(2)를 받았으니 송신자의 정보를 지운다.
+          // rowData에 있던 focus를 지워준다.
+          if (this.users[res.userName] && this.users[res.userName].isFocusing) {
+            let index = this.rowData[this.users[res.userName].row_idx][
+              this.users[res.userName].col_idx
+            ].focuses.indexOf(res.userName);
+            this.rowData[this.users[res.userName].row_idx][
+              this.users[res.userName].col_idx
+            ].focuses.splice(index, 1);
+            // this.users의 정보를 지운다.
+            delete this.users[res.userName];
+          }
+        } else {
+          // focusReq(1)를 받았으니 내 users 변수에 신규/변경내용을 저장해준다.
+
+          // 내가 보냈다면 변경하지 않아도 됨.
+          if (res.userName == this.userName) return;
+
+          // 1. 요청한 사람이...
+          // 신규가 아닌, 있던 유저이면서, isFocusing = true 라면 : focus를 지워주고,
+          if (this.users[res.userName] && this.users[res.userName].isFocusing) {
+            let index = this.rowData[this.users[res.userName].row_idx][
+              this.users[res.userName].col_idx
+            ].focuses.indexOf(res.userName);
+            this.rowData[this.users[res.userName].row_idx][
+              this.users[res.userName].col_idx
+            ].focuses.splice(index, 1);
+          }
+
+          // 해당 user가 없으면 추가, 있으면 교체
+          this.users[res.userName] = {
+            isFocusing: res_content.isFocusing,
+            row_idx: res_content.row_idx,
+            col_idx: res_content.col_idx,
+          };
+
+          // 2. 요청한 사람이
+          // isFocusing = true 라면 : 새 focus를 push 해줌.
+          if (res_content.isFocusing) {
+            this.rowData[this.users[res.userName].row_idx][
+              this.users[res.userName].col_idx
+            ].focuses.push(res.userName);
+          }
+        }
       });
+
+      this.focusReq(0);
+      window.addEventListener("beforeunload", this.unLoadEvent);
     });
   },
   beforeUnmount() {
-    this.stompClient.disconnect();
+    window.removeEventListener("beforeunload", this.unLoadEvent);
   },
   methods: {
+    unLoadEvent() {
+      this.focusReq(2);
+      this.stompClient.disconnect();
+    },
     onColChange(evt) {
       this.callMoveCol(evt.moved.element.uuid, evt.moved.newIndex);
     },
@@ -379,15 +427,6 @@ export default {
         };
         this.callUpdateCol(element);
       }
-    },
-    editFocus(cell, row_idx, col_idx) {
-      // 여기서 focusrequest 보내야 함.
-      this.focus.isFocusing = true;
-      this.focus.rowId = cell.rowId;
-      this.focus.colId = cell.colId;
-      this.focus.row_idx = row_idx;
-      this.focus.col_idx = col_idx;
-      this.focusReq();
     },
     focusHighlight(position) {
       position;
@@ -438,19 +477,61 @@ export default {
         JSON.stringify(req)
       );
     },
-    focusReq() {
-      const req = {
+    setFocus(row_idx, col_idx) {
+      this.focus = {
+        isFocusing: true,
+        row_idx: row_idx,
+        col_idx: col_idx,
+      };
+      this.focusReq(1);
+    },
+    clearFocus() {
+      let active_tag = document.activeElement.tagName;
+      if (active_tag == "INPUT") return;
+      else {
+        this.focus = {
+          isFocusing: false,
+          row_idx: "",
+          col_idx: "",
+        };
+        this.focusReq(1);
+      }
+    },
+    focusReq(type) {
+      let req = {
         userName: this.userName,
-        content: JSON.stringify({
+        content: null,
+      };
+
+      if (type == 0) {
+        // 0. 수신한 모두가 송신자에게 focus 정보를 달라는 request
+        req.content = 0;
+        this.stompClient.send(
+          "/pub/" + this.projectId + "/focus",
+          {},
+          JSON.stringify(req)
+        );
+      } else if (type == 1) {
+        // 1. 내 focus를 전송함.
+        req.content = JSON.stringify({
+          isFocusing: this.focus.isFocusing,
           row_idx: this.focus.row_idx,
           col_idx: this.focus.col_idx,
-        }),
-      };
-      this.stompClient.send(
-        "/pub/" + this.projectId + "/focus",
-        {},
-        JSON.stringify(req)
-      );
+        });
+        this.stompClient.send(
+          "/pub/" + this.projectId + "/focus",
+          {},
+          JSON.stringify(req)
+        );
+      } else {
+        // 2. 수신하면 송신자를 지워달라는 request
+        req.content = 2;
+        this.stompClient.send(
+          "/pub/" + this.projectId + "/focus",
+          {},
+          JSON.stringify(req)
+        );
+      }
     },
     callGetDocs() {
       getDocs(
@@ -478,6 +559,14 @@ export default {
             this.rowData.push(ith_row);
             this.rowActive.push(false);
           });
+
+          // this.users를 순회하며 공동 작업중인 user들의 focus를 채워줌
+          for (let userName in this.users) {
+            let info = this.users[userName];
+            if (info.isFocusing) {
+              this.rowData[info.row_idx][info.col_idx].focuses.push(userName);
+            }
+          }
         },
         (error) => {
           console.warn(error);
@@ -567,9 +656,6 @@ export default {
         this.drawer = false;
         this.drawerRowId = null;
       }
-      if (this.focus.isFocusing && this.focus.rowId == rowId) {
-        this.focus.isFocusing = false;
-      }
       deleteRow(
         {
           pathVariable: {
@@ -586,9 +672,6 @@ export default {
       );
     },
     callDeleteCol(colId) {
-      if (this.focus.isFocusing && this.focus.colId == colId) {
-        this.focus.isFocusing = false;
-      }
       deleteCol(
         {
           pathVariable: {
@@ -653,7 +736,6 @@ export default {
 
     addColWarning() {
       this.addColWarningDialog = true;
-      console.log(this.addColName);
     },
   },
 };
