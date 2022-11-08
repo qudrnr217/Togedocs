@@ -19,80 +19,80 @@
         <q-card-section class="q-pa-xs row">
           <q-card class="q-pa-sm q-ma-xs cell cell-no" />
           <q-card class="q-pa-sm q-ma-xs cell cell-no" />
-        </q-card-section>
-        <!-- cols -->
-        <draggable
-          class="row"
-          v-model="document.cols"
-          @start="dragCol = true"
-          @end="dragCol = false"
-          item-key="id_col"
-          @change="onColChange"
-          handle=".handle-col"
-        >
-          <template #item="{ element }">
-            <div
-              class="row q-pa-xs"
-              v-if="
-                element.category === 'REQUIRED' || element.category === 'ADDED'
-              "
-            >
-              <div>
-                <q-card
-                  v-if="element.category === 'REQUIRED'"
-                  v-on:click.right.prevent
-                  class="q-pa-sm cell row handle-col"
-                  :style="{ width: element.width + 'px' }"
-                >
-                  {{ element.name }}
-                </q-card>
-                <q-card
-                  v-else
-                  class="q-pa-sm cell row handle-col"
-                  :style="{ width: element.width + 'px' }"
-                >
-                  {{ element.name }}
-                  <q-popup-proxy
-                    context-menu
-                    @before-show="putColName(element)"
-                    @before-hide="callUpdateColName(element)"
+          <!-- cols -->
+          <draggable
+            class="row"
+            v-model="document.cols"
+            @start="dragCol = true"
+            @end="dragCol = false"
+            item-key="id_col"
+            @change="onColChange"
+            handle=".handle-col"
+          >
+            <template #item="{ element }">
+              <div
+                class="row q-pa-xs"
+                v-if="
+                  element.category === 'REQUIRED' ||
+                  element.category === 'ADDED'
+                "
+              >
+                <div>
+                  <q-card
+                    v-if="element.category === 'REQUIRED'"
+                    v-on:click.right.prevent
+                    class="q-pa-sm cell row handle-col"
+                    :style="{ width: element.width + 'px' }"
                   >
-                    <q-banner>
-                      <q-input
-                        filled
-                        v-model="updateColName"
-                        dense
-                        :rules="[(val) => !!val]"
-                        @keydown.enter.prevent="callUpdateColName(element)"
-                      />
-                      <q-btn
-                        color="primary"
-                        label="Del Col"
-                        @click="callDeleteCol(element.uuid)"
-                      />
-                    </q-banner>
-                  </q-popup-proxy>
-                </q-card>
-              </div>
-              <div style="position: relative">
-                <div
-                  class="col-width-handle"
-                  v-touch-pan.preserveCursor.prevent.mouse.horizontal="
-                    resizeCol
-                  "
-                  @mouseover="element.active = true"
-                  @mouseleave="element.active = false"
-                  @mousedown="setHandlingItem(element.uuid)"
-                >
-                  <div class="handling">
-                    <q-icon v-show="element.active" name="drag_indicator" />
+                    {{ element.name }}
+                  </q-card>
+                  <q-card
+                    v-else
+                    class="q-pa-sm cell row handle-col"
+                    :style="{ width: element.width + 'px' }"
+                  >
+                    {{ element.name }}
+                    <q-popup-proxy
+                      context-menu
+                      @before-show="putColName(element)"
+                      @before-hide="callUpdateColName(element)"
+                    >
+                      <q-banner>
+                        <q-input
+                          filled
+                          v-model="updateColName"
+                          dense
+                          :rules="[(val) => !!val]"
+                          @keydown.enter.prevent="callUpdateColName(element)"
+                        />
+                        <q-btn
+                          color="primary"
+                          label="Del Col"
+                          @click="callDeleteCol(element.uuid)"
+                        />
+                      </q-banner>
+                    </q-popup-proxy>
+                  </q-card>
+                </div>
+                <div style="position: relative">
+                  <div
+                    class="col-width-handle"
+                    v-touch-pan.preserveCursor.prevent.mouse.horizontal="
+                      resizeCol
+                    "
+                    @mouseover="element.active = true"
+                    @mouseleave="element.active = false"
+                    @mousedown="setHandlingItem(element.uuid)"
+                  >
+                    <div class="handling">
+                      <q-icon v-show="element.active" name="drag_indicator" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </template>
-        </draggable>
-
+            </template>
+          </draggable>
+        </q-card-section>
         <!-- "+" btn -->
         <q-card class="q-pa-sm q-my-xs">
           <q-icon class="addBtn shadow-1 cursor-pointer" name="add" />
@@ -134,8 +134,8 @@
         handle=".handle-row"
       >
         <template #item="{ element, index }">
-          <q-card class="">
-            <q-card-section class="q-pa-xs row">
+          <q-card>
+            <div class="q-pa-xs row">
               <q-card class="q-pa-sm q-ma-xs cell">
                 <q-icon
                   class="addBtn shadow-1 cursor-pointer"
@@ -181,8 +181,16 @@
                           document.data[cell.rowId][cell.colId]
                         )
                     "
+                    class="TEST"
                   />
-                  {{ cell.focuses }}
+                  <div class="hide">
+                    <template v-if="cell.focuses.length == 1">
+                      {{ cell.focuses[0] }}
+                    </template>
+                    <template v-else-if="cell.focuses.length > 1">
+                      {{ cell.focuses[0] }}, {{ cell.focuses[1] }}...
+                    </template>
+                  </div>
                 </q-card>
               </template>
 
@@ -195,7 +203,7 @@
                   />
                 </q-banner>
               </q-popup-proxy>
-            </q-card-section>
+            </div>
           </q-card>
         </template>
       </draggable>
@@ -328,7 +336,7 @@ export default {
   mounted() {
     this.callGetDocs();
 
-    this.userName = Math.round(Math.random() * 1000); // 나중에 유저를 token에서 가져오자.
+    this.userName = "user_" + Math.round(Math.random() * 100); // 나중에 유저를 token에서 가져오자.
 
     // WEBSOCKET CONNECTION
     this.socket = new SockJS(BASEURL + "/ws");
@@ -794,7 +802,7 @@ export default {
 }
 
 .active {
-  outline: 2px solid blue;
+  outline: 2px solid skyblue;
 }
 
 .col-width-handle {
@@ -821,5 +829,19 @@ export default {
   width: 4px;
   background-color: red;
   cursor: ew-resize;
+}
+
+.hide {
+  display: none;
+  position: absolute;
+  top: -10px;
+  right: 0px;
+  background: skyblue;
+  padding: 0px 2px;
+  border-radius: 5px !important;
+}
+
+.TEST:hover + .hide {
+  display: block;
 }
 </style>
