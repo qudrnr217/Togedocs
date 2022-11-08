@@ -30,31 +30,48 @@
           handle=".handle-col"
         >
           <template #item="{ element }">
-            <div class="row q-pa-xs">
-              <div
-                class="q-pa-sm cell row handle-col"
-                :style="{ width: element.width + 'px' }"
-              >
-                {{ element.name }}
-                <q-popup-proxy
-                  context-menu
-                  @before-hide="callUpdateCol(element)"
+            <div
+              class="row q-pa-xs"
+              v-if="
+                element.category === 'REQUIRED' || element.category === 'ADDED'
+              "
+            >
+              <div>
+                <div
+                  v-if="element.category === 'REQUIRED'"
+                  v-on:click.right.prevent
+                  class="q-pa-sm cell row handle-col"
+                  :style="{ width: element.width + 'px' }"
                 >
-                  <q-banner>
-                    <q-input
-                      filled
-                      v-model="element.name"
-                      dense
-                      @keydown.enter.prevent="callUpdateCol(element)"
-                      @blur="callUpdateCol(element)"
-                    />
-                    <q-btn
-                      color="primary"
-                      label="Del Col"
-                      @click="callDeleteCol(element.uuid)"
-                    />
-                  </q-banner>
-                </q-popup-proxy>
+                  {{ element.name }}
+                </div>
+                <div
+                  v-else
+                  class="q-pa-sm cell row handle-col"
+                  :style="{ width: element.width + 'px' }"
+                >
+                  {{ element.name }}
+                  <q-popup-proxy
+                    context-menu
+                    @before-show="putColName(element)"
+                    @before-hide="callUpdateColName(element)"
+                  >
+                    <q-banner>
+                      <q-input
+                        filled
+                        v-model="updateColName"
+                        dense
+                        :rules="[(val) => !!val]"
+                        @keydown.enter.prevent="callUpdateColName(element)"
+                      />
+                      <q-btn
+                        color="primary"
+                        label="Del Col"
+                        @click="callDeleteCol(element.uuid)"
+                      />
+                    </q-banner>
+                  </q-popup-proxy>
+                </div>
               </div>
               <div style="position: relative">
                 <div
@@ -78,12 +95,13 @@
         <!-- "+" btn -->
         <q-card class="q-pa-sm q-my-xs">
           <q-icon class="addBtn shadow-1 cursor-pointer" name="add" />
-          <q-popup-proxy v-model="addColPopup">
+          <q-popup-proxy v-model="addColPopup" @before-hide="resetAddColName">
             <q-banner>
               <q-input
                 filled
                 dense
                 v-model="addColName"
+                :rules="[(val) => !!val]"
                 @keyup.enter="callAddCol(addColName, 'text')"
               />
               <q-btn
@@ -94,7 +112,7 @@
             </q-banner>
           </q-popup-proxy>
         </q-card>
-        <q-dialog v-model="addColWarningDialog" position="top">
+        <q-dialog v-model="colWarningDialog" position="top">
           <q-card style="width: 350px">
             <q-card-section class="row items-center no-wrap">
               <div>속성 이름을 입력해주세요!</div>
@@ -251,7 +269,7 @@ export default {
     draggable,
   },
   setup() {
-    const addColWarningDialog = ref(false);
+    const colWarningDialog = ref(false);
     const addColPopup = ref(false);
     let initialDrawerWidth;
     const drawerWidth = ref(300);
@@ -294,7 +312,7 @@ export default {
         }
         drawerWidth.value = initialDrawerWidth - ev.offset.x;
       },
-      addColWarningDialog,
+      colWarningDialog,
       addColPopup,
 
       updateColName: ref(""),
@@ -594,7 +612,7 @@ export default {
     },
     callAddCol(name, type) {
       if (name.length == 0) {
-        this.addColWarning();
+        this.colWarning();
         return;
       }
       this.addColPopup = false;
@@ -692,6 +710,7 @@ export default {
       );
     },
     callUpdateCol(element) {
+      console.log(element);
       updateCol(
         {
           pathVariable: {
@@ -740,6 +759,20 @@ export default {
 
     colWarning() {
       this.colWarningDialog = true;
+    },
+    resetAddColName() {
+      this.addColName = "";
+    },
+    putColName(element) {
+      this.updateColName = element.name;
+    },
+    callUpdateColName(element) {
+      if (this.updateColName.length == 0) {
+        this.colWarning();
+        return;
+      }
+      element.name = this.updateColName;
+      this.callUpdateCol(element);
     },
   },
 };
