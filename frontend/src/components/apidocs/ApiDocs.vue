@@ -14,11 +14,12 @@
       projectId: {{ document.projectId }}
 
       <!-- Columns -->
-      <q-card class="q-pa-xs row">
+      <q-card class="row">
         <!-- blank -->
-
-        <q-card class="q-pa-sm q-ma-xs cell cell-no" />
-        <q-card class="q-pa-sm q-ma-xs cell cell-no" />
+        <q-card-section class="q-pa-xs row">
+          <q-card class="q-pa-sm q-ma-xs cell cell-no" />
+          <q-card class="q-pa-sm q-ma-xs cell cell-no" />
+        </q-card-section>
         <!-- cols -->
         <draggable
           class="row"
@@ -37,15 +38,15 @@
               "
             >
               <div>
-                <div
+                <q-card
                   v-if="element.category === 'REQUIRED'"
                   v-on:click.right.prevent
                   class="q-pa-sm cell row handle-col"
                   :style="{ width: element.width + 'px' }"
                 >
                   {{ element.name }}
-                </div>
-                <div
+                </q-card>
+                <q-card
                   v-else
                   class="q-pa-sm cell row handle-col"
                   :style="{ width: element.width + 'px' }"
@@ -71,7 +72,7 @@
                       />
                     </q-banner>
                   </q-popup-proxy>
-                </div>
+                </q-card>
               </div>
               <div style="position: relative">
                 <div
@@ -133,65 +134,68 @@
         handle=".handle-row"
       >
         <template #item="{ element, index }">
-          <q-card class="q-pa-xs row">
-            <q-card class="q-pa-sm q-ma-xs cell">
-              <q-icon
-                class="addBtn shadow-1 cursor-pointer"
-                name="add"
-                @click="openSideDrawer(document.rows[index])"
-              />
-            </q-card>
-            <q-card
-              @mouseover="rowActive[index] = true"
-              @mouseleave="rowActive[index] = false"
-              class="q-pa-sm q-ma-xs cell text-right cell-no handle-row"
-            >
-              <template v-if="!rowActive[index]">
-                {{ index + 1 }}
-              </template>
-              <template v-else>
-                <q-icon name="drag_indicator" />
-              </template>
-              <!-- <q-icon name="drag_indicator" class="handle-row" size="20px" /> -->
-            </q-card>
-            <template v-for="(cell, col_idx) in element" :key="col_idx">
-              <div
-                class="q-px-sm q-ma-xs cell"
-                :style="{ width: cell.width + 'px' }"
+          <q-card class="">
+            <q-card-section class="q-pa-xs row">
+              <q-card class="q-pa-sm q-ma-xs cell">
+                <q-icon
+                  class="addBtn shadow-1 cursor-pointer"
+                  name="add"
+                  @click="openSideDrawer(document.rows[index])"
+                />
+              </q-card>
+              <q-card
+                @mouseover="rowActive[index] = true"
+                @mouseleave="rowActive[index] = false"
+                class="q-pa-sm q-ma-xs cell text-right cell-no handle-row"
               >
-                <q-input
-                  dense
-                  borderless=""
-                  :style="{
-                    width: cell.width - 15 + 'px',
-                  }"
-                  type="text"
-                  v-model="document.data[cell.rowId][cell.colId]"
-                  :class="index + '_' + col_idx"
-                  @keypress.enter="pressEnter($event, index, col_idx, cell)"
-                  @focus="setFocus(index, col_idx)"
-                  @blur="
-                    clearFocus(),
-                      callUpdateCell(
-                        cell.rowId,
-                        cell.colId,
-                        document.data[cell.rowId][cell.colId]
-                      )
-                  "
-                />
-                {{ cell.focuses }}
-              </div>
-            </template>
+                <template v-if="!rowActive[index]">
+                  {{ index + 1 }}
+                </template>
+                <template v-else>
+                  <q-icon name="drag_indicator" />
+                </template>
+                <!-- <q-icon name="drag_indicator" class="handle-row" size="20px" /> -->
+              </q-card>
+              <template v-for="(cell, col_idx) in element" :key="col_idx">
+                <q-card
+                  class="q-px-sm q-ma-xs cell"
+                  :style="{ width: cell.width + 'px' }"
+                  :class="{ active: cell.focuses.length != 0 }"
+                >
+                  <q-input
+                    dense
+                    borderless=""
+                    :style="{
+                      width: cell.width - 15 + 'px',
+                    }"
+                    type="text"
+                    v-model="document.data[cell.rowId][cell.colId]"
+                    :class="index + '_' + col_idx"
+                    @keypress.enter="pressEnter($event, index, col_idx, cell)"
+                    @focus="setFocus(index, col_idx)"
+                    @blur="
+                      clearFocus(),
+                        callUpdateCell(
+                          cell.rowId,
+                          cell.colId,
+                          document.data[cell.rowId][cell.colId]
+                        )
+                    "
+                  />
+                  {{ cell.focuses }}
+                </q-card>
+              </template>
 
-            <q-popup-proxy context-menu>
-              <q-banner>
-                <q-btn
-                  color="primary"
-                  label="Del Row"
-                  @click="callDeleteRow(document.rows[index])"
-                />
-              </q-banner>
-            </q-popup-proxy>
+              <q-popup-proxy context-menu>
+                <q-banner>
+                  <q-btn
+                    color="primary"
+                    label="Del Row"
+                    @click="callDeleteRow(document.rows[index])"
+                  />
+                </q-banner>
+              </q-popup-proxy>
+            </q-card-section>
           </q-card>
         </template>
       </draggable>
@@ -787,6 +791,10 @@ export default {
 }
 .addBtn {
   border-radius: 7px;
+}
+
+.active {
+  outline: 2px solid blue;
 }
 
 .col-width-handle {
