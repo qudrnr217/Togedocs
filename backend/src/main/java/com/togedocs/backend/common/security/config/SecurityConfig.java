@@ -1,10 +1,8 @@
 package com.togedocs.backend.common.security.config;
 
-import com.togedocs.backend.common.security.config.jwt.JwtAuthenticationFilter;
-import com.togedocs.backend.common.security.config.jwt.JwtProperties;
+import com.togedocs.backend.common.security.config.jwt.OAuth2SuccessHandler;
 import com.togedocs.backend.common.security.config.oauth.PrincipalOauth2UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,7 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final PrincipalOauth2UserService principalOauth2UserService;
-
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public BCryptPasswordEncoder encodePwd(){
@@ -38,7 +36,7 @@ public class SecurityConfig {
                 .and()
                 .formLogin().disable()
                 .httpBasic().disable()
-                .addFilter(new JwtAuthenticationFilter(authenticationManager)) //AuthenticationManager
+//                .addFilter(new JwtAuthenticationFilter(authenticationManager)) //AuthenticationManager
                 .authorizeRequests()
                 .antMatchers("/user/**").authenticated()
 //                .antMatchers("/manager/**").access("hasRole('DVELOPER')")
@@ -46,9 +44,11 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
                 .and()
                 .oauth2Login()
-                .loginPage("http://localhost:8080/")
+//                .loginPage("http://localhost:8080/")
                 .defaultSuccessUrl("myapp://")
-                .userInfoEndpoint().userService(principalOauth2UserService);
+                .userInfoEndpoint().userService(principalOauth2UserService)
+                .and()
+                .successHandler(oAuth2SuccessHandler);
 
 
 
