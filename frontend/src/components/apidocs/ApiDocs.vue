@@ -410,6 +410,7 @@ export default {
       userName: ref(""),
       users: ref({}),
 
+      editing_content: ref(""),
       // icon
       biLayoutSidebarInsetReverse,
       biTrash3,
@@ -436,30 +437,36 @@ export default {
     this.stompClient.connect({}, () => {
       this.stompClient.subscribe(
         "/sub/" + this.projectId + "/refresh",
-        (msg) => {
+        async (msg) => {
           msg;
 
           // TODO: refresh 해도 내가 작업중인 content는 유지될 수 있도록 하는 코드 (test 필요!!)
-          let editing_content = "";
-          let rowId = "",
-            colId = "";
+          // refresh해도 작업중인 content를 유지하기
+          let isEditing = false;
+          // 1. focus.isFocusing = true일 경우
           if (this.focus.isFocusing) {
-            let rowIdIdx = this.getRowIdxFromRowId(this.focus.rowId);
-            let colIdIdx = this.getColIdxFromColId(this.focus.colId);
-            if (rowIdIdx > -1 && colIdIdx > -1) {
-              let cell_info = this.rowData[rowIdIdx][colIdIdx];
-              rowId = cell_info.rowId;
-              colId = cell_info.colId;
-              editing_content = this.document.data[rowId][colId];
+            // 1-1. 그리고 focus가 가리키는 셀이 삭제되지 않았을 경우에만
+            // editing_content에 내용이 저장되고, isEditing = true 가 되면서 2로 갈 수 있음.
+            if (
+              this.getRowIdxFromRowId(this.focus.rowId) > -1 &&
+              this.getColIdxFromColId(this.focus.colId) > -1
+            ) {
+              this.editing_content =
+                this.document.data[this.focus.rowId][this.focus.colId];
+              isEditing = true;
             }
           }
-          this.callGetDocs();
-          if (
-            this.focus.isFocusing &&
-            this.document.rows.includes(rowId) &&
-            this.document.cols.includes(colId)
-          ) {
-            this.document.data[rowId][colId] = editing_content;
+          await this.callGetDocs();
+          let rowIdIdx = this.getRowIdxFromRowId(this.focus.rowId);
+          let colIdIdx = this.getColIdxFromColId(this.focus.colId);
+          if (isEditing && rowIdIdx > -1 && colIdIdx > -1) {
+            // 2. isEditing이 true이고, refresh를 했는데도 id로 참조하는 값이 남아있다면 editing_content 덮어쓰기 수행
+            // 저장해뒀던 editing_content를 원래의 id로 찾은 알맞은 위치에 넣어줌
+            this.document.data[this.focus.rowId][this.focus.colId] =
+              this.editing_content;
+            document
+              .getElementsByClassName(rowIdIdx + "_" + colIdIdx)[0]
+              .focus();
           }
         }
       );
@@ -716,8 +723,8 @@ export default {
         );
       }
     },
-    callGetDocs() {
-      getDocs(
+    async callGetDocs() {
+      await getDocs(
         {
           pathVariable: {
             projectId: this.projectId,
