@@ -1,6 +1,8 @@
 package com.togedocs.backend.common.security.config;
 
+import com.togedocs.backend.common.security.config.jwt.JwtAuthFilter;
 import com.togedocs.backend.common.security.config.jwt.OAuth2SuccessHandler;
+import com.togedocs.backend.common.security.config.jwt.TokenService;
 import com.togedocs.backend.common.security.config.oauth.PrincipalOauth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 //import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @Configuration
@@ -21,6 +24,7 @@ public class SecurityConfig {
 
     private final PrincipalOauth2UserService principalOauth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final TokenService tokenService;
 
     @Bean
     public BCryptPasswordEncoder encodePwd(){
@@ -36,13 +40,13 @@ public class SecurityConfig {
                 .and()
                 .formLogin().disable()
                 .httpBasic().disable()
-//                .addFilter(new JwtAuthenticationFilter(authenticationManager)) //AuthenticationManager
                 .authorizeRequests()
-                .antMatchers("/user/**").authenticated()
+                .antMatchers("/api/user/**").authenticated()
 //                .antMatchers("/manager/**").access("hasRole('DVELOPER')")
 //                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
                 .anyRequest().permitAll()
                 .and()
+                .addFilterBefore(new JwtAuthFilter(tokenService),UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login()
 //                .loginPage("http://localhost:8080/")
                 .defaultSuccessUrl("myapp://")

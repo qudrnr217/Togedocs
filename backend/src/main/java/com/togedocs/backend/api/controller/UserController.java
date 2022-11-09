@@ -9,13 +9,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user")
 public class UserController {
     @GetMapping("/getToken")
-    public String getToken(@RequestParam("token")String token){
-        System.out.println("hi");
-        System.out.println(token);
+    public String getToken(){
+
         String accessToken = "";
         String refreshToken = "";
 //        token.split("token=")
-        return "Test";
+        return "<h1>Test</h1>";
     }
 
 }

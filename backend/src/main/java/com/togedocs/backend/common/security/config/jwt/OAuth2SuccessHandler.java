@@ -40,12 +40,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //        System.out.println(token.getRefreshToken());
         log.info("{}", token);
 //        targetUrl = UriComponentsBuilder.fromUriString("/api/user/getToken")
-        targetUrl = UriComponentsBuilder.fromUriString("myapp://2")
+        targetUrl = UriComponentsBuilder.fromUriString("myapp://")
                 .queryParam("token", token)
                 .build().toUriString();
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
 
         System.out.println("response: "+response);
+        response.addHeader("Authorization","Bearer "+token.getToken());
         //왜 redirect를 controller로 해야하는지 모르겠음.
         //queryParam으로 하면 보안적으로 문제점이 있지않나요 ??
 

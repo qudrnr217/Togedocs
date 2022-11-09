@@ -31,16 +31,21 @@ public class TokenService{
     public Token generateToken(String email) {
         long tokenPeriod = 1000L * 60L * 10L;
         long refreshPeriod = 1000L * 60L * 60L * 24L * 30L * 3L;
-
+        System.out.println("email: "+email);
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("email",email);
 
         Date now = new Date();
-        return new Token(
+        Token token = new Token(
                 Jwts.builder()
                         .setClaims(claims)
                         .setIssuedAt(now)
                         .setExpiration(new Date(now.getTime() + tokenPeriod))
+//                        .setSubject(email)
+//                        .setHeaderParam("typ", "JWT")
+//                        .setExpiration(new Date(now.getTime()+tokenPeriod))
+//                        .setIssuedAt(new Date(System.currentTimeMillis()))
+//                        .claim("email",email)
                         .signWith(SignatureAlgorithm.HS256, secretKey)
                         .compact(),
                 Jwts.builder()
@@ -49,6 +54,7 @@ public class TokenService{
                         .setExpiration(new Date(now.getTime() + refreshPeriod))
                         .signWith(SignatureAlgorithm.HS256, secretKey)
                         .compact());
+        return token;
     }
 
     public boolean verifyToken(String token) {
@@ -63,9 +69,8 @@ public class TokenService{
             return false;
         }
     }
-
-
     public String getUid(String token) {
+//        System.out.println(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token));
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 }

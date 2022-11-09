@@ -12,7 +12,7 @@ spring:
       naming:
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
         physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-      ddl-auto: create
+      ddl-auto: update
       dialect: org.hibernate.dialect.MySQL57Dialect
       format_sql: true
       default_batch_fetch_size: 100
