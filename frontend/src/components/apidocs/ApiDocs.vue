@@ -14,84 +14,85 @@
       projectId: {{ document.projectId }}
 
       <!-- Columns -->
-      <q-card class="q-pa-xs row">
+      <q-card class="row">
         <!-- blank -->
-
-        <q-card class="q-pa-sm q-ma-xs cell cell-no" />
-        <q-card class="q-pa-sm q-ma-xs cell cell-no" />
-        <!-- cols -->
-        <draggable
-          class="row"
-          v-model="document.cols"
-          @start="dragCol = true"
-          @end="dragCol = false"
-          item-key="id_col"
-          @change="onColChange"
-          handle=".handle-col"
-        >
-          <template #item="{ element }">
-            <div
-              class="row q-pa-xs"
-              v-if="
-                element.category === 'REQUIRED' || element.category === 'ADDED'
-              "
-            >
-              <div>
-                <div
-                  v-if="element.category === 'REQUIRED'"
-                  v-on:click.right.prevent
-                  class="q-pa-sm cell row handle-col"
-                  :style="{ width: element.width + 'px' }"
-                >
-                  {{ element.name }}
-                </div>
-                <div
-                  v-else
-                  class="q-pa-sm cell row handle-col"
-                  :style="{ width: element.width + 'px' }"
-                >
-                  {{ element.name }}
-                  <q-popup-proxy
-                    context-menu
-                    @before-show="putColName(element)"
-                    @before-hide="callUpdateColName(element)"
+        <q-card-section class="q-pa-xs row">
+          <q-card class="q-pa-sm q-ma-xs cell cell-no" />
+          <q-card class="q-pa-sm q-ma-xs cell cell-no" />
+          <!-- cols -->
+          <draggable
+            class="row"
+            v-model="document.cols"
+            @start="dragCol = true"
+            @end="dragCol = false"
+            item-key="id_col"
+            @change="onColChange"
+            handle=".handle-col"
+          >
+            <template #item="{ element }">
+              <div
+                class="row q-pa-xs"
+                v-if="
+                  element.category === 'REQUIRED' ||
+                  element.category === 'ADDED'
+                "
+              >
+                <div>
+                  <q-card
+                    v-if="element.category === 'REQUIRED'"
+                    v-on:click.right.prevent
+                    class="q-pa-sm cell row handle-col"
+                    :style="{ width: element.width + 'px' }"
                   >
-                    <q-banner>
-                      <q-input
-                        filled
-                        v-model="updateColName"
-                        dense
-                        :rules="[(val) => !!val]"
-                        @keydown.enter.prevent="callUpdateColName(element)"
-                      />
-                      <q-btn
-                        color="primary"
-                        label="Del Col"
-                        @click="callDeleteCol(element.uuid)"
-                      />
-                    </q-banner>
-                  </q-popup-proxy>
+                    {{ element.name }}
+                  </q-card>
+                  <q-card
+                    v-else
+                    class="q-pa-sm cell row handle-col"
+                    :style="{ width: element.width + 'px' }"
+                  >
+                    {{ element.name }}
+                    <q-popup-proxy
+                      context-menu
+                      @before-show="putColName(element)"
+                      @before-hide="callUpdateColName(element)"
+                    >
+                      <q-banner>
+                        <q-input
+                          filled
+                          v-model="updateColName"
+                          dense
+                          :rules="[(val) => !!val]"
+                          @keydown.enter.prevent="callUpdateColName(element)"
+                        />
+                        <q-btn
+                          color="primary"
+                          label="Del Col"
+                          @click="callDeleteCol(element.uuid)"
+                        />
+                      </q-banner>
+                    </q-popup-proxy>
+                  </q-card>
                 </div>
-              </div>
-              <div style="position: relative">
-                <div
-                  class="col-width-handle"
-                  v-touch-pan.preserveCursor.prevent.mouse.horizontal="
-                    resizeCol
-                  "
-                  @mouseover="element.active = true"
-                  @mouseleave="element.active = false"
-                  @mousedown="setHandlingItem(element.uuid)"
-                >
-                  <div class="handling">
-                    <q-icon v-show="element.active" name="drag_indicator" />
+                <div style="position: relative">
+                  <div
+                    class="col-width-handle"
+                    v-touch-pan.preserveCursor.prevent.mouse.horizontal="
+                      resizeCol
+                    "
+                    @mouseover="element.active = true"
+                    @mouseleave="element.active = false"
+                    @mousedown="setHandlingItem(element.uuid)"
+                  >
+                    <div class="handling">
+                      <q-icon v-show="element.active" name="drag_indicator" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </template>
-        </draggable>
-
+            </template>
+          </draggable>
+        </q-card-section>
         <!-- "+" btn -->
         <q-card class="q-pa-sm q-my-xs">
           <q-icon class="addBtn shadow-1 cursor-pointer" name="add" />
@@ -133,65 +134,76 @@
         handle=".handle-row"
       >
         <template #item="{ element, index }">
-          <q-card class="q-pa-xs row">
-            <q-card class="q-pa-sm q-ma-xs cell">
-              <q-icon
-                class="addBtn shadow-1 cursor-pointer"
-                name="add"
-                @click="openSideDrawer(document.rows[index])"
-              />
-            </q-card>
-            <q-card
-              @mouseover="rowActive[index] = true"
-              @mouseleave="rowActive[index] = false"
-              class="q-pa-sm q-ma-xs cell text-right cell-no handle-row"
-            >
-              <template v-if="!rowActive[index]">
-                {{ index + 1 }}
-              </template>
-              <template v-else>
-                <q-icon name="drag_indicator" />
-              </template>
-              <!-- <q-icon name="drag_indicator" class="handle-row" size="20px" /> -->
-            </q-card>
-            <template v-for="(cell, col_idx) in element" :key="col_idx">
-              <div
-                class="q-px-sm q-ma-xs cell"
-                :style="{ width: cell.width + 'px' }"
+          <q-card>
+            <div class="q-pa-xs row">
+              <q-card class="q-pa-sm q-ma-xs cell">
+                <q-icon
+                  class="addBtn shadow-1 cursor-pointer"
+                  name="add"
+                  @click="openSideDrawer(document.rows[index])"
+                />
+              </q-card>
+              <q-card
+                @mouseover="rowActive[index] = true"
+                @mouseleave="rowActive[index] = false"
+                class="q-pa-sm q-ma-xs cell text-right cell-no handle-row"
               >
-                <q-input
-                  dense
-                  borderless=""
-                  :style="{
-                    width: cell.width - 15 + 'px',
-                  }"
-                  type="text"
-                  v-model="document.data[cell.rowId][cell.colId]"
-                  :class="index + '_' + col_idx"
-                  @keypress.enter="pressEnter($event, index, col_idx, cell)"
-                  @focus="setFocus(index, col_idx)"
-                  @blur="
-                    clearFocus(),
-                      callUpdateCell(
-                        cell.rowId,
-                        cell.colId,
-                        document.data[cell.rowId][cell.colId]
-                      )
-                  "
-                />
-                {{ cell.focuses }}
-              </div>
-            </template>
+                <template v-if="!rowActive[index]">
+                  {{ index + 1 }}
+                </template>
+                <template v-else>
+                  <q-icon name="drag_indicator" />
+                </template>
+                <!-- <q-icon name="drag_indicator" class="handle-row" size="20px" /> -->
+              </q-card>
+              <template v-for="(cell, col_idx) in element" :key="col_idx">
+                <q-card
+                  class="q-px-sm q-ma-xs cell"
+                  :style="{ width: cell.width + 'px' }"
+                  :class="{ active: cell.focuses.length != 0 }"
+                >
+                  <q-input
+                    dense
+                    borderless=""
+                    :style="{
+                      width: cell.width - 15 + 'px',
+                    }"
+                    type="text"
+                    v-model="document.data[cell.rowId][cell.colId]"
+                    :class="index + '_' + col_idx"
+                    @keypress.enter="pressEnter($event, index, col_idx, cell)"
+                    @focus="setFocus(cell.rowId, cell.colId)"
+                    @blur="
+                      clearFocus(),
+                        callUpdateCell(
+                          cell.rowId,
+                          cell.colId,
+                          document.data[cell.rowId][cell.colId]
+                        )
+                    "
+                    class="hoverable"
+                  />
+                  <div class="hide">
+                    <template v-if="cell.focuses.length == 1">
+                      {{ cell.focuses[0] }}
+                    </template>
+                    <template v-else-if="cell.focuses.length > 1">
+                      {{ cell.focuses[0] }}, {{ cell.focuses[1] }}...
+                    </template>
+                  </div>
+                </q-card>
+              </template>
 
-            <q-popup-proxy context-menu>
-              <q-banner>
-                <q-btn
-                  color="primary"
-                  label="Del Row"
-                  @click="callDeleteRow(document.rows[index])"
-                />
-              </q-banner>
-            </q-popup-proxy>
+              <q-popup-proxy context-menu>
+                <q-banner>
+                  <q-btn
+                    color="primary"
+                    label="Del Row"
+                    @click="callDeleteRow(document.rows[index])"
+                  />
+                </q-banner>
+              </q-popup-proxy>
+            </div>
           </q-card>
         </template>
       </draggable>
@@ -299,8 +311,8 @@ export default {
       rowActive: ref([]),
       focus: ref({
         isFocusing: false,
-        row_idx: "",
-        col_idx: "",
+        rowId: "",
+        colId: "",
       }),
 
       drawer: ref(false),
@@ -324,7 +336,7 @@ export default {
   mounted() {
     this.callGetDocs();
 
-    this.userName = Math.round(Math.random() * 1000); // 나중에 유저를 token에서 가져오자.
+    this.userName = "user_" + Math.round(Math.random() * 100); // 나중에 유저를 token에서 가져오자.
 
     // WEBSOCKET CONNECTION
     this.socket = new SockJS(BASEURL + "/ws");
@@ -337,82 +349,126 @@ export default {
 
           // TODO: refresh 해도 내가 작업중인 content는 유지될 수 있도록 하는 코드 (test 필요!!)
           let editing_content = "";
-          let row_id = "",
-            col_id = "";
+          let rowId = "",
+            colId = "";
           if (this.focus.isFocusing) {
-            let cell_info =
-              this.rowData[this.focus.row_idx][this.focus.col_idx];
-            row_id = cell_info.rowId;
-            col_id = cell_info.colId;
-            editing_content = this.document.data[row_id][col_id];
+            let rowIdIdx = this.getRowIdxFromRowId(this.focus.rowId);
+            let colIdIdx = this.getColIdxFromColId(this.focus.colId);
+            if (rowIdIdx > -1 && colIdIdx > -1) {
+              let cell_info = this.rowData[rowIdIdx][colIdIdx];
+              rowId = cell_info.rowId;
+              colId = cell_info.colId;
+              editing_content = this.document.data[rowId][colId];
+            }
           }
           this.callGetDocs();
-          if (this.focus.isFocusing)
-            this.document.data[row_id][col_id] = editing_content;
+          if (
+            this.focus.isFocusing &&
+            this.document.rows.includes(rowId) &&
+            this.document.cols.includes(colId)
+          ) {
+            this.document.data[rowId][colId] = editing_content;
+          }
         }
       );
       this.stompClient.subscribe("/sub/" + this.projectId + "/focus", (msg) => {
         let res = JSON.parse(msg.body);
         let res_content = JSON.parse(res.content);
 
+        let rowIdIdx = -2,
+          colIdIdx = -2;
+        if (this.users[res.userName]) {
+          rowIdIdx = this.getRowIdxFromRowId(this.users[res.userName].rowId);
+          colIdIdx = this.getColIdxFromColId(this.users[res.userName].colId);
+        }
+        // -2라면 애초에 res.userName이 없었던 것
+        // -1라면 res.userName은 있지만 request를 받은 시점에 rows/cols에 focus하던 cell이 없어진 것
+
         if (res_content == 0) {
-          // focusReq(0)를 받았으니 내 focus 정보를 focusReq(1)로 돌려준다.
+          // 0. focusReq(0)를 받았으니 내 focus 정보를 focusReq(1)로 돌려준다.
           this.focusReq(1);
         } else if (res_content == 2) {
-          // focusReq(2)를 받았으니 송신자의 정보를 지운다.
-          // rowData에 있던 focus를 지워준다.
-          if (this.users[res.userName] && this.users[res.userName].isFocusing) {
-            let index = this.rowData[this.users[res.userName].row_idx][
-              this.users[res.userName].col_idx
-            ].focuses.indexOf(res.userName);
-            this.rowData[this.users[res.userName].row_idx][
-              this.users[res.userName].col_idx
-            ].focuses.splice(index, 1);
-            // this.users의 정보를 지운다.
+          // 2. focusReq(2)를 받았으니 송신자의 정보를 지운다.
+          // - users에 userName이 있다면 지운다.
+          if (this.users[res.userName]) {
+            // 2-1. userName이 isFocusing이었을 경우 rowData의 focuses에서 userName을 지운다.
+            if (
+              this.users[res.userName].isFocusing &&
+              rowIdIdx > -1 &&
+              colIdIdx > -1
+            ) {
+              let index = this.rowData[rowIdIdx][colIdIdx].focuses.indexOf(
+                res.userName
+              );
+              this.rowData[rowIdIdx][colIdIdx].focuses.splice(index, 1);
+            }
+            // 2-2. users에서 userName을 지운다.
             delete this.users[res.userName];
           }
         } else {
-          // focusReq(1)를 받았으니 내 users 변수에 신규/변경내용을 저장해준다.
+          // 1. focusReq(1)를 받았으니 내 users 변수에 신규/변경내용을 저장해준다.
 
-          // 내가 보냈다면 변경하지 않아도 됨.
+          // 1-0. 내가 보냈다면 변경하지 않아도 됨.
           if (res.userName == this.userName) return;
 
-          // 1. 요청한 사람이...
+          // 1-1. 요청한 사람이...
           // 신규가 아닌, 있던 유저이면서, isFocusing = true 라면 : focus를 지워주고,
-          if (this.users[res.userName] && this.users[res.userName].isFocusing) {
-            let index = this.rowData[this.users[res.userName].row_idx][
-              this.users[res.userName].col_idx
-            ].focuses.indexOf(res.userName);
-            this.rowData[this.users[res.userName].row_idx][
-              this.users[res.userName].col_idx
-            ].focuses.splice(index, 1);
+          if (
+            this.users[res.userName] &&
+            this.users[res.userName].isFocusing &&
+            rowIdIdx > -1 &&
+            colIdIdx > -1
+          ) {
+            let index = this.rowData[rowIdIdx][colIdIdx].focuses.indexOf(
+              res.userName
+            );
+            this.rowData[rowIdIdx][colIdIdx].focuses.splice(index, 1);
           }
 
-          // 해당 user가 없으면 추가, 있으면 교체
+          // (common) 해당 user가 없으면 추가, 있으면 교체
           this.users[res.userName] = {
             isFocusing: res_content.isFocusing,
-            row_idx: res_content.row_idx,
-            col_idx: res_content.col_idx,
+            rowId: res_content.rowId,
+            colId: res_content.colId,
           };
 
-          // 2. 요청한 사람이
+          // 1-2. 요청한 사람이
           // isFocusing = true 라면 : 새 focus를 push 해줌.
           if (res_content.isFocusing) {
-            this.rowData[this.users[res.userName].row_idx][
-              this.users[res.userName].col_idx
-            ].focuses.push(res.userName);
+            rowIdIdx = this.getRowIdxFromRowId(res_content.rowId);
+            colIdIdx = this.getColIdxFromColId(res_content.colId);
+            if (rowIdIdx > -1 && colIdIdx > -1) {
+              this.rowData[rowIdIdx][colIdIdx].focuses.push(res.userName);
+            }
           }
         }
       });
 
       this.focusReq(0);
       window.addEventListener("beforeunload", this.unLoadEvent);
+
+      this.callGetDocs();
     });
   },
   beforeUnmount() {
     window.removeEventListener("beforeunload", this.unLoadEvent);
   },
   methods: {
+    // getColIdxFromColId와 getRowIdxFromRowId는 없을 시 -1을 반환함.
+    // 호출할 때마다 -1에 대한 예외처리를 해줘야 함.
+    getColIdxFromColId(colId) {
+      let colIdIdx = -1;
+      let doc_cols = this.document.cols;
+      for (let i = 0; i < doc_cols.length; i++)
+        if (doc_cols[i].uuid == colId) {
+          colIdIdx = i;
+          break;
+        }
+      return colIdIdx;
+    },
+    getRowIdxFromRowId(rowId) {
+      return this.document.rows.indexOf(rowId);
+    },
     unLoadEvent() {
       this.focusReq(2);
       this.stompClient.disconnect();
@@ -497,11 +553,11 @@ export default {
         JSON.stringify(req)
       );
     },
-    setFocus(row_idx, col_idx) {
+    setFocus(rowId, colId) {
       this.focus = {
         isFocusing: true,
-        row_idx: row_idx,
-        col_idx: col_idx,
+        rowId: rowId,
+        colId: colId,
       };
       this.focusReq(1);
     },
@@ -511,8 +567,8 @@ export default {
       else {
         this.focus = {
           isFocusing: false,
-          row_idx: "",
-          col_idx: "",
+          rowId: "",
+          colId: "",
         };
         this.focusReq(1);
       }
@@ -535,8 +591,8 @@ export default {
         // 1. 내 focus를 전송함.
         req.content = JSON.stringify({
           isFocusing: this.focus.isFocusing,
-          row_idx: this.focus.row_idx,
-          col_idx: this.focus.col_idx,
+          rowId: this.focus.rowId,
+          colId: this.focus.colId,
         });
         this.stompClient.send(
           "/pub/" + this.projectId + "/focus",
@@ -586,7 +642,15 @@ export default {
           for (let userName in this.users) {
             let info = this.users[userName];
             if (info.isFocusing) {
-              this.rowData[info.row_idx][info.col_idx].focuses.push(userName);
+              let rowIdIdx = this.getRowIdxFromRowId(info.rowId);
+              let colIdIdx = this.getColIdxFromColId(info.colId);
+              // -1일 경우 가리키던 row/col가 사라졌다는 뜻
+
+              if (rowIdIdx == -1 || colIdIdx == -1) {
+                this.users[userName].isFocusing = false;
+              } else {
+                this.rowData[rowIdIdx][colIdIdx].focuses.push(userName);
+              }
             }
           }
         },
@@ -710,7 +774,6 @@ export default {
       );
     },
     callUpdateCol(element) {
-      console.log(element);
       updateCol(
         {
           pathVariable: {
@@ -789,6 +852,10 @@ export default {
   border-radius: 7px;
 }
 
+.active {
+  outline: 2px solid skyblue;
+}
+
 .col-width-handle {
   position: absolute;
   right: 0px;
@@ -813,5 +880,19 @@ export default {
   width: 4px;
   background-color: red;
   cursor: ew-resize;
+}
+
+.hide {
+  display: none;
+  position: absolute;
+  top: -10px;
+  right: 0px;
+  background: skyblue;
+  padding: 0px 2px;
+  border-radius: 5px !important;
+}
+
+.hoverable:hover + .hide {
+  display: block;
 }
 </style>
