@@ -52,7 +52,7 @@ public class ApidocsService {
         Update update = new Update();
         String colId = UUID.randomUUID().toString();
         ColDto col = ColDto.build(colId, request.getName(), request.getType(), DEFAULT_WIDTH, DEFAULT_CATEGORY);
-        update.push("cols").atPosition(-3).value(col);
+        update.push("cols", col);
         UpdateResult updateResult = mongoTemplate.updateFirst(query, update, APIDOCS);
 
         if (updateResult.getMatchedCount() == 0) throw new IdNotFoundException("projectId");
