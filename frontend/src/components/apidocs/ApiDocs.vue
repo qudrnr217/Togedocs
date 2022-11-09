@@ -175,13 +175,7 @@
                 <div
                   @mouseover="rowActive[index] = true"
                   @mouseleave="rowActive[index] = false"
-                  class="
-                    q-pa-sm q-ma-xs
-                    text-right
-                    cell-no
-                    handle-row
-                    drag-item
-                  "
+                  class="q-pa-sm q-ma-xs text-right cell-no handle-row drag-item"
                 >
                   <template v-if="!rowActive[index]">
                     {{ index + 1 }}
@@ -379,7 +373,6 @@ export default {
       addColName: ref(""),
 
       handling_item: ref({
-        index: null,
         uuid: null,
         name: null,
         type: null,
@@ -597,23 +590,25 @@ export default {
       );
     },
     setHandlingItem(uuid) {
-      this.handling_item.uuid = uuid;
-      let t_cols = this.document.cols;
-      for (let i = 0; i < t_cols.length; i++)
-        if (t_cols[i].uuid == uuid) {
-          this.handling_item = { ...t_cols[i] };
-          this.handling_item.index = i;
-        }
+      let colIdIdx = this.getColIdxFromColId(uuid);
+      if (colIdIdx > -1)
+        this.handling_item = { ...this.document.cols[colIdIdx] };
     },
     resizeCol(evt) {
-      this.document.cols[this.handling_item.index].width =
+      let colIdIdx = this.getColIdxFromColId(this.handling_item.uuid);
+      if (colIdIdx < 0) {
+        // TODO:
+        // 이동하던 열이 삭제됐다!!! dialog로 경고문구 표시
+        return;
+      }
+      this.document.cols[colIdIdx].width =
         this.handling_item.width + evt.offset.x;
       if (evt.isFinal) {
         let element = {
           uuid: this.handling_item.uuid,
           name: this.handling_item.name,
           type: this.handling_item.type,
-          width: this.document.cols[this.handling_item.index].width,
+          width: this.document.cols[colIdIdx].width,
         };
         this.callUpdateCol(element);
       }
@@ -958,6 +953,7 @@ export default {
 
 <style scoped>
 .cell {
+  position: relative;
   background: whitesmoke;
 }
 .cell-no {
