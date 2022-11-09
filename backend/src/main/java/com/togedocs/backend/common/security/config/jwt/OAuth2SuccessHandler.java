@@ -36,10 +36,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("토큰 발행 시작");
 
         Token token = tokenService.generateToken(email);
+        System.out.println(token);
 //        System.out.println(token.getRefreshToken());
         log.info("{}", token);
 //        targetUrl = UriComponentsBuilder.fromUriString("/api/user/getToken")
-        targetUrl = UriComponentsBuilder.fromUriString("myapp://"+token)
+        targetUrl = UriComponentsBuilder.fromUriString("myapp://2")
                 .queryParam("token", token)
                 .build().toUriString();
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
