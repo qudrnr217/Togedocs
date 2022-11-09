@@ -77,9 +77,9 @@ spring:
     url: jdbc:mysql://k7a404.p.ssafy.io:3306/togedocs?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
   data:
     mongodb:
-      user: root
-      password: k7a4@4r@@t
-      host: root
-      port: 27017
-      database: togedocs
-      uri: mongodb://k7a404.p.ssafy.io:27017/togedocs
+#      user: root
+#      password: k7a4@4r@@t
+#      host: k7a404.p.ssafy.io
+#      port: 27017
+#      database: togedocs
+      uri: mongodb://root:k7a4%404r%40%40t@k7a404.p.ssafy.io:27017/togedocs
