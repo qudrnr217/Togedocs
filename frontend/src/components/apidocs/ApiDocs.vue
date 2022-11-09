@@ -572,17 +572,12 @@ export default {
       this.focusReq(2);
       this.stompClient.disconnect();
     },
-    onStartTest(e) {
-      // console.log(e.srcElement);
-      // e.srcElement.classList.add("dragging-item");
-
-      e;
+    onStartTest() {
       console.log("start");
       const html = document.getElementsByTagName("html").item(0);
       html.classList.toggle("dragging-item", true);
     },
-    onEndTest(e) {
-      e;
+    onEndTest() {
       console.log("end");
       const html = document.getElementsByTagName("html").item(0);
       html.classList.toggle("dragging-item", false);
