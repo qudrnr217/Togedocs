@@ -79,7 +79,7 @@ spring:
     mongodb:
       user: root
       password: k7a4@4r@@t
-      host: root
+      host: k7a404.p.ssafy.io
       port: 27017
       database: togedocs
       uri: mongodb://k7a404.p.ssafy.io:27017/togedocs
