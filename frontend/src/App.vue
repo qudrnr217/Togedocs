@@ -1,15 +1,15 @@
 <template>
-  <q-layout view="hHh lpR fFf">
+  <div>
     <router-view />
-  </q-layout>
+  </div>
 </template>
 
 <script>
 export default {
   name: "App",
   components: {},
-  mounted() {
-    this.$router.push("/home");
+  mounted(){
+    this.$router.push('/home')
   },
 };
 </script>
