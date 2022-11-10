@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <q-header>
     <div class="navbar">
       <div class="navbar-pages">
         <router-link :to="{ name: 'select' }">
@@ -22,7 +22,7 @@
         <div>{사용자닉네임}</div>
       </div>
     </div>
-  </div>
+  </q-header>
 </template>
 
 <script>
