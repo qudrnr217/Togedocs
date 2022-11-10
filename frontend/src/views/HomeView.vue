@@ -11,9 +11,9 @@
         height: 80vh;
         margin: auto;
 
-        background: #ffffff;
-        border: 0.5px solid #37485d;
-        box-shadow: -5px 5px 4px 5px #37485d;
+        background: var(--white);
+        border: 0.5px solid var(--charcoal);
+        box-shadow: -5px 5px 4px 5px var(--charcoal);
         border-radius: 5px;
       ">
       <div class="spacing">
@@ -28,14 +28,7 @@
             gap: 8px;
           ">
           <img src="@/assets/dogs.jpg" alt="" style="width: 25vw" />
-          <div
-            style="
-              font-size: 8vw;
-
-              color: #000000;
-            ">
-            TogeDocs
-          </div>
+          <div style="font-size: 8vw">TogeDocs</div>
         </div>
         <router-link :to="{ name: 'select' }">
           <div
@@ -47,7 +40,7 @@
               padding: 8px 12px;
               gap: 64px;
 
-              background: #f5f5f5;
+              background: var(--cultured);
               border-radius: 10px;
             ">
             <img src="@/assets/gitlab.png" alt="" class="gitlablogo" />
