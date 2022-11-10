@@ -603,12 +603,10 @@ export default {
       this.stompClient.disconnect();
     },
     onChoose() {
-      console.log("start");
       const html = document.getElementsByTagName("html").item(0);
       html.classList.toggle("dragging-item", true);
     },
     onUnchoose() {
-      console.log("end");
       const html = document.getElementsByTagName("html").item(0);
       html.classList.toggle("dragging-item", false);
     },
