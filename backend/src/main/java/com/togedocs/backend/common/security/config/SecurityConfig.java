@@ -49,7 +49,7 @@ public class SecurityConfig {
 //                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
                 .anyRequest().permitAll()
                 .and()
-                .addFilterBefore(new JwtAuthFilter(tokenService, userRepository),UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(new JwtAuthFilter(tokenService, userRepository),UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login()
 //                .loginPage("http://localhost:8080/")
 //                .defaultSuccessUrl("myapp://")
