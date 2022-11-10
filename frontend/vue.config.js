@@ -10,7 +10,8 @@ module.exports = defineConfig({
         win: {
           icon: './Cat.png'
         }
-      }
+      },
+      nodeIntegration: true
     },
     quasar: {
       importStrategy: 'kebab',
