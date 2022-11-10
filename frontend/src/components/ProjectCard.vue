@@ -1,5 +1,5 @@
 <template>
-  <div class="container row justify-around">
+  <div class="container row justify-around black05">
     <div>
       <q-avatar class="col-md-2" size="7vw">
         <img
@@ -25,13 +25,11 @@
     <div class="col-md-2 column">
       <q-btn
         class="col q-ma-md"
-        outline
         rounded
         label="프로젝트 이동"
         @click="goToProjectUrl" />
       <q-btn
         class="col q-ma-md"
-        outline
         rounded
         label="API 문서 이동"
         @click="goToApiDocs" />
@@ -58,26 +56,27 @@ export default {
 .container {
   width: 80vw;
   height: 20vh;
-  background: linear-gradient(25deg, #b8ceef, #c0f5fb, #f8f8ba, #f17575);
+  background: linear-gradient(25deg, #b8ceef, #c0f5fb, #f8f8ba);
   display: flex;
   align-items: center;
   margin: 1rem 0 1rem 0;
   border-radius: 8px;
+  box-shadow: 5px 5px lightgrey;
 }
 img {
   margin-left: 20px;
   margin-right: 20px;
   height: 10vh;
   border-radius: 50%;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 .title {
   font-size: 4vh;
-  color: #000000;
   font-weight: bolder;
 }
 .title-detail {
   font-size: 2vh;
-  color: #000000;
   font-size: 500;
   font-weight: bold;
 }

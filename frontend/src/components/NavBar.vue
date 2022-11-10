@@ -11,16 +11,15 @@
         <router-link :to="{ name: 'test' }"> <div>api test</div></router-link>
       </div>
       <div class="navbar-users">
-        <img src="@/assets/bell.png" alt="" />
-        <img src="@/assets/settings.png" alt="" />
         <div
           style="
             width: 30px;
             height: 30px;
             border-radius: 50%;
 
-            background: #d9d9d9;
+            background: var(--cultured);
           "></div>
+        <div>{사용자닉네임}</div>
       </div>
     </div>
   </div>
@@ -40,8 +39,9 @@ export default {
 
   margin-bottom: 20px;
   align-items: center;
-  background-color: #37485d;
-  color: rgb(255, 255, 255);
+  background: none;
+  box-shadow: 2px 2px lightgrey;
+  font-weight: bold;
   justify-content: space-between;
 }
 .navbar-pages {
@@ -55,6 +55,7 @@ export default {
 .navbar-users {
   display: flex;
   margin-right: 20px;
+  align-items: center;
 
   width: 20vw;
   justify-content: space-evenly;

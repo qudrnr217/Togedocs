@@ -3,8 +3,7 @@
     view="hHh Lpr lff"
     container
     style="height: 500px"
-    class="shadow-2 rounded-borders"
-  >
+    class="shadow-2 rounded-borders">
     <div>
       <input type="text-area" />
       <br />
@@ -24,48 +23,41 @@
           @end="dragCol = false"
           item-key="id_col"
           @change="onColChange"
-          handle=".handle-col"
-        >
+          handle=".handle-col">
           <template #item="{ element }">
             <div
               class="row q-pa-xs"
               v-if="
                 element.category === 'REQUIRED' || element.category === 'ADDED'
-              "
-            >
+              ">
               <div>
                 <div
                   v-if="element.category === 'REQUIRED'"
                   v-on:click.right.prevent
                   class="q-pa-sm cell row handle-col"
-                  :style="{ width: element.width + 'px' }"
-                >
+                  :style="{ width: element.width + 'px' }">
                   {{ element.name }}
                 </div>
                 <div
                   v-else
                   class="q-pa-sm cell row handle-col"
-                  :style="{ width: element.width + 'px' }"
-                >
+                  :style="{ width: element.width + 'px' }">
                   {{ element.name }}
                   <q-popup-proxy
                     context-menu
                     @before-show="putColName(element)"
-                    @before-hide="callUpdateColName(element)"
-                  >
+                    @before-hide="callUpdateColName(element)">
                     <q-banner>
                       <q-input
                         filled
                         v-model="updateColName"
                         dense
-                        :rules="[(val) => !!val]"
-                        @keydown.enter.prevent="callUpdateColName(element)"
-                      />
+                        :rules="[val => !!val]"
+                        @keydown.enter.prevent="callUpdateColName(element)" />
                       <q-btn
                         color="primary"
                         label="Del Col"
-                        @click="callDeleteCol(element.uuid)"
-                      />
+                        @click="callDeleteCol(element.uuid)" />
                     </q-banner>
                   </q-popup-proxy>
                 </div>
@@ -78,8 +70,7 @@
                   "
                   @mouseover="element.active = true"
                   @mouseleave="element.active = false"
-                  @mousedown="setHandlingItem(element.uuid)"
-                >
+                  @mousedown="setHandlingItem(element.uuid)">
                   <div class="handling">
                     <q-icon v-show="element.active" name="drag_indicator" />
                   </div>
@@ -98,14 +89,12 @@
                 filled
                 dense
                 v-model="addColName"
-                :rules="[(val) => !!val]"
-                @keyup.enter="callAddCol(addColName, 'text')"
-              />
+                :rules="[val => !!val]"
+                @keyup.enter="callAddCol(addColName, 'text')" />
               <q-btn
                 color="primary"
                 label="Add Col"
-                @click="callAddCol(addColName, 'text')"
-              />
+                @click="callAddCol(addColName, 'text')" />
             </q-banner>
           </q-popup-proxy>
         </q-card>
@@ -127,22 +116,19 @@
         @end="dragRow = false"
         item-key="id_row"
         @change="onRowChange"
-        handle=".handle-row"
-      >
+        handle=".handle-row">
         <template #item="{ element, index }">
           <q-card class="q-pa-xs row">
             <q-card class="q-pa-sm q-ma-xs cell">
               <q-icon
                 class="addBtn shadow-1 cursor-pointer"
                 name="add"
-                @click="openSideDrawer(document.rows[index])"
-              />
+                @click="openSideDrawer(document.rows[index])" />
             </q-card>
             <q-card
               @mouseover="rowActive[index] = true"
               @mouseleave="rowActive[index] = false"
-              class="q-pa-sm q-ma-xs cell text-right cell-no handle-row"
-            >
+              class="q-pa-sm q-ma-xs cell text-right cell-no handle-row">
               <template v-if="!rowActive[index]">
                 {{ index + 1 }}
               </template>
@@ -154,8 +140,7 @@
             <template v-for="(cell, col_idx) in element" :key="col_idx">
               <div
                 class="q-px-sm q-ma-xs cell"
-                :style="{ width: cell.width + 'px' }"
-              >
+                :style="{ width: cell.width + 'px' }">
                 <q-input
                   dense
                   :style="{
@@ -172,8 +157,7 @@
                       cell.colId,
                       document.data[cell.rowId][cell.colId]
                     )
-                  "
-                />
+                  " />
               </div>
             </template>
 
@@ -182,8 +166,7 @@
                 <q-btn
                   color="primary"
                   label="Del Row"
-                  @click="callDeleteRow(document.rows[index])"
-                />
+                  @click="callDeleteRow(document.rows[index])" />
               </q-banner>
             </q-popup-proxy>
           </q-card>
@@ -195,8 +178,7 @@
           <q-icon
             class="addBtn shadow-1 cursor-pointer"
             name="add"
-            @click="callAddRow()"
-          />
+            @click="callAddRow()" />
         </q-card>
       </q-card>
       <br /><br />
@@ -209,8 +191,7 @@
           :width="drawerWidth"
           :breakpoint="0"
           bordered
-          class="bg-grey-3"
-        >
+          class="bg-grey-3">
           <q-btn flat @click="drawer = !drawer" round dense label="close">
           </q-btn>
           <br />
@@ -223,16 +204,14 @@
                 <q-input
                   dense
                   type="text"
-                  v-model="document.data[drawerRowId][col.uuid]"
-                />
+                  v-model="document.data[drawerRowId][col.uuid]" />
               </td>
             </tr>
           </q-markup-table>
 
           <div
             v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeDrawer"
-            class="q-drawer__resizer"
-          ></div> </q-drawer
+            class="q-drawer__resizer"></div> </q-drawer
       ></template>
     </div>
   </q-layout>
@@ -316,25 +295,22 @@ export default {
     this.socket = new SockJS(BASEURL + "/ws");
     this.stompClient = Stomp.over(this.socket);
     this.stompClient.connect({}, () => {
-      this.stompClient.subscribe(
-        "/sub/" + this.projectId + "/refresh",
-        (msg) => {
-          msg;
-          // 보낸 사람이 자신인지 확인하는 로직을 추가하려면:
-          // if ( msg.body.username == this.userName ) { ... }
+      this.stompClient.subscribe("/sub/" + this.projectId + "/refresh", msg => {
+        msg;
+        // 보낸 사람이 자신인지 확인하는 로직을 추가하려면:
+        // if ( msg.body.username == this.userName ) { ... }
 
-          console.log("다른 사용자가 REFRESH 요청을 보냈습니다.");
-          let editing_content = "";
-          if (this.focus.isFocusing)
-            editing_content =
-              this.document.data[this.focus.rowId][this.focus.colId];
-          this.callGetDocs();
-          if (this.focus.isFocusing)
-            this.document.data[this.focus.rowId][this.focus.colId] =
-              editing_content;
-        }
-      );
-      this.stompClient.subscribe("/sub/" + this.projectId + "/focus", (msg) => {
+        console.log("다른 사용자가 REFRESH 요청을 보냈습니다.");
+        let editing_content = "";
+        if (this.focus.isFocusing)
+          editing_content =
+            this.document.data[this.focus.rowId][this.focus.colId];
+        this.callGetDocs();
+        if (this.focus.isFocusing)
+          this.document.data[this.focus.rowId][this.focus.colId] =
+            editing_content;
+      });
+      this.stompClient.subscribe("/sub/" + this.projectId + "/focus", msg => {
         // 보낸 사람이 자신인지 확인하는 로직을 추가하려면:
         // if ( msg.body.username == this.userName ) { ... }
 
@@ -445,13 +421,13 @@ export default {
             projectId: this.projectId,
           },
         },
-        (response) => {
+        response => {
           let res_doc = response.data;
           this.document = res_doc;
           this.rowData = [];
-          res_doc.rows.forEach((rowId) => {
+          res_doc.rows.forEach(rowId => {
             let ith_row = [];
-            res_doc.cols.forEach((col) => {
+            res_doc.cols.forEach(col => {
               if (col.category !== "PAYLOAD") {
                 let colId = col.uuid;
                 let colWidth = col.width;
@@ -466,7 +442,7 @@ export default {
             this.rowActive.push(false);
           });
         },
-        (error) => {
+        error => {
           console.warn(error);
         }
       );
@@ -478,10 +454,10 @@ export default {
             projectId: this.projectId,
           },
         },
-        (response) => {
+        response => {
           response, this.refreshReq();
         },
-        (error) => {
+        error => {
           console.warn(error);
         }
       );
@@ -503,10 +479,10 @@ export default {
             type: type,
           },
         },
-        (response) => {
+        response => {
           response, this.refreshReq();
         },
-        (error) => {
+        error => {
           console.warn(error);
         }
       );
@@ -522,10 +498,10 @@ export default {
             toIndex: toIndex,
           },
         },
-        (response) => {
+        response => {
           response, this.refreshReq();
         },
-        (error) => {
+        error => {
           console.warn(error);
         }
       );
@@ -541,10 +517,10 @@ export default {
             toIndex: toIndex,
           },
         },
-        (response) => {
+        response => {
           response, this.refreshReq();
         },
-        (error) => {
+        error => {
           console.warn(error);
         }
       );
@@ -564,10 +540,10 @@ export default {
             rowId: rowId,
           },
         },
-        (response) => {
+        response => {
           response, this.refreshReq();
         },
-        (error) => {
+        error => {
           console.warn(error);
         }
       );
@@ -583,10 +559,10 @@ export default {
             colId: colId,
           },
         },
-        (response) => {
+        response => {
           response, this.refreshReq();
         },
-        (error) => {
+        error => {
           console.warn(error);
         }
       );
@@ -605,10 +581,10 @@ export default {
             width: element.width,
           },
         },
-        (response) => {
+        response => {
           response, this.refreshReq();
         },
-        (error) => {
+        error => {
           console.warn(error);
         }
       );
@@ -626,10 +602,10 @@ export default {
             content: content,
           },
         },
-        (response) => {
+        response => {
           response, this.refreshReq();
         },
-        (error) => {
+        error => {
           console.warn(error);
         }
       );
@@ -663,7 +639,7 @@ export default {
 
 <style scoped>
 .cell {
-  background: whitesmoke;
+  background: var(--cultured);
 }
 .cell-no {
   width: 30px;
