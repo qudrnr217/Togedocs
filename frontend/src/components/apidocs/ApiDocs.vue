@@ -156,14 +156,8 @@
                       </q-banner>
                     </q-popup-proxy>
                   </div>
-                  <q-dialog v-model="colWarningDialog" position="top">
-                    <q-card style="width: 350px">
-                      <q-card-section class="row items-center no-wrap">
-                        <div>속성 이름을 입력해주세요!</div>
-
-                        <q-space />
-                      </q-card-section>
-                    </q-card>
+                  <q-dialog v-model="warningDialog" position="top">
+                    <warning-dialog :msg="msg" />
                   </q-dialog>
                 </div>
                 <!-- -->
