@@ -2,14 +2,16 @@
   <div>
     <div class="projectheader">
       <div class="buttons">
-        <button>edit</button>
-        <button>로그아웃</button>
+        <button>회원정보수정</button>
+        <router-link :to="{ name: 'home' }">
+          <button>로그아웃</button>
+        </router-link>
       </div>
       <div class="header">
         <div class="profileimg">
           <img src="@/assets/logo.png" alt="" />
         </div>
-        <div class="username">{사용자이름}</div>
+        <div class="username">{사용자이름} 님 반갑습니다.</div>
       </div>
 
       <div class="shadow"></div>
@@ -21,13 +23,13 @@
           <div class="column">
             <q-btn
               stack
-              icon="add"
               color="secondary"
               class="create-project-btn"
               @click="createNewProjectBtnClicked = true"
               ><q-tooltip class="bg-positive"
                 >새로운 프로젝트를 생성합니다</q-tooltip
-              ></q-btn
+              >
+              <div style="font-size: 30px">+</div></q-btn
             >
           </div>
           <div v-for="(project, idx) in projects" :key="idx">
@@ -231,7 +233,11 @@ export default {
   width: 100vw;
   height: 5px;
 
-  background: linear-gradient(180deg, #e7e7e7 0%, rgba(231, 231, 231, 0) 100%);
+  background: linear-gradient(
+    180deg,
+    var(--cultured) 0%,
+    rgba(58, 53, 53, 0.458) 100%
+  );
 }
 .header {
   display: flex;
@@ -252,5 +258,11 @@ export default {
   align-items: center;
   top: 3vh;
   right: 0;
+}
+button {
+  border: 0;
+  outline: 0;
+  background: none;
+  color: var(--charcoal);
 }
 </style>
