@@ -12,8 +12,8 @@ spring:
       naming:
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
         physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-      ddl-auto: create
-      dialect: org.hibernate.dialect.MySQL8Dialect
+      ddl-auto: update
+      dialect: org.hibernate.dialect.MySQL57Dialect
       format_sql: true
       default_batch_fetch_size: 100
     generate-ddl: true
@@ -64,20 +64,26 @@ jwt:
   refresh-token-props:
     expiration-time-milli-sec: '864000000'
     secret: ZqefBscadfsGjaiADFSGaoGHdsjjsDFksjgDskdjgDjgHJmdSlzLfjbhikjaqWSogvjdsjzUEvlkvvhnDFGVnkfa==
+
 ---
 # local only
-#spring.config.activate.on-profile: local
-
+spring.config.activate.on-profile: local
 # database
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: a404
-    password: k7a4@4r@@t
-    url: jdbc:mysql://k7a404.p.ssafy.io:3306/togedocs?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
+    username: sapiens
+    password: sapiens
+    url: jdbc:mysql://localhost:3306/togedocs?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
   data:
     mongodb:
-      uri: mongodb://root:k7a4%404r%40%40t@k7a404.p.ssafy.io:27017/togedocs
+      user: sapiens
+      password: sapiens
+      host: localhost
+      port: 27017
+      database: togedocs
+      uri: mongodb://localhost:27017/togedocs
+
   #security
   security:
     oauth2:
@@ -89,3 +95,6 @@ spring:
             scope:
               - email
               - profile
+
+
+
