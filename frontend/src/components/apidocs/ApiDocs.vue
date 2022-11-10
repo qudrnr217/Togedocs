@@ -285,45 +285,48 @@
         bordered
         class="bg-grey-3"
       >
-        <q-btn
-          flat
-          @click="drawer = !drawer"
-          round
-          dense
-          :icon="fasAnglesRight"
-          size="sm"
-        >
-        </q-btn>
-        <br />
-        <q-markup-table>
-          <tr v-for="(col, colId) in document.cols" :key="colId">
-            <td>
-              <strong>{{ col.name }}</strong>
-            </td>
-            <td>
-              <q-input
-                dense
-                type="text"
-                @keypress.enter="
-                  callUpdateCell(
-                    drawerRowId,
-                    col.uuid,
-                    document.data[drawerRowId][col.uuid]
-                  )
-                "
-                @blur="
-                  callUpdateCell(
-                    drawerRowId,
-                    col.uuid,
-                    document.data[drawerRowId][col.uuid]
-                  )
-                "
-                v-model="document.data[drawerRowId][col.uuid]"
-              />
-            </td>
-          </tr>
-        </q-markup-table>
-
+        <div class="column full-height">
+          <q-scroll-area class="col q-pa-sm" visible :thumb-style="thumbStyle">
+            <q-btn
+              flat
+              @click="drawer = !drawer"
+              round
+              dense
+              :icon="fasAnglesRight"
+              size="sm"
+            >
+            </q-btn>
+            <br />
+            <q-markup-table>
+              <tr v-for="(col, colId) in document.cols" :key="colId">
+                <td>
+                  <strong>{{ col.name }}</strong>
+                </td>
+                <td>
+                  <q-input
+                    dense
+                    type="text"
+                    @keypress.enter="
+                      callUpdateCell(
+                        drawerRowId,
+                        col.uuid,
+                        document.data[drawerRowId][col.uuid]
+                      )
+                    "
+                    @blur="
+                      callUpdateCell(
+                        drawerRowId,
+                        col.uuid,
+                        document.data[drawerRowId][col.uuid]
+                      )
+                    "
+                    v-model="document.data[drawerRowId][col.uuid]"
+                  />
+                </td>
+              </tr>
+            </q-markup-table>
+          </q-scroll-area>
+        </div>
         <div
           v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeDrawer"
           class="q-drawer__resizer"
