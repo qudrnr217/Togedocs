@@ -1,220 +1,308 @@
 <template>
-  <q-layout
-    view="hHh Lpr lff"
-    container
-    style="height: 500px"
-    class="shadow-2 rounded-borders">
-    <div>
-      <input type="text-area" />
-      <br />
-      projectId: {{ document.projectId }}
+  <div>
+    <q-page-container>
+      <q-page padding>
+        <div style="overflow: auto">
+          <div>My Name : {{ userName }}</div>
+          <div>My Focus : {{ focus }}</div>
+          <div>Cooperators : {{ users }}</div>
+          projectId: {{ document.projectId }}
 
-      <!-- Columns -->
-      <q-card class="q-pa-xs row">
-        <!-- blank -->
+          <!-- Columns -->
+          <div class="q-pa-xs row no-wrap">
+            <!-- blank -->
 
-        <q-card class="q-pa-sm q-ma-xs cell cell-no" />
-        <q-card class="q-pa-sm q-ma-xs cell cell-no" />
-        <!-- cols -->
-        <draggable
-          class="row"
-          v-model="document.cols"
-          @start="dragCol = true"
-          @end="dragCol = false"
-          item-key="id_col"
-          @change="onColChange"
-          handle=".handle-col">
-          <template #item="{ element }">
-            <div
-              class="row q-pa-xs"
-              v-if="
-                element.category === 'REQUIRED' || element.category === 'ADDED'
-              ">
-              <div>
+            <div class="q-pa-sm q-ma-xs cell-no" />
+            <div class="q-pa-sm q-ma-xs cell-no" />
+            <!-- cols -->
+            <draggable
+              class="row no-wrap"
+              v-bind="dragOptions"
+              v-model="document.cols"
+              @start="dragCol = true"
+              @end="dragCol = false"
+              @choose="onStartTest"
+              @unchoose="onEndTest"
+              item-key="id_col"
+              @change="onColChange"
+              handle=".handle-col"
+            >
+              <template #item="{ element }">
                 <div
-                  v-if="element.category === 'REQUIRED'"
-                  v-on:click.right.prevent
-                  class="q-pa-sm cell row handle-col"
-                  :style="{ width: element.width + 'px' }">
-                  {{ element.name }}
-                </div>
-                <div
-                  v-else
-                  class="q-pa-sm cell row handle-col"
-                  :style="{ width: element.width + 'px' }">
-                  {{ element.name }}
-                  <q-popup-proxy
-                    context-menu
-                    @before-show="putColName(element)"
-                    @before-hide="callUpdateColName(element)">
-                    <q-banner>
-                      <q-input
-                        filled
-                        v-model="updateColName"
-                        dense
-                        :rules="[val => !!val]"
-                        @keydown.enter.prevent="callUpdateColName(element)" />
-                      <q-btn
-                        color="primary"
-                        label="Del Col"
-                        @click="callDeleteCol(element.uuid)" />
-                    </q-banner>
-                  </q-popup-proxy>
-                </div>
-              </div>
-              <div style="position: relative">
-                <div
-                  class="col-width-handle"
-                  v-touch-pan.preserveCursor.prevent.mouse.horizontal="
-                    resizeCol
+                  class="row q-pa-xs"
+                  v-if="
+                    element.category === 'REQUIRED' ||
+                    element.category === 'ADDED'
                   "
-                  @mouseover="element.active = true"
-                  @mouseleave="element.active = false"
-                  @mousedown="setHandlingItem(element.uuid)">
-                  <div class="handling">
-                    <q-icon v-show="element.active" name="drag_indicator" />
+                >
+                  <div class="drag-item">
+                    <div
+                      v-if="element.category === 'REQUIRED'"
+                      v-on:click.right.prevent
+                      class="q-pa-sm cell row handle-col"
+                      :style="{ width: element.width + 'px' }"
+                    >
+                      {{ element.name }}
+                      <q-icon :name="biAsterisk" style="font-size: 0.5em" />
+                    </div>
+                    <div
+                      v-else
+                      class="q-pa-sm cell row handle-col"
+                      :style="{ width: element.width + 'px' }"
+                    >
+                      {{ element.name }}
+                      <q-popup-proxy @before-show="putColName(element)">
+                        <q-banner style="max-width: 250px">
+                          <div class="row items-baseline justify-between">
+                            <q-input
+                              filled
+                              dense
+                              v-model="updateColName"
+                              :rules="[(val) => !!val]"
+                              @keydown.enter.prevent="
+                                callUpdateColName(element)
+                              "
+                              class="col-10"
+                            />
+                            <q-icon
+                              class="cursor-pointer"
+                              v-close-popup
+                              size="xs"
+                              :name="mdiArrowLeftBottomBold"
+                              @click="callUpdateColName(element)"
+                            />
+                          </div>
+                          <div class="row">
+                            <q-btn
+                              class="col-12"
+                              flat
+                              v-close-popup
+                              label="열 삭제"
+                              :icon="biTrash3"
+                              size="sm"
+                              @click="callDeleteCol(element.uuid)"
+                            />
+                          </div>
+                        </q-banner>
+                      </q-popup-proxy>
+                    </div>
+                  </div>
+                  <div style="position: relative">
+                    <div
+                      class="col-width-handle"
+                      v-touch-pan.preserveCursor.prevent.mouse.horizontal="
+                        resizeCol
+                      "
+                      @mouseover="element.active = true"
+                      @mouseleave="element.active = false"
+                      @mousedown="setHandlingItem(element.uuid)"
+                    >
+                      <div class="handling">
+                        <q-icon
+                          v-show="element.active"
+                          :name="fasGripLinesVertical"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </template>
+            </draggable>
+
+            <!-- "+" btn -->
+            <div class="q-pa-sm q-my-xs cursor-pointer">
+              <q-icon :name="biPlusCircle" />
+              <q-tooltip anchor="bottom middle" self="bottom middle">
+                열 추가
+              </q-tooltip>
+              <q-popup-proxy
+                v-model="addColPopup"
+                @before-hide="resetAddColName"
+              >
+                <q-banner>
+                  <div class="row items-baseline justify-between">
+                    <q-input
+                      filled
+                      dense
+                      v-model="addColName"
+                      :rules="[(val) => !!val]"
+                      @keyup.enter="callAddCol(addColName, 'text')"
+                      class="col-10"
+                    />
+                    <q-icon
+                      class="cursor-pointer"
+                      v-close-popup
+                      size="xs"
+                      :name="mdiArrowLeftBottomBold"
+                      @click="callAddCol(addColName, 'text')"
+                    />
+                  </div>
+                </q-banner>
+              </q-popup-proxy>
             </div>
-          </template>
-        </draggable>
+            <q-dialog v-model="colWarningDialog" position="top">
+              <q-card style="width: 350px">
+                <q-card-section class="row items-center no-wrap">
+                  <div>속성 이름을 입력해주세요!</div>
 
-        <!-- "+" btn -->
-        <q-card class="q-pa-sm q-my-xs">
-          <q-icon class="addBtn shadow-1 cursor-pointer" name="add" />
-          <q-popup-proxy v-model="addColPopup" @before-hide="resetAddColName">
-            <q-banner>
-              <q-input
-                filled
-                dense
-                v-model="addColName"
-                :rules="[val => !!val]"
-                @keyup.enter="callAddCol(addColName, 'text')" />
-              <q-btn
-                color="primary"
-                label="Add Col"
-                @click="callAddCol(addColName, 'text')" />
-            </q-banner>
-          </q-popup-proxy>
-        </q-card>
-        <q-dialog v-model="colWarningDialog" position="top">
-          <q-card style="width: 350px">
-            <q-card-section class="row items-center no-wrap">
-              <div>속성 이름을 입력해주세요!</div>
+                  <q-space />
+                </q-card-section>
+              </q-card>
+            </q-dialog>
+          </div>
+          <!-- -->
+          <!-- Rows -->
+          <draggable
+            v-model="rowData"
+            v-bind="dragOptions"
+            @start="dragRow = true"
+            @end="dragRow = false"
+            item-key="id_row"
+            @change="onRowChange"
+            handle=".handle-row"
+          >
+            <template #item="{ element, index }">
+              <div class="q-pa-xs row no-wrap">
+                <div
+                  class="q-pa-sm q-ma-xs cursor-pointer"
+                  @click="openSideDrawer(document.rows[index])"
+                >
+                  <q-icon :name="biLayoutSidebarInsetReverse" />
+                  <q-tooltip anchor="bottom middle" self="bottom middle">
+                    열기
+                  </q-tooltip>
+                </div>
+                <div
+                  @mouseover="rowActive[index] = true"
+                  @mouseleave="rowActive[index] = false"
+                  class="q-pa-sm q-ma-xs text-right cell-no handle-row drag-item"
+                >
+                  <template v-if="!rowActive[index]">
+                    {{ index + 1 }}
+                  </template>
+                  <template v-else>
+                    <q-icon :name="fasGripVertical" />
+                  </template>
+                  <!-- <q-icon name="drag_indicator" class="handle-row" size="20px" /> -->
+                </div>
+                <template v-for="(cell, col_idx) in element" :key="col_idx">
+                  <div
+                    class="q-px-sm q-ma-xs cell"
+                    :style="{ width: cell.width + 'px' }"
+                    :class="{ active: cell.focuses.length != 0 }"
+                  >
+                    <q-input
+                      dense
+                      borderless=""
+                      :style="{
+                        width: cell.width - 15 + 'px',
+                      }"
+                      type="text"
+                      v-model="document.data[cell.rowId][cell.colId]"
+                      :class="index + '_' + col_idx"
+                      @focus="setFocus(cell.rowId, cell.colId)"
+                      @keypress.enter="pressEnter($event, index, col_idx, cell)"
+                      @blur="
+                        clearFocus(),
+                          callUpdateCell(
+                            cell.rowId,
+                            cell.colId,
+                            document.data[cell.rowId][cell.colId]
+                          )
+                      "
+                      class="hoverable"
+                    />
+                    <div class="hide">
+                      <template v-if="cell.focuses.length == 1">
+                        {{ cell.focuses[0] }}
+                      </template>
+                      <template v-else-if="cell.focuses.length > 1">
+                        {{ cell.focuses[0] }}, {{ cell.focuses[1] }}...
+                      </template>
+                    </div>
+                  </div>
+                </template>
 
-              <q-space />
-            </q-card-section>
-          </q-card>
-        </q-dialog>
-      </q-card>
-      <!--  -->
-      <!-- Rows -->
-      <draggable
-        v-model="rowData"
-        @start="dragRow = true"
-        @end="dragRow = false"
-        item-key="id_row"
-        @change="onRowChange"
-        handle=".handle-row">
-        <template #item="{ element, index }">
-          <q-card class="q-pa-xs row">
-            <q-card class="q-pa-sm q-ma-xs cell">
-              <q-icon
-                class="addBtn shadow-1 cursor-pointer"
-                name="add"
-                @click="openSideDrawer(document.rows[index])" />
-            </q-card>
-            <q-card
-              @mouseover="rowActive[index] = true"
-              @mouseleave="rowActive[index] = false"
-              class="q-pa-sm q-ma-xs cell text-right cell-no handle-row">
-              <template v-if="!rowActive[index]">
-                {{ index + 1 }}
-              </template>
-              <template v-else>
-                <q-icon name="drag_indicator" />
-              </template>
-              <!-- <q-icon name="drag_indicator" class="handle-row" size="20px" /> -->
-            </q-card>
-            <template v-for="(cell, col_idx) in element" :key="col_idx">
-              <div
-                class="q-px-sm q-ma-xs cell"
-                :style="{ width: cell.width + 'px' }">
-                <q-input
-                  dense
-                  :style="{
-                    width: cell.width - 15 + 'px',
-                  }"
-                  type="text"
-                  v-model="document.data[cell.rowId][cell.colId]"
-                  :class="index + '_' + col_idx"
-                  @focus="editFocus(cell)"
-                  @keypress.enter="pressEnter($event, index, col_idx, cell)"
-                  @blur="
-                    callUpdateCell(
-                      cell.rowId,
-                      cell.colId,
-                      document.data[cell.rowId][cell.colId]
-                    )
-                  " />
+                <q-popup-proxy context-menu>
+                  <q-banner>
+                    <q-btn
+                      flat
+                      label="행 삭제"
+                      :icon="biTrash3"
+                      size="sm"
+                      @click="callDeleteRow(document.rows[index])"
+                    />
+                  </q-banner>
+                </q-popup-proxy>
               </div>
             </template>
+          </draggable>
+          <!-- -->
+          <div class="q-pa-xs row">
+            <div class="q-pa-sm q-ma-xs cursor-pointer" @click="callAddRow()">
+              <q-icon :name="biPlusCircle" />
+              <q-tooltip anchor="bottom middle" self="bottom middle">
+                행 추가
+              </q-tooltip>
+            </div>
+          </div>
+          <br /><br /></div
+      ></q-page>
+    </q-page-container>
+    <template v-if="initDrawer">
+      <q-drawer
+        v-model="drawer"
+        side="right"
+        :width="drawerWidth"
+        :breakpoint="0"
+        bordered
+        class="bg-grey-3"
+      >
+        <q-btn
+          flat
+          @click="drawer = !drawer"
+          round
+          dense
+          :icon="fasAnglesRight"
+          size="sm"
+        >
+        </q-btn>
+        <br />
+        <q-markup-table>
+          <tr v-for="(col, colId) in document.cols" :key="colId">
+            <td>
+              <strong>{{ col.name }}</strong>
+            </td>
+            <td>
+              <q-input
+                dense
+                type="text"
+                @keypress.enter="
+                  callUpdateCell(
+                    drawerRowId,
+                    col.uuid,
+                    document.data[drawerRowId][col.uuid]
+                  )
+                "
+                @blur="
+                  callUpdateCell(
+                    drawerRowId,
+                    col.uuid,
+                    document.data[drawerRowId][col.uuid]
+                  )
+                "
+                v-model="document.data[drawerRowId][col.uuid]"
+              />
+            </td>
+          </tr>
+        </q-markup-table>
 
-            <q-popup-proxy context-menu>
-              <q-banner>
-                <q-btn
-                  color="primary"
-                  label="Del Row"
-                  @click="callDeleteRow(document.rows[index])" />
-              </q-banner>
-            </q-popup-proxy>
-          </q-card>
-        </template>
-      </draggable>
-      <!-- -->
-      <q-card class="q-pa-xs row">
-        <q-card class="q-pa-sm q-ma-xs">
-          <q-icon
-            class="addBtn shadow-1 cursor-pointer"
-            name="add"
-            @click="callAddRow()" />
-        </q-card>
-      </q-card>
-      <br /><br />
-
-      <template v-if="drawer">
-        <q-drawer
-          v-model="drawer"
-          side="right"
-          overlay
-          :width="drawerWidth"
-          :breakpoint="0"
-          bordered
-          class="bg-grey-3">
-          <q-btn flat @click="drawer = !drawer" round dense label="close">
-          </q-btn>
-          <br />
-          <q-markup-table>
-            <tr v-for="(col, colId) in document.cols" :key="colId">
-              <td>
-                <strong>{{ col.name }}</strong>
-              </td>
-              <td>
-                <q-input
-                  dense
-                  type="text"
-                  v-model="document.data[drawerRowId][col.uuid]" />
-              </td>
-            </tr>
-          </q-markup-table>
-
-          <div
-            v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeDrawer"
-            class="q-drawer__resizer"></div> </q-drawer
-      ></template>
-    </div>
-  </q-layout>
+        <div
+          v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeDrawer"
+          class="q-drawer__resizer"
+        ></div> </q-drawer
+    ></template>
+  </div>
 </template>
 
 <script>
@@ -237,6 +325,24 @@ import {
   updateCell,
 } from "@/api/apidocs.js";
 
+import {
+  biLayoutSidebarInsetReverse,
+  biTrash3,
+  biChevronDoubleRight,
+  biArrowReturnLeft,
+  biGripVertical,
+  biPlusCircle,
+  biAsterisk,
+} from "@quasar/extras/bootstrap-icons";
+import {
+  fasGripLinesVertical,
+  fasAnglesRight,
+  fasGripVertical,
+} from "@quasar/extras/fontawesome-v6";
+import {
+  mdiDragVerticalVariant,
+  mdiArrowLeftBottomBold,
+} from "@quasar/extras/mdi-v6";
 export default {
   components: {
     draggable,
@@ -247,6 +353,12 @@ export default {
     let initialDrawerWidth;
     const drawerWidth = ref(300);
     const drawerRowId = ref(null);
+
+    const dragOptions = ref({
+      animation: 200,
+      disabled: false,
+      ghostClass: "ghost",
+    });
 
     return {
       // TODO: 나중에 자동으로 받아와서 채우는 걸로 변경
@@ -261,7 +373,6 @@ export default {
       addColName: ref(""),
 
       handling_item: ref({
-        index: null,
         uuid: null,
         name: null,
         type: null,
@@ -270,11 +381,16 @@ export default {
 
       rowData: ref([]),
       rowActive: ref([]),
-      focus: ref({ isFocusing: false, rowId: "", colId: "" }),
-
+      focus: ref({
+        isFocusing: false,
+        rowId: "",
+        colId: "",
+      }),
+      initDrawer: ref(false),
       drawer: ref(false),
       drawerWidth,
       drawerRowId,
+      dragOptions,
       resizeDrawer(ev) {
         if (ev.isFirst) {
           initialDrawerWidth = drawerWidth.value;
@@ -284,53 +400,186 @@ export default {
       colWarningDialog,
       addColPopup,
       updateColName: ref(""),
+      userName: ref(""),
+      users: ref({}),
+
+      editing_content: ref(""),
+      // icon
+      biLayoutSidebarInsetReverse,
+      biTrash3,
+      biChevronDoubleRight,
+      biArrowReturnLeft,
+      biGripVertical,
+      biPlusCircle,
+      biAsterisk,
+      fasGripLinesVertical,
+      fasAnglesRight,
+      fasGripVertical,
+      mdiDragVerticalVariant,
+      mdiArrowLeftBottomBold,
     };
   },
   mounted() {
     this.callGetDocs();
 
-    this.userName = Math.round(Math.random() * 1000); // 나중에 유저를 token에서 가져오자.
+    this.userName = "user_" + Math.round(Math.random() * 100); // 나중에 유저를 token에서 가져오자.
 
     // WEBSOCKET CONNECTION
     this.socket = new SockJS(BASEURL + "/ws");
     this.stompClient = Stomp.over(this.socket);
     this.stompClient.connect({}, () => {
-      this.stompClient.subscribe("/sub/" + this.projectId + "/refresh", msg => {
-        msg;
-        // 보낸 사람이 자신인지 확인하는 로직을 추가하려면:
-        // if ( msg.body.username == this.userName ) { ... }
+      this.stompClient.subscribe(
+        "/sub/" + this.projectId + "/refresh",
+        async (msg) => {
+          msg;
 
-        console.log("다른 사용자가 REFRESH 요청을 보냈습니다.");
-        let editing_content = "";
-        if (this.focus.isFocusing)
-          editing_content =
-            this.document.data[this.focus.rowId][this.focus.colId];
-        this.callGetDocs();
-        if (this.focus.isFocusing)
-          this.document.data[this.focus.rowId][this.focus.colId] =
-            editing_content;
-      });
-      this.stompClient.subscribe("/sub/" + this.projectId + "/focus", msg => {
-        // 보낸 사람이 자신인지 확인하는 로직을 추가하려면:
-        // if ( msg.body.username == this.userName ) { ... }
+          // TODO: refresh 해도 내가 작업중인 content는 유지될 수 있도록 하는 코드 (test 필요!!)
+          // refresh해도 작업중인 content를 유지하기
+          let isEditing = false;
+          // 1. focus.isFocusing = true일 경우
+          if (this.focus.isFocusing) {
+            // 1-1. 그리고 focus가 가리키는 셀이 삭제되지 않았을 경우에만
+            // editing_content에 내용이 저장되고, isEditing = true 가 되면서 2로 갈 수 있음.
+            if (
+              this.getRowIdxFromRowId(this.focus.rowId) > -1 &&
+              this.getColIdxFromColId(this.focus.colId) > -1
+            ) {
+              this.editing_content =
+                this.document.data[this.focus.rowId][this.focus.colId];
+              isEditing = true;
+            }
+          }
+          await this.callGetDocs();
+          let rowIdIdx = this.getRowIdxFromRowId(this.focus.rowId);
+          let colIdIdx = this.getColIdxFromColId(this.focus.colId);
+          if (isEditing && rowIdIdx > -1 && colIdIdx > -1) {
+            // 2. isEditing이 true이고, refresh를 했는데도 id로 참조하는 값이 남아있다면 editing_content 덮어쓰기 수행
+            // 저장해뒀던 editing_content를 원래의 id로 찾은 알맞은 위치에 넣어줌
+            this.document.data[this.focus.rowId][this.focus.colId] =
+              this.editing_content;
+            document
+              .getElementsByClassName(rowIdIdx + "_" + colIdIdx)[0]
+              .focus();
+          }
+        }
+      );
+      this.stompClient.subscribe("/sub/" + this.projectId + "/focus", (msg) => {
+        let res = JSON.parse(msg.body);
+        let res_content = JSON.parse(res.content);
 
-        var res = JSON.parse(msg.body);
-        // TODO: Focus
-        // 다른 사람의 포커스 위치를 옮겨줌. (내껀 내 프론트에서만 보여줌)
-        console.log(
-          res.userName,
-          "사용자가 FOCUS를 ",
-          res.content,
-          "로 변경하였습니다."
-        );
-        // --
+        let rowIdIdx = -2,
+          colIdIdx = -2;
+        if (this.users[res.userName]) {
+          rowIdIdx = this.getRowIdxFromRowId(this.users[res.userName].rowId);
+          colIdIdx = this.getColIdxFromColId(this.users[res.userName].colId);
+        }
+        // -2라면 애초에 res.userName이 없었던 것
+        // -1라면 res.userName은 있지만 request를 받은 시점에 rows/cols에 focus하던 cell이 없어진 것
+
+        if (res_content == 0) {
+          // 0. focusReq(0)를 받았으니 내 focus 정보를 focusReq(1)로 돌려준다.
+          this.focusReq(1);
+        } else if (res_content == 2) {
+          // 2. focusReq(2)를 받았으니 송신자의 정보를 지운다.
+          // - users에 userName이 있다면 지운다.
+          if (this.users[res.userName]) {
+            // 2-1. userName이 isFocusing이었을 경우 rowData의 focuses에서 userName을 지운다.
+            if (
+              this.users[res.userName].isFocusing &&
+              rowIdIdx > -1 &&
+              colIdIdx > -1
+            ) {
+              let index = this.rowData[rowIdIdx][colIdIdx].focuses.indexOf(
+                res.userName
+              );
+              this.rowData[rowIdIdx][colIdIdx].focuses.splice(index, 1);
+            }
+            // 2-2. users에서 userName을 지운다.
+            delete this.users[res.userName];
+          }
+        } else {
+          // 1. focusReq(1)를 받았으니 내 users 변수에 신규/변경내용을 저장해준다.
+
+          // 1-0. 내가 보냈다면 변경하지 않아도 됨.
+          if (res.userName == this.userName) return;
+
+          // 1-1. 요청한 사람이...
+          // 신규가 아닌, 있던 유저이면서, isFocusing = true 라면 : focus를 지워주고,
+          if (
+            this.users[res.userName] &&
+            this.users[res.userName].isFocusing &&
+            rowIdIdx > -1 &&
+            colIdIdx > -1
+          ) {
+            let index = this.rowData[rowIdIdx][colIdIdx].focuses.indexOf(
+              res.userName
+            );
+            this.rowData[rowIdIdx][colIdIdx].focuses.splice(index, 1);
+          }
+
+          // (common) 해당 user가 없으면 추가, 있으면 교체
+          this.users[res.userName] = {
+            isFocusing: res_content.isFocusing,
+            rowId: res_content.rowId,
+            colId: res_content.colId,
+          };
+
+          // 1-2. 요청한 사람이
+          // isFocusing = true 라면 : 새 focus를 push 해줌.
+          if (res_content.isFocusing) {
+            rowIdIdx = this.getRowIdxFromRowId(res_content.rowId);
+            colIdIdx = this.getColIdxFromColId(res_content.colId);
+            if (rowIdIdx > -1 && colIdIdx > -1) {
+              this.rowData[rowIdIdx][colIdIdx].focuses.push(res.userName);
+            }
+          }
+        }
       });
+
+      this.focusReq(0);
+      window.addEventListener("beforeunload", this.unLoadEvent);
+
+      this.callGetDocs();
     });
   },
   beforeUnmount() {
-    this.stompClient.disconnect();
+    window.removeEventListener("beforeunload", this.unLoadEvent);
   },
   methods: {
+    // getColIdxFromColId와 getRowIdxFromRowId는 없을 시 -1을 반환함.
+    // 호출할 때마다 -1에 대한 예외처리를 해줘야 함.
+    getColIdxFromColId(colId) {
+      let colIdIdx = -1;
+      let doc_cols = this.document.cols;
+      for (let i = 0; i < doc_cols.length; i++)
+        if (doc_cols[i].uuid == colId) {
+          colIdIdx = i;
+          break;
+        }
+      return colIdIdx;
+    },
+    getRowIdxFromRowId(rowId) {
+      return this.document.rows.indexOf(rowId);
+    },
+    unLoadEvent() {
+      this.focusReq(2);
+      this.stompClient.disconnect();
+    },
+    onStartTest(e) {
+      // console.log(e.srcElement);
+      // e.srcElement.classList.add("dragging-item");
+
+      e;
+      console.log("start");
+      const html = document.getElementsByTagName("html").item(0);
+      html.classList.toggle("dragging-item", true);
+    },
+    onEndTest(e) {
+      e;
+      console.log("end");
+      const html = document.getElementsByTagName("html").item(0);
+      html.classList.toggle("dragging-item", false);
+    },
     onColChange(evt) {
       this.callMoveCol(evt.moved.element.uuid, evt.moved.newIndex);
     },
@@ -341,32 +590,31 @@ export default {
       );
     },
     setHandlingItem(uuid) {
-      this.handling_item.uuid = uuid;
-      let t_cols = this.document.cols;
-      for (let i = 0; i < t_cols.length; i++)
-        if (t_cols[i].uuid == uuid) {
-          this.handling_item = { ...t_cols[i] };
-          this.handling_item.index = i;
-        }
+      let colIdIdx = this.getColIdxFromColId(uuid);
+      if (colIdIdx > -1)
+        this.handling_item = { ...this.document.cols[colIdIdx] };
     },
     resizeCol(evt) {
-      this.document.cols[this.handling_item.index].width =
+      let colIdIdx = this.getColIdxFromColId(this.handling_item.uuid);
+      if (colIdIdx < 0) {
+        // TODO:
+        // 이동하던 열이 삭제됐다!!! dialog로 경고문구 표시
+        return;
+      }
+      this.document.cols[colIdIdx].width =
         this.handling_item.width + evt.offset.x;
       if (evt.isFinal) {
         let element = {
           uuid: this.handling_item.uuid,
           name: this.handling_item.name,
           type: this.handling_item.type,
-          width: this.document.cols[this.handling_item.index].width,
+          width: this.document.cols[colIdIdx].width,
         };
         this.callUpdateCol(element);
       }
     },
-    editFocus(cell) {
-      // 여기서 focusrequest 보내야 함.
-      this.focus.isFocusing = true;
-      this.focus.rowId = cell.rowId;
-      this.focus.colId = cell.colIs;
+    focusHighlight(position) {
+      position;
     },
     focusNextLine(row_idx, col_idx) {
       if (row_idx + 1 == this.document.rows.length) return;
@@ -414,8 +662,64 @@ export default {
         JSON.stringify(req)
       );
     },
-    callGetDocs() {
-      getDocs(
+    setFocus(rowId, colId) {
+      this.focus = {
+        isFocusing: true,
+        rowId: rowId,
+        colId: colId,
+      };
+      this.focusReq(1);
+    },
+    clearFocus() {
+      let active_tag = document.activeElement.tagName;
+      if (active_tag == "INPUT") return;
+      else {
+        this.focus = {
+          isFocusing: false,
+          rowId: "",
+          colId: "",
+        };
+        this.focusReq(1);
+      }
+    },
+    focusReq(type) {
+      let req = {
+        userName: this.userName,
+        content: null,
+      };
+
+      if (type == 0) {
+        // 0. 수신한 모두가 송신자에게 focus 정보를 달라는 request
+        req.content = 0;
+        this.stompClient.send(
+          "/pub/" + this.projectId + "/focus",
+          {},
+          JSON.stringify(req)
+        );
+      } else if (type == 1) {
+        // 1. 내 focus를 전송함.
+        req.content = JSON.stringify({
+          isFocusing: this.focus.isFocusing,
+          rowId: this.focus.rowId,
+          colId: this.focus.colId,
+        });
+        this.stompClient.send(
+          "/pub/" + this.projectId + "/focus",
+          {},
+          JSON.stringify(req)
+        );
+      } else {
+        // 2. 수신하면 송신자를 지워달라는 request
+        req.content = 2;
+        this.stompClient.send(
+          "/pub/" + this.projectId + "/focus",
+          {},
+          JSON.stringify(req)
+        );
+      }
+    },
+    async callGetDocs() {
+      await getDocs(
         {
           pathVariable: {
             projectId: this.projectId,
@@ -435,12 +739,29 @@ export default {
                   rowId: rowId,
                   colId: colId,
                   width: colWidth,
+                  focuses: [],
                 });
               }
             });
             this.rowData.push(ith_row);
             this.rowActive.push(false);
           });
+
+          // this.users를 순회하며 공동 작업중인 user들의 focus를 채워줌
+          for (let userName in this.users) {
+            let info = this.users[userName];
+            if (info.isFocusing) {
+              let rowIdIdx = this.getRowIdxFromRowId(info.rowId);
+              let colIdIdx = this.getColIdxFromColId(info.colId);
+              // -1일 경우 가리키던 row/col가 사라졌다는 뜻
+
+              if (rowIdIdx == -1 || colIdIdx == -1) {
+                this.users[userName].isFocusing = false;
+              } else {
+                this.rowData[rowIdIdx][colIdIdx].focuses.push(userName);
+              }
+            }
+          }
         },
         error => {
           console.warn(error);
@@ -530,9 +851,6 @@ export default {
         this.drawer = false;
         this.drawerRowId = null;
       }
-      if (this.focus.isFocusing && this.focus.rowId == rowId) {
-        this.focus.isFocusing = false;
-      }
       deleteRow(
         {
           pathVariable: {
@@ -549,9 +867,6 @@ export default {
       );
     },
     callDeleteCol(colId) {
-      if (this.focus.isFocusing && this.focus.colId == colId) {
-        this.focus.isFocusing = false;
-      }
       deleteCol(
         {
           pathVariable: {
@@ -568,7 +883,6 @@ export default {
       );
     },
     callUpdateCol(element) {
-      console.log(element);
       updateCol(
         {
           pathVariable: {
@@ -611,13 +925,13 @@ export default {
       );
     },
     openSideDrawer(rowId) {
+      this.initDrawer = true;
       this.drawer = true;
       this.drawerRowId = rowId;
     },
 
     colWarning() {
       this.colWarningDialog = true;
-      console.log(this.addColName);
     },
     resetAddColName() {
       this.addColName = "";
@@ -639,15 +953,19 @@ export default {
 
 <style scoped>
 .cell {
-  background: var(--cultured);
+  position: relative;
+  background: whitesmoke;
 }
 .cell-no {
-  width: 30px;
+  min-width: 30px;
+  max-width: 30px;
 }
 .addBtn {
   border-radius: 7px;
 }
-
+.active {
+  outline: 2px solid skyblue;
+}
 .col-width-handle {
   position: absolute;
   right: 0px;
@@ -672,5 +990,28 @@ export default {
   width: 4px;
   background-color: red;
   cursor: ew-resize;
+}
+
+.hide {
+  display: none;
+  position: absolute;
+  top: -10px;
+  right: 0px;
+  background: skyblue;
+  padding: 0px 2px;
+  border-radius: 5px !important;
+}
+
+.hoverable:hover + .hide {
+  display: block;
+}
+.colWidth {
+  width: 190px;
+}
+.drag-item {
+  cursor: grab;
+}
+.dragging-item {
+  cursor: grabbing !important;
 }
 </style>
