@@ -140,14 +140,8 @@
                 </q-banner>
               </q-popup-proxy>
             </div>
-            <q-dialog v-model="colWarningDialog" position="top">
-              <q-card style="width: 350px">
-                <q-card-section class="row items-center no-wrap">
-                  <div>속성 이름을 입력해주세요!</div>
-
-                  <q-space />
-                </q-card-section>
-              </q-card>
+            <q-dialog v-model="warningDialog" position="top">
+              <warning-dialog :msg="msg" />
             </q-dialog>
           </div>
           <!-- -->
@@ -312,6 +306,7 @@ import { BASEURL } from "@/api/index.js";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import draggable from "vuedraggable";
+import WarningDialog from "./WarningDialog.vue";
 
 import {
   getDocs,
@@ -343,12 +338,13 @@ import {
   mdiDragVerticalVariant,
   mdiArrowLeftBottomBold,
 } from "@quasar/extras/mdi-v6";
+
 export default {
   components: {
     draggable,
+    WarningDialog,
   },
   setup() {
-    const colWarningDialog = ref(false);
     const addColPopup = ref(false);
     let initialDrawerWidth;
     const drawerWidth = ref(300);
@@ -397,7 +393,10 @@ export default {
         }
         drawerWidth.value = initialDrawerWidth - ev.offset.x;
       },
-      colWarningDialog,
+
+      warningDialog: ref(false),
+      msg: ref(""),
+
       addColPopup,
       updateColName: ref(""),
       userName: ref(""),
@@ -433,8 +432,7 @@ export default {
         async (msg) => {
           msg;
 
-          // TODO: refresh 해도 내가 작업중인 content는 유지될 수 있도록 하는 코드 (test 필요!!)
-          // refresh해도 작업중인 content를 유지하기
+          // refresh해도 작업중인 content를 유지하는 코드
           let isEditing = false;
           // 1. focus.isFocusing = true일 경우
           if (this.focus.isFocusing) {
@@ -444,22 +442,37 @@ export default {
               this.getRowIdxFromRowId(this.focus.rowId) > -1 &&
               this.getColIdxFromColId(this.focus.colId) > -1
             ) {
+              // 1-1. 그리고 focus가 가리키는 셀이 삭제되지 않았을 경우에만
+              // editing_content에 내용을 저장해둔다.
               this.editing_content =
                 this.document.data[this.focus.rowId][this.focus.colId];
               isEditing = true;
+            } else {
+              // 1-2. 하지만 focus가 가리키는 셀이 삭제됐을 경우,
+              // 작성 중인 셀이 삭제되었다는 warning dialog를 띄우고 끝낸다.
+              this.callGetDocs();
+              this.deleteWarning();
+              return;
             }
           }
           await this.callGetDocs();
           let rowIdIdx = this.getRowIdxFromRowId(this.focus.rowId);
           let colIdIdx = this.getColIdxFromColId(this.focus.colId);
-          if (isEditing && rowIdIdx > -1 && colIdIdx > -1) {
-            // 2. isEditing이 true이고, refresh를 했는데도 id로 참조하는 값이 남아있다면 editing_content 덮어쓰기 수행
-            // 저장해뒀던 editing_content를 원래의 id로 찾은 알맞은 위치에 넣어줌
-            this.document.data[this.focus.rowId][this.focus.colId] =
-              this.editing_content;
-            document
-              .getElementsByClassName(rowIdIdx + "_" + colIdIdx)[0]
-              .focus();
+          if (isEditing) {
+            // 2. isEditing이 true일 경우
+            if (rowIdIdx > -1 && colIdIdx > -1) {
+              // 2-1. refresh를 했는데도 focus가 가리키는 셀이 남아있다면,
+              // 알맞은 위치를 찾아서 editing_content 덮어쓰기 수행.
+              this.document.data[this.focus.rowId][this.focus.colId] =
+                this.editing_content;
+              document
+                .getElementsByClassName(rowIdIdx + "_" + colIdIdx)[0]
+                .focus();
+            } else {
+              // 2-2. refresh를 했더니 focus가 가리키던 셀이 사라졌다면,
+              // 작성 중인 셀이 삭제되었다는 warning dialog를 띄우고 끝낸다.
+              this.deleteWarning();
+            }
           }
         }
       );
@@ -597,8 +610,8 @@ export default {
     resizeCol(evt) {
       let colIdIdx = this.getColIdxFromColId(this.handling_item.uuid);
       if (colIdIdx < 0) {
-        // TODO:
-        // 이동하던 열이 삭제됐다!!! dialog로 경고문구 표시
+        // resize 중이던 열이 삭제됐다는 warning dialog 표시
+        this.deleteWarning();
         return;
       }
       this.document.cols[colIdIdx].width =
@@ -931,7 +944,12 @@ export default {
     },
 
     colWarning() {
-      this.colWarningDialog = true;
+      this.msg = "속성 이름을 입력해주세요!";
+      this.warningDialog = true;
+    },
+    deleteWarning() {
+      this.msg = "셀이 삭제되었습니다!";
+      this.warningDialog = true;
     },
     resetAddColName() {
       this.addColName = "";
