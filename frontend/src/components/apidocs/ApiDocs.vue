@@ -193,10 +193,9 @@
                         <template v-else>
                           <q-icon :name="fasGripVertical" />
                         </template>
-                        <!-- <q-icon name="drag_indicator" class="handle-row" size="20px" /> -->
                       </div>
                       <template
-                        v-for="(cell, col_idx) in element"
+                        v-for="(cell, col_idx) in element.slice(0, -3)"
                         :key="col_idx"
                       >
                         <div
@@ -297,25 +296,32 @@
                   <strong>{{ col.name }}</strong>
                 </td>
                 <td>
-                  <q-input
-                    dense
-                    type="text"
-                    @keypress.enter="
-                      callUpdateCell(
-                        drawerRowId,
-                        col.uuid,
-                        document.data[drawerRowId][col.uuid]
-                      )
-                    "
-                    @blur="
-                      callUpdateCell(
-                        drawerRowId,
-                        col.uuid,
-                        document.data[drawerRowId][col.uuid]
-                      )
-                    "
-                    v-model="document.data[drawerRowId][col.uuid]"
-                  />
+                  <div
+                    class="drawer-input"
+                    :class="{ active: isFocused(drawerRowId, col.uuid) }"
+                  >
+                    <q-input
+                      dense
+                      type="text"
+                      @keypress.enter="
+                        callUpdateCell(
+                          drawerRowId,
+                          col.uuid,
+                          document.data[drawerRowId][col.uuid]
+                        )
+                      "
+                      @focus="setFocus(drawerRowId, col.uuid)"
+                      @blur="
+                        clearFocus(),
+                          callUpdateCell(
+                            drawerRowId,
+                            col.uuid,
+                            document.data[drawerRowId][col.uuid]
+                          )
+                      "
+                      v-model="document.data[drawerRowId][col.uuid]"
+                    />
+                  </div>
                 </td>
               </tr>
             </q-markup-table>
@@ -777,16 +783,14 @@ export default {
           res_doc.rows.forEach((rowId) => {
             let ith_row = [];
             res_doc.cols.forEach((col) => {
-              if (col.category !== "PAYLOAD") {
-                let colId = col.uuid;
-                let colWidth = col.width;
-                ith_row.push({
-                  rowId: rowId,
-                  colId: colId,
-                  width: colWidth,
-                  focuses: [],
-                });
-              }
+              let colId = col.uuid;
+              let colWidth = col.width;
+              ith_row.push({
+                rowId: rowId,
+                colId: colId,
+                width: colWidth,
+                focuses: [],
+              });
             });
             this.rowData.push(ith_row);
             this.rowActive.push(false);
@@ -1001,6 +1005,17 @@ export default {
       element.name = this.updateColName;
       this.callUpdateCol(element);
     },
+    isFocused(rowId, colId) {
+      let rowIdIdx = this.getRowIdxFromRowId(rowId),
+        colIdIdx = this.getColIdxFromColId(colId);
+      if (
+        rowIdIdx > -1 &&
+        colIdIdx > -1 &&
+        this.rowData[rowIdIdx][colIdIdx].focuses.length != 0
+      )
+        return true;
+      return false;
+    },
   },
 };
 </script>
@@ -1019,6 +1034,11 @@ export default {
 }
 .active {
   outline: 2px solid skyblue;
+  border-radius: 5px;
+}
+
+.drawer-input {
+  padding: 3px 10px;
 }
 .col-width-handle {
   position: absolute;
