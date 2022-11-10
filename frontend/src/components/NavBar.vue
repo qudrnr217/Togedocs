@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <q-header>
     <div class="navbar">
       <div class="navbar-pages">
         <router-link :to="{ name: 'select' }">
@@ -20,10 +20,11 @@
             border-radius: 50%;
 
             background: #d9d9d9;
-          "></div>
+          "
+        ></div>
       </div>
     </div>
-  </div>
+  </q-header>
 </template>
 
 <script>
