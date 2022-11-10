@@ -51,7 +51,10 @@
                       :style="{ width: element.width + 'px' }"
                     >
                       {{ element.name }}
-                      <q-popup-proxy @before-show="putColName(element)">
+                      <q-popup-proxy
+                        @before-show="putColName(element)"
+                        @show="moveCursor('putColName')"
+                      >
                         <q-banner style="max-width: 250px">
                           <div class="row items-baseline justify-between">
                             <q-input
@@ -63,6 +66,7 @@
                                 callUpdateColName(element)
                               "
                               class="col-10"
+                              ref="putColNameCursor"
                             />
                             <q-icon
                               class="cursor-pointer"
@@ -117,6 +121,7 @@
               </q-tooltip>
               <q-popup-proxy
                 v-model="addColPopup"
+                @show="moveCursor('addCol')"
                 @before-hide="resetAddColName"
               >
                 <q-banner>
@@ -128,6 +133,7 @@
                       :rules="[(val) => !!val]"
                       @keyup.enter="callAddCol(addColName, 'text')"
                       class="col-10"
+                      ref="addColCursor"
                     />
                     <q-icon
                       class="cursor-pointer"
@@ -950,12 +956,16 @@ export default {
     deleteWarning() {
       this.msg = "셀이 삭제되었습니다!";
       this.warningDialog = true;
+      this.focus.isFocusing = false;
     },
     resetAddColName() {
       this.addColName = "";
     },
     putColName(element) {
       this.updateColName = element.name;
+    },
+    moveCursor(name) {
+      this.$refs[name + "Cursor"].focus();
     },
     callUpdateColName(element) {
       if (this.updateColName.length == 0) {
