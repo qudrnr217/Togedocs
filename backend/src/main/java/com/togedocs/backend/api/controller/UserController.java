@@ -17,4 +17,12 @@ public class UserController {
         return "<h1>Test</h1>";
     }
 
+//    {email: "",
+//    profileImage: "",
+//    projects: [
+//        {
+//            name:""
+//        }...]
+//    }
+
 }

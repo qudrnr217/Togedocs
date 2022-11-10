@@ -15,13 +15,16 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RequiredArgsConstructor
 public class JwtAuthFilter extends GenericFilterBean {
 
     private final TokenService tokenService;
-    public UserRepository userRepository;
+    private final UserRepository userRepository;
+
+
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -49,6 +52,8 @@ public class JwtAuthFilter extends GenericFilterBean {
             SecurityContextHolder.getContext().setAuthentication(auth);
             chain.doFilter(request,response);
 
+        } else {
+            ((HttpServletResponse)response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
     }

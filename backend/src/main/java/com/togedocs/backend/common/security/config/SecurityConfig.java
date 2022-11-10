@@ -4,6 +4,7 @@ import com.togedocs.backend.common.security.config.jwt.JwtAuthFilter;
 import com.togedocs.backend.common.security.config.jwt.OAuth2SuccessHandler;
 import com.togedocs.backend.common.security.config.jwt.TokenService;
 import com.togedocs.backend.common.security.config.oauth.PrincipalOauth2UserService;
+import com.togedocs.backend.common.security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,8 @@ public class SecurityConfig {
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final TokenService tokenService;
 
+    private final UserRepository userRepository;
+
     @Bean
     public BCryptPasswordEncoder encodePwd(){
         return new BCryptPasswordEncoder();
@@ -46,15 +49,15 @@ public class SecurityConfig {
 //                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
                 .anyRequest().permitAll()
                 .and()
-                .addFilterBefore(new JwtAuthFilter(tokenService),UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthFilter(tokenService, userRepository),UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login()
 //                .loginPage("http://localhost:8080/")
-                .defaultSuccessUrl("myapp://")
+//                .defaultSuccessUrl("myapp://")
                 .userInfoEndpoint().userService(principalOauth2UserService)
                 .and()
                 .successHandler(oAuth2SuccessHandler);
 
-
+//        http.addFilterBefore(new JwtAuthFilter(tokenService,userRepository), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
