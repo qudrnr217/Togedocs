@@ -9,8 +9,31 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class ColDto {
     private String uuid;
     private String name;
     private String type;
+    private int width;
+    private ColCategory category;
+
+    public static ColDto build(String uuid, String name, String type, int width, ColCategory category){
+        return ColDto.builder()
+                .uuid(uuid)
+                .name(name)
+                .type(type)
+                .width(width)
+                .category(category)
+                .build();
+    }
+
+    @Override
+    public String toString() {
+        return "ColDto{" +
+                "uuid='" + uuid + '\'' +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", width=" + width +
+                '}';
+    }
 }

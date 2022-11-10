@@ -11,11 +11,12 @@
         height: 80vh;
         margin: auto;
 
-        background: #ffffff;
-        border: 0.5px solid #37485d;
-        box-shadow: -5px 5px 4px 5px #37485d;
+        background: var(--white);
+        border: 0.5px solid var(--charcoal);
+        box-shadow: -5px 5px 4px 5px var(--charcoal);
         border-radius: 5px;
-      ">
+      "
+    >
       <div class="spacing">
         <div
           class="service title"
@@ -26,18 +27,12 @@
             align-items: flex-start;
             padding: 8px;
             gap: 8px;
-          ">
-          <img src="@/assets/Cat.png" alt="" />
-          <div
-            style="
-              font-size: 5.5rem;
-
-              color: #000000;
-            ">
-            TogeDOGs
-          </div>
+          "
+        >
+          <img src="@/assets/dogs.jpg" alt="" style="width: 25vw" />
+          <div style="font-size: 8vw">TogeDocs</div>
         </div>
-        <router-link :to="{ name: 'select' }">
+        <button @click="login()">
           <div
             style="
               display: flex;
@@ -47,20 +42,40 @@
               padding: 8px 12px;
               gap: 64px;
 
-              background: #f5f5f5;
+              background: var(--cultured);
               border-radius: 10px;
-            ">
+            "
+          >
             <img src="@/assets/gitlab.png" alt="" class="gitlablogo" />
             <div class="login">로그인</div>
           </div>
-        </router-link>
+        </button>
       </div>
     </div>
+    <router-link :to="{ name: 'testjh' }">To test jh</router-link>
   </div>
 </template>
 
 <script>
-export default {};
+import { shell } from "electron";
+// import { access } from "fs";
+// import router from "vue";
+export default {
+  methods: {
+    login() {
+      shell.openExternal("http://localhost:8081/oauth2/authorization/google");
+    },
+  },
+  mounted() {
+    console.log("hi");
+    let _this = this;
+    console.log(_this);
+    window.addEventListener("login-successful", (event) => {
+      console.log(event);
+      _this.$router.push({ name: "select" });
+    });
+  },
+};
 </script>
 
 <style scoped>
@@ -68,7 +83,7 @@ export default {};
   height: 10vh;
 }
 .login {
-  font-size: 3rem;
+  font-size: 5vw;
 }
 .spacing {
   display: flex;

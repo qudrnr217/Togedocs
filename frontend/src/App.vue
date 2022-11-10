@@ -1,16 +1,15 @@
 <template>
-  <div>
-    <nav-bar></nav-bar>
+  <q-layout view="hHh lpR fFf">
     <router-view />
-  </div>
+  </q-layout>
 </template>
 
 <script>
-import NavBar from "@/components/NavBar.vue";
 export default {
   name: "App",
-  components: {
-    NavBar,
+  components: {},
+  mounted() {
+    this.$router.push("/home");
   },
 };
 </script>

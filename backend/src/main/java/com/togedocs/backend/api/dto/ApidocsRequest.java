@@ -1,5 +1,6 @@
 package com.togedocs.backend.api.dto;
 
+import com.togedocs.backend.domain.entity.ColCategory;
 import lombok.*;
 
 public class ApidocsRequest {
@@ -19,7 +20,7 @@ public class ApidocsRequest {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class MoveItemRequest {
         private String fromId;
-        private int toIndex;
+        private Integer toIndex;
     }
 
     @Getter
@@ -30,6 +31,25 @@ public class ApidocsRequest {
         private String rowId;
         private String colId;
         private String content; // col type이 추가되면 타입 변경 가능성 있음.
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class UpdateProjectInfoRequest {
+        private String title;
+        private String desc;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class UpdateColRequest {
+        private String name;
+        private String type;
+        private Integer width;
     }
 
 }

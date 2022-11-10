@@ -1,6 +1,5 @@
 <template>
-  <div>This is ApidocsView</div>
-  <api-docs />
+  <div><api-docs /></div>
 </template>
 
 <script>
