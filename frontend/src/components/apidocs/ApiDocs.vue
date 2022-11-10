@@ -191,13 +191,7 @@
                       <div
                         @mouseover="rowActive[index] = true"
                         @mouseleave="rowActive[index] = false"
-                        class="
-                          q-pa-sm q-ma-xs
-                          text-right
-                          cell-no
-                          handle-row
-                          drag-item
-                        "
+                        class="q-pa-sm q-ma-xs text-right cell-no handle-row drag-item"
                       >
                         <template v-if="!rowActive[index]">
                           {{ index + 1 }}
@@ -348,7 +342,7 @@ import { BASEURL } from "@/api/index.js";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import draggable from "vuedraggable";
-import WarningDialog from "./WarningDialog.vue";
+// import WarningDialog from "./WarningDialog.vue";
 
 import {
   getDocs,
@@ -384,7 +378,7 @@ import {
 export default {
   components: {
     draggable,
-    WarningDialog,
+    // WarningDialog,
   },
   setup() {
     const addColPopup = ref(false);
@@ -782,13 +776,13 @@ export default {
             projectId: this.projectId,
           },
         },
-        response => {
+        (response) => {
           let res_doc = response.data;
           this.document = res_doc;
           this.rowData = [];
-          res_doc.rows.forEach(rowId => {
+          res_doc.rows.forEach((rowId) => {
             let ith_row = [];
-            res_doc.cols.forEach(col => {
+            res_doc.cols.forEach((col) => {
               if (col.category !== "PAYLOAD") {
                 let colId = col.uuid;
                 let colWidth = col.width;
@@ -820,7 +814,7 @@ export default {
             }
           }
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -832,10 +826,10 @@ export default {
             projectId: this.projectId,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -857,10 +851,10 @@ export default {
             type: type,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -876,10 +870,10 @@ export default {
             toIndex: toIndex,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -895,10 +889,10 @@ export default {
             toIndex: toIndex,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -915,10 +909,10 @@ export default {
             rowId: rowId,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -931,10 +925,10 @@ export default {
             colId: colId,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -952,10 +946,10 @@ export default {
             width: element.width,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -973,10 +967,10 @@ export default {
             content: content,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
