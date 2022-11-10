@@ -156,14 +156,8 @@
                       </q-banner>
                     </q-popup-proxy>
                   </div>
-                  <q-dialog v-model="colWarningDialog" position="top">
-                    <q-card style="width: 350px">
-                      <q-card-section class="row items-center no-wrap">
-                        <div>속성 이름을 입력해주세요!</div>
-
-                        <q-space />
-                      </q-card-section>
-                    </q-card>
+                  <q-dialog v-model="warningDialog" position="top">
+                    <warning-dialog :msg="msg" />
                   </q-dialog>
                 </div>
                 <!-- -->
@@ -782,13 +776,13 @@ export default {
             projectId: this.projectId,
           },
         },
-        response => {
+        (response) => {
           let res_doc = response.data;
           this.document = res_doc;
           this.rowData = [];
-          res_doc.rows.forEach(rowId => {
+          res_doc.rows.forEach((rowId) => {
             let ith_row = [];
-            res_doc.cols.forEach(col => {
+            res_doc.cols.forEach((col) => {
               if (col.category !== "PAYLOAD") {
                 let colId = col.uuid;
                 let colWidth = col.width;
@@ -820,7 +814,7 @@ export default {
             }
           }
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -832,10 +826,10 @@ export default {
             projectId: this.projectId,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -857,10 +851,10 @@ export default {
             type: type,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -876,10 +870,10 @@ export default {
             toIndex: toIndex,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -895,10 +889,10 @@ export default {
             toIndex: toIndex,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -915,10 +909,10 @@ export default {
             rowId: rowId,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -931,10 +925,10 @@ export default {
             colId: colId,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -952,10 +946,10 @@ export default {
             width: element.width,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -973,10 +967,10 @@ export default {
             content: content,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
