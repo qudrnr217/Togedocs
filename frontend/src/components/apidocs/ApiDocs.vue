@@ -183,9 +183,11 @@
                   <template v-else>
                     <q-icon :name="fasGripVertical" />
                   </template>
-                  <!-- <q-icon name="drag_indicator" class="handle-row" size="20px" /> -->
                 </div>
-                <template v-for="(cell, col_idx) in element" :key="col_idx">
+                <template
+                  v-for="(cell, col_idx) in element.slice(0, -3)"
+                  :key="col_idx"
+                >
                   <div
                     class="q-px-sm q-ma-xs cell"
                     :style="{ width: cell.width + 'px' }"
@@ -274,25 +276,32 @@
               <strong>{{ col.name }}</strong>
             </td>
             <td>
-              <q-input
-                dense
-                type="text"
-                @keypress.enter="
-                  callUpdateCell(
-                    drawerRowId,
-                    col.uuid,
-                    document.data[drawerRowId][col.uuid]
-                  )
-                "
-                @blur="
-                  callUpdateCell(
-                    drawerRowId,
-                    col.uuid,
-                    document.data[drawerRowId][col.uuid]
-                  )
-                "
-                v-model="document.data[drawerRowId][col.uuid]"
-              />
+              <div
+                class="drawer-input"
+                :class="{ active: isFocused(drawerRowId, col.uuid) }"
+              >
+                <q-input
+                  dense
+                  type="text"
+                  @keypress.enter="
+                    callUpdateCell(
+                      drawerRowId,
+                      col.uuid,
+                      document.data[drawerRowId][col.uuid]
+                    )
+                  "
+                  @focus="setFocus(drawerRowId, col.uuid)"
+                  @blur="
+                    clearFocus(),
+                      callUpdateCell(
+                        drawerRowId,
+                        col.uuid,
+                        document.data[drawerRowId][col.uuid]
+                      )
+                  "
+                  v-model="document.data[drawerRowId][col.uuid]"
+                />
+              </div>
             </td>
           </tr>
         </q-markup-table>
@@ -744,23 +753,21 @@ export default {
             projectId: this.projectId,
           },
         },
-        response => {
+        (response) => {
           let res_doc = response.data;
           this.document = res_doc;
           this.rowData = [];
-          res_doc.rows.forEach(rowId => {
+          res_doc.rows.forEach((rowId) => {
             let ith_row = [];
-            res_doc.cols.forEach(col => {
-              if (col.category !== "PAYLOAD") {
-                let colId = col.uuid;
-                let colWidth = col.width;
-                ith_row.push({
-                  rowId: rowId,
-                  colId: colId,
-                  width: colWidth,
-                  focuses: [],
-                });
-              }
+            res_doc.cols.forEach((col) => {
+              let colId = col.uuid;
+              let colWidth = col.width;
+              ith_row.push({
+                rowId: rowId,
+                colId: colId,
+                width: colWidth,
+                focuses: [],
+              });
             });
             this.rowData.push(ith_row);
             this.rowActive.push(false);
@@ -782,7 +789,7 @@ export default {
             }
           }
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -794,10 +801,10 @@ export default {
             projectId: this.projectId,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -819,10 +826,10 @@ export default {
             type: type,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -838,10 +845,10 @@ export default {
             toIndex: toIndex,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -857,10 +864,10 @@ export default {
             toIndex: toIndex,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -877,10 +884,10 @@ export default {
             rowId: rowId,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -893,10 +900,10 @@ export default {
             colId: colId,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -914,10 +921,10 @@ export default {
             width: element.width,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -935,10 +942,10 @@ export default {
             content: content,
           },
         },
-        response => {
+        (response) => {
           response, this.refreshReq();
         },
-        error => {
+        (error) => {
           console.warn(error);
         }
       );
@@ -975,6 +982,17 @@ export default {
       element.name = this.updateColName;
       this.callUpdateCol(element);
     },
+    isFocused(rowId, colId) {
+      let rowIdIdx = this.getRowIdxFromRowId(rowId),
+        colIdIdx = this.getColIdxFromColId(colId);
+      if (
+        rowIdIdx > -1 &&
+        colIdIdx > -1 &&
+        this.rowData[rowIdIdx][colIdIdx].focuses.length != 0
+      )
+        return true;
+      return false;
+    },
   },
 };
 </script>
@@ -993,6 +1011,11 @@ export default {
 }
 .active {
   outline: 2px solid skyblue;
+  border-radius: 5px;
+}
+
+.drawer-input {
+  padding: 3px 10px;
 }
 .col-width-handle {
   position: absolute;
