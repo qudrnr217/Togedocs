@@ -290,15 +290,18 @@
             >
             </q-btn>
             <br />
-            <q-markup-table>
-              <tr v-for="(col, colId) in document.cols" :key="colId">
+            <q-markup-table class="q-py-sm">
+              <tr v-for="(col, col_idx) in document.cols" :key="col_idx">
                 <td>
                   <strong>{{ col.name }}</strong>
                 </td>
                 <td>
                   <div
                     class="drawer-input"
-                    :class="{ active: isFocused(drawerRowId, col.uuid) }"
+                    style="position: relative"
+                    :class="{
+                      active: focusesLength(drawerRowId, col.uuid) > 0,
+                    }"
                   >
                     <q-input
                       dense
@@ -326,7 +329,33 @@
                           )
                       "
                       v-model="document.data[drawerRowId][col.uuid]"
+                      class="hoverable"
                     />
+                    <div class="hide">
+                      <template
+                        v-if="focusesLength(drawerRowId, col.uuid) == 1"
+                      >
+                        {{
+                          rowData[getRowIdxFromRowId(drawerRowId)][
+                            getColIdxFromColId(col.uuid)
+                          ].focuses[0]
+                        }}
+                      </template>
+                      <template
+                        v-else-if="focusesLength(drawerRowId, col.uuid) > 1"
+                      >
+                        {{
+                          rowData[getRowIdxFromRowId(drawerRowId)][
+                            getColIdxFromColId(col.uuid)
+                          ].focuses[0]
+                        }},
+                        {{
+                          rowData[getRowIdxFromRowId(drawerRowId)][
+                            getColIdxFromColId(col.uuid)
+                          ].focuses[1]
+                        }}...
+                      </template>
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -336,8 +365,9 @@
         <div
           v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeDrawer"
           class="q-drawer__resizer"
-        ></div> </q-drawer
-    ></template>
+        ></div>
+      </q-drawer>
+    </template>
   </div>
 </template>
 
@@ -348,7 +378,7 @@ import { BASEURL } from "@/api/index.js";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import draggable from "vuedraggable";
-import WarningDialog from "./WarningDialog.vue";
+// import WarningDialog from "./WarningDialog.vue";
 
 import {
   getDocs,
@@ -384,7 +414,7 @@ import {
 export default {
   components: {
     draggable,
-    WarningDialog,
+    // WarningDialog,
   },
   setup() {
     const addColPopup = ref(false);
@@ -576,7 +606,6 @@ export default {
 
           // 1-0. 내가 보냈다면 변경하지 않아도 됨.
           // TODO: 내 ID 관련 수정할 사항이 많이 생길 듯
-          console.log("TEST", res.id, this.myId);
           if (res.id == this.myId) return;
 
           // 1-1. 요청한 사람이...
@@ -597,6 +626,7 @@ export default {
           }
 
           let res_content_focus = JSON.parse(res_content.focus);
+          console.log(res_content_focus);
 
           // (common) 해당 user가 없으면 추가, 있으면 교체
           this.users[res.id] = {
@@ -822,13 +852,13 @@ export default {
           // this.users를 순회하며 공동 작업중인 user들의 focus를 채워줌
           for (let id in this.users) {
             let info = this.users[id];
-            if (info.isFocusing) {
-              let rowIdIdx = this.getRowIdxFromRowId(info.rowId);
-              let colIdIdx = this.getColIdxFromColId(info.colId);
+            if (info.focus.isFocusing) {
+              let rowIdIdx = this.getRowIdxFromRowId(info.focus.rowId);
+              let colIdIdx = this.getColIdxFromColId(info.focus.colId);
               // -1일 경우 가리키던 row/col가 사라졌다는 뜻
 
               if (rowIdIdx == -1 || colIdIdx == -1) {
-                this.users[id].isFocusing = false;
+                this.users[id].focus.isFocusing = false;
               } else {
                 this.rowData[rowIdIdx][colIdIdx].focuses.push(id);
               }
@@ -1028,16 +1058,12 @@ export default {
       element.name = this.updateColName;
       this.callUpdateCol(element);
     },
-    isFocused(rowId, colId) {
+    focusesLength(rowId, colId) {
       let rowIdIdx = this.getRowIdxFromRowId(rowId),
         colIdIdx = this.getColIdxFromColId(colId);
-      if (
-        rowIdIdx > -1 &&
-        colIdIdx > -1 &&
-        this.rowData[rowIdIdx][colIdIdx].focuses.length != 0
-      )
-        return true;
-      return false;
+      if (rowIdIdx > -1 && colIdIdx > -1)
+        return this.rowData[rowIdIdx][colIdIdx].focuses.length;
+      return 0;
     },
   },
 };
