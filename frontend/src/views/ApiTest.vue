@@ -502,77 +502,72 @@ export default {
     //Item 1, 2, 3, 4는 강제설정 데이터
     //DB 및 BE 구현되면 받아와야 함
     var Item1 = new Object();
-    Item1.type = "POST";
-    Item1.name = "로그인";
-    Item1.Header=`{
-
-}`;
+    Item1.type = "Method";
+    Item1.name = "이름";
+    Item1.Header=``;
     Item1.PathVariable='';
     Item1.Params = '';
-    Item1.RequestBody = `{
-  "userId": "String",
-  "userPassword": "String"
-}`
-    Item1.RequestURL = 'https://k7a404.p.ssafy.io/api/auth/login';
+    Item1.RequestBody = ``
+    Item1.RequestURL = '';
 
 
-    var Item2 = new Object();
-    Item2.type = "GET";
-    Item2.name = "book 조회";
-    Item2.Header=`{
+//     var Item2 = new Object();
+//     Item2.type = "GET";
+//     Item2.name = "book 조회";
+//     Item2.Header=`{
 
-}`;
-    Item2.PathVariable='';
-    Item2.Params = '';
-    Item2.RequestBody = '';
-    Item2.RequestURL = 'https://k7a404.p.ssafy.io/api/book/{bookseq}';
+// }`;
+//     Item2.PathVariable='';
+//     Item2.Params = '';
+//     Item2.RequestBody = '';
+//     Item2.RequestURL = 'https://k7a404.p.ssafy.io/api/book/{bookseq}';
     
-    var Item3 = new Object();
-    Item3.type = "POST";
-    Item3.name = "회원가입";
-    Item3.Header=`{
+//     var Item3 = new Object();
+//     Item3.type = "POST";
+//     Item3.name = "회원가입";
+//     Item3.Header=`{
 
-}`;
-    Item3.PathVariable='';
-    Item3.Params = '';
-    Item3.RequestBody = `{
-  "userEmail": "string",
-  "userId": "string",
-  "userName": "string",
-  "userNickname": "string",
-  "userPassword": "string",
-  "userPhone": "string"
-}`;
-    Item3.RequestURL = 'https://k7a404.p.ssafy.io/api/user/signup';
+// }`;
+//     Item3.PathVariable='';
+//     Item3.Params = '';
+//     Item3.RequestBody = `{
+//   "userEmail": "string",
+//   "userId": "string",
+//   "userName": "string",
+//   "userNickname": "string",
+//   "userPassword": "string",
+//   "userPhone": "string"
+// }`;
+//     Item3.RequestURL = 'https://k7a404.p.ssafy.io/api/user/signup';
 
 
-    var Item4 = new Object();
-    Item4.type = "GET";
-    Item4.name = "개별 랜드마크 조회";
-    Item4.Header=`{
+//     var Item4 = new Object();
+//     Item4.type = "GET";
+//     Item4.name = "개별 랜드마크 조회";
+//     Item4.Header=`{
 
-}`;
-    Item4.PathVariable='';
-    Item4.Params = '';
-    Item4.RequestBody = ``;
-    Item4.RequestURL = 'https://k7a404.p.ssafy.io/api/book/{userSeq}/{bookSeq}';
+// }`;
+//     Item4.PathVariable='';
+//     Item4.Params = '';
+//     Item4.RequestBody = ``;
+//     Item4.RequestURL = 'https://k7a404.p.ssafy.io/api/book/{userSeq}/{bookSeq}';
 
     
-    var Item5 = new Object();
-    Item5.type = "GET";
-    Item5.name = "프로젝트 id로 조회";
-    Item5.Header=`{
+//     var Item5 = new Object();
+//     Item5.type = "GET";
+//     Item5.name = "프로젝트 id로 조회";
+//     Item5.Header=`{
 
-}`;
-    Item5.PathVariable='';
-    Item5.Params = '';
-    Item5.RequestBody = ``;
-    Item5.RequestURL = 'http://k7a404.p.ssafy.io:8081/api/docs/{projectId}';
+// }`;
+//     Item5.PathVariable='';
+//     Item5.Params = '';
+//     Item5.RequestBody = ``;
+//     Item5.RequestURL = 'http://k7a404.p.ssafy.io:8081/api/docs/{projectId}';
 
     var testprojectID = 1;
 
 
-    var apiListMount = [];
+    //var apiListMount = [];
     getDocs({pathVariable: {projectId: testprojectID}}, (data)=>{
       console.log(data.data.data);
       for (let key in data.data.data){
@@ -580,23 +575,27 @@ export default {
         // one -> 이름
         // two -> method
         // three -> URL
-        var Item5 = new Object();
-    Item5.type = data.data.data[key].two;
-    Item5.name = data.data.data[key].one
-    Item5.Header=`{
+        var obj = new Object();
+    obj.type = data.data.data[key].two;
+    obj.name = data.data.data[key].one
+    obj.Header=`{
 
 }`;
-    Item5.PathVariable='';
-    Item5.Params = '';
-    Item5.RequestBody = ``;
-    Item5.RequestURL = data.data.data[key].three;
+    obj.PathVariable='';
+    obj.Params = '';
+    obj.RequestBody = '';
+    obj.RequestURL = data.data.data[key].three;
 
-    apiListMount.push(Item5);
+    this.apiList.push(obj);
       }
     });
 
-    this.apiList = [Item4, Item1, Item2, Item3, Item5];
+    console.log('뭐지');
+    this.apiList.push(Item1);
     this.$store.state.apiStoreList = this.apiList;
+
+    console.log('왜안될까');
+    console.log(this.apiList);
     this.index = 0;
 
     //처음 페이지 로드 시 (index값 변화했을때와 같음)
