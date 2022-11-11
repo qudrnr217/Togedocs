@@ -154,6 +154,7 @@
 <script>
 import axios from "axios";
 import {DragCol} from 'vue-resizer';
+import {getDocs} from "@/api/apidocs.js";
 export default {
   components: {DragCol}, 
   props: {
@@ -307,6 +308,8 @@ export default {
 
       },
       logListDetail(index){
+
+        //로그 클릭 시 보여줄 변수들 설정
         this.isBtnClicked = false;
 
         this.statusCode = this.logList[index].status;
@@ -378,6 +381,7 @@ export default {
 
       if (this.isBtnClicked){
         console.log("버튼클릭한거");
+        //이 부분에 DB에 로그 저장하는 로직이 들어가야 함.
       } else{
         console.log("로그누른거");
       }
@@ -426,6 +430,10 @@ export default {
       }
 
 
+
+        /**Log 불러와야 하는 부분 */
+        /**this.logList 라는 배열에 Log들이 담기면 됨 */
+        /** */
         if (newindex == 1){
           //Logs 1, 2, 3은 강제설정 데이터
           var Log1 = new Object();
@@ -560,8 +568,32 @@ export default {
     Item5.Params = '';
     Item5.RequestBody = ``;
     Item5.RequestURL = 'http://k7a404.p.ssafy.io:8081/api/docs/{projectId}';
-    
-    
+
+    var testprojectID = 1;
+
+
+    var apiListMount = [];
+    getDocs({pathVariable: {projectId: testprojectID}}, (data)=>{
+      console.log(data.data.data);
+      for (let key in data.data.data){
+        console.log(data.data.data[key]);
+        // one -> 이름
+        // two -> method
+        // three -> URL
+        var Item5 = new Object();
+    Item5.type = data.data.data[key].two;
+    Item5.name = data.data.data[key].one
+    Item5.Header=`{
+
+}`;
+    Item5.PathVariable='';
+    Item5.Params = '';
+    Item5.RequestBody = ``;
+    Item5.RequestURL = data.data.data[key].three;
+
+    apiListMount.push(Item5);
+      }
+    });
 
     this.apiList = [Item4, Item1, Item2, Item3, Item5];
     this.$store.state.apiStoreList = this.apiList;
