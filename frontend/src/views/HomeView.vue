@@ -52,7 +52,7 @@
         </button>
       </div>
     </div>
-    <router-link :to="{ name: 'testjh' }">To test jh</router-link>
+    <router-link :to="{ name: 'projectview' }">To test jh</router-link>
   </div>
 </template>
 
