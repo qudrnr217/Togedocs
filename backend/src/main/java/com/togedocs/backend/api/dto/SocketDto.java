@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SocketDto {
 
-    private String userName;
+    private Integer id;
 
     private String content;
 }

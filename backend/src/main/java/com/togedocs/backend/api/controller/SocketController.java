@@ -12,14 +12,12 @@ public class SocketController {
     @SendTo("/sub/{project_id}/refresh")
     public SocketDto RefreshRequest(@DestinationVariable("project_id") Long project_id, SocketDto socketDto) {
 
-        String userName = socketDto.getUserName();
+        Integer id = socketDto.getId();
         String content = socketDto.getContent();
 
-        SocketDto result = new SocketDto(userName, content);
+        SocketDto result = new SocketDto(id, content);
 
         // MongoDB에 그게 됐다는걸 확인하고 다시 send 해주자
-        System.out.println("MongoDB에 내용을 반영 중...");
-        System.out.println("MongoDB에 내용 반영 완료...!");
 
         return result;
     }
@@ -28,10 +26,10 @@ public class SocketController {
     @SendTo("/sub/{project_id}/focus")
     public SocketDto FocusChange(@DestinationVariable("project_id") Long project_id, SocketDto socketDto) {
 
-        String userName = socketDto.getUserName();
+        Integer id = socketDto.getId();
         String content = socketDto.getContent();
 
-        SocketDto result = new SocketDto(userName, content);
+        SocketDto result = new SocketDto(id, content);
 
         return result;
     }
