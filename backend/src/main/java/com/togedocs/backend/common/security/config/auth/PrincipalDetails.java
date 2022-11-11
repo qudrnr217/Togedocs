@@ -1,6 +1,6 @@
 package com.togedocs.backend.common.security.config.auth;
 
-import com.togedocs.backend.api.dto.User;
+import com.togedocs.backend.domain.entity.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
