@@ -211,8 +211,8 @@
                             }"
                             type="text"
                             v-model="document.data[cell.rowId][cell.colId]"
-                            :class="index + '_' + col_idx"
-                            @focus="setFocus(cell.rowId, cell.colId)"
+                            :class="index + '_' + col_idx + '_false'"
+                            @focus="setFocus(cell.rowId, cell.colId, false)"
                             @keypress.enter="
                               pressEnter($event, index, col_idx, cell)
                             "
@@ -303,6 +303,12 @@
                     <q-input
                       dense
                       type="text"
+                      :class="
+                        getRowIdxFromRowId(drawerRowId) +
+                        '_' +
+                        getColIdxFromColId(col.uuid) +
+                        '_true'
+                      "
                       @keypress.enter="
                         callUpdateCell(
                           drawerRowId,
@@ -310,7 +316,7 @@
                           document.data[drawerRowId][col.uuid]
                         )
                       "
-                      @focus="setFocus(drawerRowId, col.uuid)"
+                      @focus="setFocus(drawerRowId, col.uuid, true)"
                       @blur="
                         clearFocus(),
                           callUpdateCell(
@@ -342,7 +348,7 @@ import { BASEURL } from "@/api/index.js";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import draggable from "vuedraggable";
-// import WarningDialog from "./WarningDialog.vue";
+import WarningDialog from "./WarningDialog.vue";
 
 import {
   getDocs,
@@ -378,7 +384,7 @@ import {
 export default {
   components: {
     draggable,
-    // WarningDialog,
+    WarningDialog,
   },
   setup() {
     const addColPopup = ref(false);
@@ -417,6 +423,7 @@ export default {
         isFocusing: false,
         rowId: "",
         colId: "",
+        isDrawer: false,
       }),
       initDrawer: ref(false),
       drawer: ref(false),
@@ -511,7 +518,9 @@ export default {
               this.document.data[this.focus.rowId][this.focus.colId] =
                 this.editing_content;
               document
-                .getElementsByClassName(rowIdIdx + "_" + colIdIdx)[0]
+                .getElementsByClassName(
+                  rowIdIdx + "_" + colIdIdx + "_" + this.focus.isDrawer
+                )[0]
                 .focus();
             } else {
               // 2-2. refresh를 했더니 focus가 가리키던 셀이 사라졌다면,
@@ -664,16 +673,6 @@ export default {
         this.callUpdateCol(element);
       }
     },
-    focusHighlight(position) {
-      position;
-    },
-    focusNextLine(row_idx, col_idx) {
-      if (row_idx + 1 == this.document.rows.length) return;
-      let nextLine = document.getElementsByClassName(
-        row_idx + 1 + "_" + col_idx
-      );
-      nextLine[0].focus();
-    },
     pressEnter(evt, row_idx, col_idx, cell) {
       if (evt.charCode === 13) {
         if (!evt.shiftKey) {
@@ -681,9 +680,9 @@ export default {
           if (row_idx + 1 != this.document.rows.length) {
             // can blur
             let nextLine = document.getElementsByClassName(
-              row_idx + 1 + "_" + col_idx
+              row_idx + 1 + "_" + col_idx + "_" + this.focus.isDrawer
             );
-            nextLine[0].focus();
+            if (nextLine.length > 0) nextLine[0].focus();
             return;
           }
         } else {
@@ -691,9 +690,9 @@ export default {
           if (row_idx != 0) {
             // can blur
             let nextLine = document.getElementsByClassName(
-              row_idx - 1 + "_" + col_idx
+              row_idx - 1 + "_" + col_idx + "_" + this.focus.isDrawer
             );
-            nextLine[0].focus();
+            if (nextLine.length > 0) nextLine[0].focus();
             return;
           }
         }
@@ -713,11 +712,12 @@ export default {
         JSON.stringify(req)
       );
     },
-    setFocus(rowId, colId) {
+    setFocus(rowId, colId, isDrawer) {
       this.focus = {
         isFocusing: true,
         rowId: rowId,
         colId: colId,
+        isDrawer: isDrawer,
       };
       this.focusReq(1);
     },
@@ -729,6 +729,7 @@ export default {
           isFocusing: false,
           rowId: "",
           colId: "",
+          isDrawer: false,
         };
         this.focusReq(1);
       }
