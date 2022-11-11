@@ -348,7 +348,7 @@ import { BASEURL } from "@/api/index.js";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import draggable from "vuedraggable";
-import WarningDialog from "./WarningDialog.vue";
+// import WarningDialog from "./WarningDialog.vue";
 
 import {
   getDocs,
@@ -384,7 +384,7 @@ import {
 export default {
   components: {
     draggable,
-    WarningDialog,
+    // WarningDialog,
   },
   setup() {
     const addColPopup = ref(false);
