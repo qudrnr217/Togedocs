@@ -205,7 +205,7 @@
                         >
                           <q-input
                             dense
-                            borderless=""
+                            borderless
                             :style="{
                               width: cell.width - 15 + 'px',
                             }"
@@ -292,18 +292,53 @@
             <br />
             <q-markup-table class="q-py-sm">
               <tr v-for="(col, col_idx) in document.cols" :key="col_idx">
-                <td>
-                  <strong>{{ col.name }}</strong>
+                <td style="width: 130px; vertical-align: top">
+                  <div style="height: 44px" class="column justify-center">
+                    <strong>{{ col.name }}</strong>
+                  </div>
                 </td>
                 <td>
                   <div
-                    class="drawer-input"
+                    class="drawer-input cell"
                     style="position: relative"
                     :class="{
                       active: focusesLength(drawerRowId, col.uuid) > 0,
                     }"
                   >
                     <q-input
+                      v-if="col.uuid == 'd-three' || col.uuid == 'd-two'"
+                      type="textarea"
+                      borderless
+                      autogrow
+                      dense
+                      :class="
+                        getRowIdxFromRowId(drawerRowId) +
+                        '_' +
+                        getColIdxFromColId(col.uuid) +
+                        '_true'
+                      "
+                      @keypress.enter="
+                        callUpdateCell(
+                          drawerRowId,
+                          col.uuid,
+                          document.data[drawerRowId][col.uuid]
+                        )
+                      "
+                      @focus="setFocus(drawerRowId, col.uuid, true)"
+                      @blur="
+                        clearFocus(),
+                          callUpdateCell(
+                            drawerRowId,
+                            col.uuid,
+                            document.data[drawerRowId][col.uuid]
+                          )
+                      "
+                      v-model="document.data[drawerRowId][col.uuid]"
+                      class="hoverable"
+                    />
+                    <q-input
+                      v-else
+                      borderless
                       dense
                       type="text"
                       :class="
@@ -378,7 +413,7 @@ import { BASEURL } from "@/api/index.js";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import draggable from "vuedraggable";
-// import WarningDialog from "./WarningDialog.vue";
+import WarningDialog from "./WarningDialog.vue";
 
 import {
   getDocs,
@@ -414,7 +449,7 @@ import {
 export default {
   components: {
     draggable,
-    // WarningDialog,
+    WarningDialog,
   },
   setup() {
     const addColPopup = ref(false);
@@ -515,7 +550,7 @@ export default {
     this.socket = new SockJS(BASEURL + "/ws");
     this.stompClient = Stomp.over(this.socket);
 
-    // // TODO: 주석을 해제하면 websocket 관련 console.log가 제거됩니다.
+    // // TODO: 주석을 해제하면 websocket 관련 console log가 제거됩니다.
     // this.stompClient.debug = null;
 
     this.stompClient.connect({}, () => {
@@ -626,7 +661,6 @@ export default {
           }
 
           let res_content_focus = JSON.parse(res_content.focus);
-          console.log(res_content_focus);
 
           // (common) 해당 user가 없으면 추가, 있으면 교체
           this.users[res.id] = {
@@ -771,7 +805,7 @@ export default {
     },
     clearFocus() {
       let active_tag = document.activeElement.tagName;
-      if (active_tag == "INPUT") return;
+      if (active_tag == "INPUT" || active_tag == "TEXTAREA") return;
       else {
         this.focus = {
           isFocusing: false,
