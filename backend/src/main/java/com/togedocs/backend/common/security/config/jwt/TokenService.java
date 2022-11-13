@@ -28,7 +28,7 @@ public class TokenService{
 
 
 //    @Override
-    public Token generateToken(int userId, String name, int imgNo) {
+    public Token generateToken(Long userId, String name, int imgNo) {
         long tokenPeriod = 1000L * 60L * 10L;
         long refreshPeriod = 1000L * 60L * 60L * 24L * 30L * 3L;
 //        System.out.println("email: "+email);

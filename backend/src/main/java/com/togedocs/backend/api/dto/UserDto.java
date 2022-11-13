@@ -1,25 +1,22 @@
 package com.togedocs.backend.api.dto;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.querydsl.core.annotations.QueryProjection;
+import com.togedocs.backend.domain.entity.ProjectUserRole;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@Data
-@NoArgsConstructor
+
+@Getter
+@RequiredArgsConstructor
 public class UserDto {
-//    private int id;
+    private Long id;
+    private String name;
+    private ProjectUserRole role;
 
-    private String username;
-
-    private String password;
-
-    private String email;
-
-    // TODO: 나중에 지울 컬럼
-    private String role;
-
-
-    //소셜로그인을 할 경우 어디서 받아온지 알 수 있게 알려주는 String
-    private String provider;
-    private String providerId;
-//    private Timestamp createDate;
+    @QueryProjection
+    public UserDto(Long id, String name, ProjectUserRole role){
+        this.id = id;
+        this.name = name;
+        this.role = role;
+    }
 }

@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 public class User {
     @Id //primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private int imgNo;
     private String email;

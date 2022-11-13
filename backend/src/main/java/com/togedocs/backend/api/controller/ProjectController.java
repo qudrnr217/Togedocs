@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.ws.Response;
+
 @RestController
 @RequestMapping("/api/project")
 public class ProjectController {
@@ -18,11 +20,74 @@ public class ProjectController {
     private ProjectService projectService;
 
     @PostMapping
-    public ResponseEntity<?> createProject(@RequestBody ProjectRequest.CreateProjectRequest projectRequest){
+    public ResponseEntity<?> createProject(@RequestBody ProjectRequest.CreateProjectRequest request){
         ProjectResponse.Id response;
-        response = projectService.createProject(projectRequest);
+        response = projectService.createProject(request);
         return ResponseEntity.status(200).body(response);
     }
 
+    @DeleteMapping("/{projectId}")
+    public ResponseEntity<?> deleteProject(@PathVariable Long projectId){
+        ProjectResponse.Id response;
+        try {
+            response = projectService.deleteProject(projectId);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+        return ResponseEntity.status(204).body(response);
+    }
 
+    @PostMapping("/join")
+    public ResponseEntity<?> joinProject(@RequestBody ProjectRequest.JoinProjectRequest request){
+        ProjectResponse.ProjectUser response;
+        try {
+            response = projectService.joinProject(request);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+        return ResponseEntity.status(200).body(response);
+    }
+
+    @GetMapping("/{projectId}/members")
+    public ResponseEntity<?> getMemberManageInfo(@PathVariable Long projectId){
+        ProjectResponse.MemberManageInfo response;
+        try {
+            response = projectService.getMemberManagerInfo(projectId);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+        return ResponseEntity.status(200).body(response);
+    }
+
+    @DeleteMapping("/{projectId}/member/{userId}")
+    public ResponseEntity<?> removeMember(@PathVariable Long projectId, @PathVariable Long userId){
+        ProjectResponse.MemberManageInfo response;
+        try {
+            response = projectService.removeMember(projectId, userId);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+        return ResponseEntity.status(204).body(response);
+    }
+
+    @PatchMapping("/{projectId}/member")
+    public ResponseEntity<?> updateMemberRole(@PathVariable Long projectId, @RequestBody ProjectRequest.UpdateMemberRoleRequest request){
+        ProjectResponse.MemberManageInfo response;
+        try {
+            response = projectService.updateMemberRole(projectId, request);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+        return ResponseEntity.status(200).body(response);
+    }
 }

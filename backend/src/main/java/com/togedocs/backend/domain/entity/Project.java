@@ -1,15 +1,13 @@
 package com.togedocs.backend.domain.entity;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Data
+@Getter
 @NoArgsConstructor
 public class Project {
     @Id
@@ -20,17 +18,10 @@ public class Project {
     @Column(length = 50, nullable = false)
     private String code; //초대 코드
 
-
-
-
     @Builder
-    public Project(int imgNo, String code){
-        this.imgNo=imgNo;
-        this.code=code;
+    public Project(int imgNo, String code) {
+        this.imgNo = imgNo;
+        this.code = code;
     }
-
-    @OneToMany(mappedBy = "project")
-    List<ProjectUser> projectUsers = new ArrayList<>();
-
 
 }
