@@ -18,7 +18,8 @@
             border-radius: 50%;
 
             background: var(--cultured);
-          "></div>
+          "
+        ></div>
         <div>{사용자닉네임}</div>
       </div>
     </div>
@@ -37,7 +38,6 @@ export default {
   height: 3rem;
   width: 100vw;
 
-  margin-bottom: 20px;
   align-items: center;
   background: none;
   box-shadow: 2px 2px lightgrey;
