@@ -44,7 +44,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String targetUrl;
         log.info("토큰 발행 시작");
 
-        Token token = tokenService.generateToken(user_id.getId(),user_id.getName(),user_id.getImgNo());
+        Token token = tokenService.generateToken(user_id.getId(),user_id.getName(),user_id.getImgNo(), email);
         System.out.println(token);
 //        System.out.println(token.getRefreshToken());
         log.info("{}", token);

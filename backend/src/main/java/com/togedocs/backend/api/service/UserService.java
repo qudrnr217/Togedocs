@@ -16,18 +16,8 @@ public class UserService {
         System.out.println("providerId; "+providerId);
         User userEntity = userRepository.findByProviderId(providerId);
 
+        long num=userRepository.updateByUserInfo(userEntity,userRequest);
 
-        User user = User.builder()
-                .email(userEntity.getEmail())
-                .provider(userEntity.getProvider())
-                .providerId(providerId)
-                .name(userRequest.getName())
-                .imgNo(userRequest.getImgNo())
-                .build();
-
-        userRepository.save(user);
-
-
-        return UserResponse.Id.builder().id(1).build();
+        return UserResponse.Id.builder().id((int)num).build();
     }
 }
