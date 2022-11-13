@@ -998,18 +998,6 @@ export default {
           res_doc.rows.forEach((rowId) => {
             let ith_row = [];
             res_doc.cols.forEach((col) => {
-<<<<<<< HEAD
-              if (col.category !== "PAYLOAD") {
-                let colId = col.uuid;
-                let colWidth = col.width;
-                ith_row.push({
-                  rowId: rowId,
-                  colId: colId,
-                  width: colWidth,
-                  focuses: [],
-                });
-              }
-=======
               let colId = col.uuid;
               let colWidth = col.width;
               ith_row.push({
@@ -1018,7 +1006,6 @@ export default {
                 width: colWidth,
                 focuses: [],
               });
->>>>>>> 2403c981705f78937f7fe3fa1e8f6f94231516ac
             });
             this.rowData.push(ith_row);
             this.rowActive.push(false);
