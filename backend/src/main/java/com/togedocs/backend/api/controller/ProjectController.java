@@ -1,36 +1,37 @@
 package com.togedocs.backend.api.controller;
 
-import com.togedocs.backend.api.dto.ApidocsResponse;
-import com.togedocs.backend.api.dto.ProjectDto;
 import com.togedocs.backend.api.dto.ProjectRequest;
 import com.togedocs.backend.api.dto.ProjectResponse;
 import com.togedocs.backend.api.exception.IdNotFoundException;
 import com.togedocs.backend.api.service.ProjectService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.ws.Response;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/project")
+@RequiredArgsConstructor
 public class ProjectController {
 
-    @Autowired
-    private ProjectService projectService;
+    private final ProjectService projectService;
+
 
     @PostMapping
-    public ResponseEntity<?> createProject(@RequestBody ProjectRequest.CreateProjectRequest request){
+    public ResponseEntity<?> createProject(@RequestBody ProjectRequest.CreateProjectRequest request, Principal principal) {
         ProjectResponse.Id response;
-        response = projectService.createProject(request);
+        String providerId = principal.getName();
+        response = projectService.createProject(request, providerId);
         return ResponseEntity.status(200).body(response);
     }
 
     @DeleteMapping("/{projectId}")
-    public ResponseEntity<?> deleteProject(@PathVariable Long projectId){
+    public ResponseEntity<?> deleteProject(@PathVariable Long projectId, Principal principal) {
         ProjectResponse.Id response;
+        String providerId = principal.getName();
         try {
-            response = projectService.deleteProject(projectId);
+            response = projectService.deleteProject(projectId, providerId);
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
@@ -40,10 +41,11 @@ public class ProjectController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<?> joinProject(@RequestBody ProjectRequest.JoinProjectRequest request){
+    public ResponseEntity<?> joinProject(@RequestBody ProjectRequest.JoinProjectRequest request, Principal principal) {
         ProjectResponse.ProjectUser response;
+        String providerId = principal.getName();
         try {
-            response = projectService.joinProject(request);
+            response = projectService.joinProject(request, providerId);
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
@@ -53,10 +55,11 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}/members")
-    public ResponseEntity<?> getMemberManageInfo(@PathVariable Long projectId){
+    public ResponseEntity<?> getMemberManageInfo(@PathVariable Long projectId, Principal principal) {
         ProjectResponse.MemberManageInfo response;
+        String providerId = principal.getName();
         try {
-            response = projectService.getMemberManagerInfo(projectId);
+            response = projectService.getMemberManagerInfo(projectId, providerId);
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
@@ -66,10 +69,11 @@ public class ProjectController {
     }
 
     @DeleteMapping("/{projectId}/member/{userId}")
-    public ResponseEntity<?> removeMember(@PathVariable Long projectId, @PathVariable Long userId){
-        ProjectResponse.MemberManageInfo response;
+    public ResponseEntity<?> removeMember(@PathVariable Long projectId, @PathVariable Long userId, Principal principal) {
+        ProjectResponse.Id response;
+        String providerId = principal.getName();
         try {
-            response = projectService.removeMember(projectId, userId);
+            response = projectService.removeMember(projectId, userId, providerId);
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
@@ -79,10 +83,11 @@ public class ProjectController {
     }
 
     @PatchMapping("/{projectId}/member")
-    public ResponseEntity<?> updateMemberRole(@PathVariable Long projectId, @RequestBody ProjectRequest.UpdateMemberRoleRequest request){
-        ProjectResponse.MemberManageInfo response;
+    public ResponseEntity<?> updateMemberRole(@PathVariable Long projectId, @RequestBody ProjectRequest.UpdateMemberRoleRequest request, Principal principal) {
+        ProjectResponse.Id response;
+        String providerId = principal.getName();
         try {
-            response = projectService.updateMemberRole(projectId, request);
+            response = projectService.updateMemberRole(projectId, request, providerId);
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {

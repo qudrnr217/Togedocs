@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +34,13 @@ public class ProjectService {
                 .orElseThrow(() -> new IdNotFoundException("projectId"));
     }
 
-    public ProjectResponse.Id createProject(ProjectRequest.CreateProjectRequest projectRequest) {
-        // TODO 1. code 생성하기
+    public ProjectUser findProjectUser(Long projectId, Long userId) throws IdNotFoundException {
+        return projectUserRepository.findByProjectIdAndUserId(projectId, userId)
+                .orElseThrow(() -> new IdNotFoundException("projectId and userId"));
+    }
+
+    public ProjectResponse.Id createProject(ProjectRequest.CreateProjectRequest projectRequest, String loginUserProviderId) {
+        // 1. code 생성하기
         String code = UUID.randomUUID().toString();
 
         // 2. project insert
@@ -67,8 +73,8 @@ public class ProjectService {
 
         // 4. project_user insert
         // 생성한 사람한테 admin 권한 부여
-        // TODO 사용자 정보 꺼내기
-        User user = userRepository.findById(1L).get();
+        // 사용자 정보 꺼내기
+        User user = userRepository.findByProviderId(loginUserProviderId);
 
         ProjectUser projectUser = ProjectUser.builder()
                 .project(project)
@@ -82,8 +88,13 @@ public class ProjectService {
 
 
     @Transactional
-    public ProjectResponse.Id deleteProject(Long projectId) throws IdNotFoundException {
-        // TODO 1. user가 매니저인지 확인하기
+    public ProjectResponse.Id deleteProject(Long projectId, String loginUserProviderId) throws IdNotFoundException {
+        // 1. user 확인 (admin)
+        User user = userRepository.findByProviderId(loginUserProviderId);
+        ProjectUser loginProjectUser = findProjectUser(projectId, user.getId());
+        if (loginProjectUser.getRole() != ProjectUserRole.ADMIN) {
+            throw new AccessDeniedException("Login User is not ADMIN");
+        }
 
         // 2. RDB에서 삭제 (Project, project user 테이블에서 삭제)
         Project project = findById(projectId);
@@ -99,12 +110,13 @@ public class ProjectService {
     }
 
 
-    public ProjectResponse.ProjectUser joinProject(ProjectRequest.JoinProjectRequest request) throws IdNotFoundException {
+    public ProjectResponse.ProjectUser joinProject(ProjectRequest.JoinProjectRequest request, String loginUserProviderId) throws IdNotFoundException {
         // 1. project에서 code가 동일한 레코드 찾기
-        Project project = projectRepository.findByCode(request.getCode()).orElseThrow(() -> new IdNotFoundException("project code"));
+        Project project = projectRepository.findByCode(request.getCode())
+                .orElseThrow(() -> new IdNotFoundException("project code"));
 
-        // TODO 2. user 정보 꺼내기
-        User user = userRepository.findById(2L).get();
+        // 2. user 정보 꺼내기
+        User user = userRepository.findByProviderId(loginUserProviderId);
 
         // 3. Project user insert하기 (기본 role은 member)
         ProjectUser projectUser = ProjectUser.builder()
@@ -113,44 +125,57 @@ public class ProjectService {
                 .role(ProjectUserRole.MEMBER)
                 .build();
         projectUserRepository.save(projectUser);
-
         return ProjectResponse.ProjectUser.build(project.getId(), user.getId(), projectUser.getRole());
     }
 
 
-    public ProjectResponse.MemberManageInfo getMemberManagerInfo(Long projectId) throws IdNotFoundException {
-        // TODO 1. user 확인 (프로젝트 멤버인지)
+    public ProjectResponse.MemberManageInfo getMemberManagerInfo(Long projectId, String loginUserProviderId) throws IdNotFoundException {
+        // 1. user 확인 (member or admin)
+        User user = userRepository.findByProviderId(loginUserProviderId);
+        ProjectUser loginProjectUser = findProjectUser(projectId, user.getId());
 
         // 2. project 테이블에서 code를 꺼내기
         String code = findById(projectId).getCode();
+
         // 3. project user 테이블에서 user와 role을 꺼내 list로 만들기
         List<UserDto> members = projectUserRepository.getMembers(projectId);
         return ProjectResponse.MemberManageInfo.build(projectId, members, code);
     }
 
-    public ProjectResponse.MemberManageInfo removeMember(Long projectId, Long userId) throws IdNotFoundException {
-        // TODO 1. 매니저인지 확인
+    public ProjectResponse.Id removeMember(Long projectId, Long userId, String loginUserProviderId) throws IdNotFoundException {
+        // TODO 리턴 타입 미정
+        // 1. user 확인 (admin)
+        User user = userRepository.findByProviderId(loginUserProviderId);
+        ProjectUser loginProjectUser = findProjectUser(projectId, user.getId());
+        if (loginProjectUser.getRole() != ProjectUserRole.ADMIN) {
+            throw new AccessDeniedException("Login User is not ADMIN");
+        }
 
         // TODO 2. 삭제 후 매니저가 1명 이상 남아있어야 함
 
         // 3. project user 삭제
-        ProjectUser projectUser = projectUserRepository.findByProjectIdAndUserId(projectId, userId)
-                .orElseThrow(() -> new IdNotFoundException("projectId and userId"));
+        ProjectUser projectUser = findProjectUser(projectId, userId);
         projectUserRepository.deleteById(projectUser.getId());
-
-        return null;
+        return ProjectResponse.Id.build(projectId);
     }
 
 
     @Transactional
-    public ProjectResponse.MemberManageInfo updateMemberRole(Long projectId, ProjectRequest.UpdateMemberRoleRequest request) throws IdNotFoundException {
-        // TODO 1. 매니저인지 확인
+    public ProjectResponse.Id updateMemberRole(Long projectId, ProjectRequest.UpdateMemberRoleRequest request, String loginUserProviderId) throws IdNotFoundException {
+        // TODO 리턴 타입 미정
+        // 1. user 확인 (admin)
+        User user = userRepository.findByProviderId(loginUserProviderId);
+        ProjectUser loginProjectUser = findProjectUser(projectId, user.getId());
+        if (loginProjectUser.getRole() != ProjectUserRole.ADMIN) {
+            throw new AccessDeniedException("Login User is not ADMIN");
+        }
 
         // 2. project user role 업데이트
         // TODO 고려할 점 : 다른 매니저를 강등할 수 있는지? 혹은 MEMBER -> ADMIN만 가능?
         Long updatedResult = projectUserRepository.updateMemberRole(projectId, request);
-        if (updatedResult == 0) throw new IdNotFoundException("projectId and userId");
-
-        return null;
+        if (updatedResult == 0) {
+            throw new IdNotFoundException("projectId and userId");
+        }
+        return ProjectResponse.Id.build(projectId);
     }
 }
