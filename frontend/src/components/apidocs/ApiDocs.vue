@@ -121,7 +121,7 @@
               :thumb-style="thumbStyle"
             >
               <div style="overflow: auto">
-                <div>My Name : {{ userName }}</div>
+                <div>My Name : {{ myName }}</div>
                 <div>My Focus : {{ focus }}</div>
                 <div>Cooperators : {{ users }}</div>
                 projectId: {{ document.projectId }}
@@ -296,13 +296,7 @@
                       <div
                         @mouseover="rowActive[index] = true"
                         @mouseleave="rowActive[index] = false"
-                        class="
-                          q-pa-sm q-ma-xs
-                          text-right
-                          cell-no
-                          handle-row
-                          drag-item
-                        "
+                        class="q-pa-sm q-ma-xs text-right cell-no handle-row drag-item"
                       >
                         <template v-if="!rowActive[index]">
                           {{ index + 1 }}
@@ -310,10 +304,9 @@
                         <template v-else>
                           <q-icon :name="fasGripVertical" />
                         </template>
-                        <!-- <q-icon name="drag_indicator" class="handle-row" size="20px" /> -->
                       </div>
                       <template
-                        v-for="(cell, col_idx) in element"
+                        v-for="(cell, col_idx) in element.slice(0, -3)"
                         :key="col_idx"
                       >
                         <div
@@ -323,14 +316,14 @@
                         >
                           <q-input
                             dense
-                            borderless=""
+                            borderless
                             :style="{
                               width: cell.width - 15 + 'px',
                             }"
                             type="text"
                             v-model="document.data[cell.rowId][cell.colId]"
-                            :class="index + '_' + col_idx"
-                            @focus="setFocus(cell.rowId, cell.colId)"
+                            :class="index + '_' + col_idx + '_false'"
+                            @focus="setFocus(cell.rowId, cell.colId, false)"
                             @keypress.enter="
                               pressEnter($event, index, col_idx, cell)
                             "
@@ -408,31 +401,108 @@
             >
             </q-btn>
             <br />
-            <q-markup-table>
-              <tr v-for="(col, colId) in document.cols" :key="colId">
-                <td>
-                  <strong>{{ col.name }}</strong>
+            <q-markup-table class="q-py-sm">
+              <tr v-for="(col, col_idx) in document.cols" :key="col_idx">
+                <td style="width: 130px; vertical-align: top">
+                  <div style="height: 44px" class="column justify-center">
+                    <strong>{{ col.name }}</strong>
+                  </div>
                 </td>
                 <td>
-                  <q-input
-                    dense
-                    type="text"
-                    @keypress.enter="
-                      callUpdateCell(
-                        drawerRowId,
-                        col.uuid,
-                        document.data[drawerRowId][col.uuid]
-                      )
-                    "
-                    @blur="
-                      callUpdateCell(
-                        drawerRowId,
-                        col.uuid,
-                        document.data[drawerRowId][col.uuid]
-                      )
-                    "
-                    v-model="document.data[drawerRowId][col.uuid]"
-                  />
+                  <div
+                    class="drawer-input cell"
+                    style="position: relative"
+                    :class="{
+                      active: focusesLength(drawerRowId, col.uuid) > 0,
+                    }"
+                  >
+                    <q-input
+                      v-if="col.uuid == 'd-three' || col.uuid == 'd-two'"
+                      type="textarea"
+                      borderless
+                      autogrow
+                      dense
+                      :class="
+                        getRowIdxFromRowId(drawerRowId) +
+                        '_' +
+                        getColIdxFromColId(col.uuid) +
+                        '_true'
+                      "
+                      @keypress.enter="
+                        callUpdateCell(
+                          drawerRowId,
+                          col.uuid,
+                          document.data[drawerRowId][col.uuid]
+                        )
+                      "
+                      @focus="setFocus(drawerRowId, col.uuid, true)"
+                      @blur="
+                        clearFocus(),
+                          callUpdateCell(
+                            drawerRowId,
+                            col.uuid,
+                            document.data[drawerRowId][col.uuid]
+                          )
+                      "
+                      v-model="document.data[drawerRowId][col.uuid]"
+                      class="hoverable"
+                    />
+                    <q-input
+                      v-else
+                      borderless
+                      dense
+                      type="text"
+                      :class="
+                        getRowIdxFromRowId(drawerRowId) +
+                        '_' +
+                        getColIdxFromColId(col.uuid) +
+                        '_true'
+                      "
+                      @keypress.enter="
+                        callUpdateCell(
+                          drawerRowId,
+                          col.uuid,
+                          document.data[drawerRowId][col.uuid]
+                        )
+                      "
+                      @focus="setFocus(drawerRowId, col.uuid, true)"
+                      @blur="
+                        clearFocus(),
+                          callUpdateCell(
+                            drawerRowId,
+                            col.uuid,
+                            document.data[drawerRowId][col.uuid]
+                          )
+                      "
+                      v-model="document.data[drawerRowId][col.uuid]"
+                      class="hoverable"
+                    />
+                    <div class="hide">
+                      <template
+                        v-if="focusesLength(drawerRowId, col.uuid) == 1"
+                      >
+                        {{
+                          rowData[getRowIdxFromRowId(drawerRowId)][
+                            getColIdxFromColId(col.uuid)
+                          ].focuses[0]
+                        }}
+                      </template>
+                      <template
+                        v-else-if="focusesLength(drawerRowId, col.uuid) > 1"
+                      >
+                        {{
+                          rowData[getRowIdxFromRowId(drawerRowId)][
+                            getColIdxFromColId(col.uuid)
+                          ].focuses[0]
+                        }},
+                        {{
+                          rowData[getRowIdxFromRowId(drawerRowId)][
+                            getColIdxFromColId(col.uuid)
+                          ].focuses[1]
+                        }}...
+                      </template>
+                    </div>
+                  </div>
                 </td>
               </tr>
             </q-markup-table>
@@ -441,8 +511,9 @@
         <div
           v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeDrawer"
           class="q-drawer__resizer"
-        ></div> </q-drawer
-    ></template>
+        ></div>
+      </q-drawer>
+    </template>
   </div>
 </template>
 
@@ -531,11 +602,7 @@ export default {
 
       rowData: ref([]),
       rowActive: ref([]),
-      focus: ref({
-        isFocusing: false,
-        rowId: "",
-        colId: "",
-      }),
+
       initDrawer: ref(false),
       drawer: ref(false),
       drawerWidth,
@@ -553,10 +620,20 @@ export default {
 
       addColPopup,
       updateColName: ref(""),
-      userName: ref(""),
+
+      myId: ref(0),
+      myName: ref("user_" + 0),
       users: ref({}),
       avatarLimit: 3,
+      focus: ref({
+        isFocusing: false,
+        rowId: "",
+        colId: "",
+        isDrawer: false,
+      }),
+
       editing_content: ref(""),
+
       thumbStyle: {
         right: "3px",
         bottom: "3px",
@@ -589,11 +666,16 @@ export default {
   mounted() {
     this.callGetDocs();
 
-    this.userName = "user_" + Math.round(Math.random() * 100); // 나중에 유저를 token에서 가져오자.
+    this.myId = Math.round(Math.random() * 100).toString(); // 나중에 유저를 token에서 가져오자.
+    this.myName = "user_" + this.myId;
 
     // WEBSOCKET CONNECTION
     this.socket = new SockJS(BASEURL + "/ws");
     this.stompClient = Stomp.over(this.socket);
+
+    // // TODO: 주석을 해제하면 websocket 관련 console log가 제거됩니다.
+    // this.stompClient.debug = null;
+
     this.stompClient.connect({}, () => {
       this.stompClient.subscribe(
         "/sub/" + this.projectId + "/refresh",
@@ -634,7 +716,9 @@ export default {
               this.document.data[this.focus.rowId][this.focus.colId] =
                 this.editing_content;
               document
-                .getElementsByClassName(rowIdIdx + "_" + colIdIdx)[0]
+                .getElementsByClassName(
+                  rowIdIdx + "_" + colIdIdx + "_" + this.focus.isDrawer
+                )[0]
                 .focus();
             } else {
               // 2-2. refresh를 했더니 focus가 가리키던 셀이 사라졌다면,
@@ -648,70 +732,77 @@ export default {
         let res = JSON.parse(msg.body);
         let res_content = JSON.parse(res.content);
 
-        let rowIdIdx = -2,
-          colIdIdx = -2;
-        if (this.users[res.userName]) {
-          rowIdIdx = this.getRowIdxFromRowId(this.users[res.userName].rowId);
-          colIdIdx = this.getColIdxFromColId(this.users[res.userName].colId);
-        }
-        // -2라면 애초에 res.userName이 없었던 것
-        // -1라면 res.userName은 있지만 request를 받은 시점에 rows/cols에 focus하던 cell이 없어진 것
-
         if (res_content == 0) {
           // 0. focusReq(0)를 받았으니 내 focus 정보를 focusReq(1)로 돌려준다.
           this.focusReq(1);
         } else if (res_content == 2) {
           // 2. focusReq(2)를 받았으니 송신자의 정보를 지운다.
-          // - users에 userName이 있다면 지운다.
-          if (this.users[res.userName]) {
-            // 2-1. userName이 isFocusing이었을 경우 rowData의 focuses에서 userName을 지운다.
+          // - users에 id가 있다면 지운다.
+          if (this.users[res.id]) {
+            // 2-1. id가 isFocusing이었을 경우 rowData의 focuses에서 id를 지운다.
+            let rowIdIdx = this.getRowIdxFromRowId(
+                this.users[res.id].focus.rowId
+              ),
+              colIdIdx = this.getColIdxFromColId(
+                this.users[res.id].focus.colId
+              );
             if (
-              this.users[res.userName].isFocusing &&
+              this.users[res.id].focus.isFocusing &&
               rowIdIdx > -1 &&
               colIdIdx > -1
             ) {
               let index = this.rowData[rowIdIdx][colIdIdx].focuses.indexOf(
-                res.userName
+                res.id
               );
               this.rowData[rowIdIdx][colIdIdx].focuses.splice(index, 1);
             }
-            // 2-2. users에서 userName을 지운다.
-            delete this.users[res.userName];
+            // 2-2. users에서 id를 지운다.
+            delete this.users[res.id];
           }
         } else {
           // 1. focusReq(1)를 받았으니 내 users 변수에 신규/변경내용을 저장해준다.
 
           // 1-0. 내가 보냈다면 변경하지 않아도 됨.
-          if (res.userName == this.userName) return;
+          // TODO: 내 ID 관련 수정할 사항이 많이 생길 듯
+          if (res.id == this.myId) return;
 
           // 1-1. 요청한 사람이...
           // 신규가 아닌, 있던 유저이면서, isFocusing = true 라면 : focus를 지워주고,
-          if (
-            this.users[res.userName] &&
-            this.users[res.userName].isFocusing &&
-            rowIdIdx > -1 &&
-            colIdIdx > -1
-          ) {
-            let index = this.rowData[rowIdIdx][colIdIdx].focuses.indexOf(
-              res.userName
-            );
-            this.rowData[rowIdIdx][colIdIdx].focuses.splice(index, 1);
+          if (this.users[res.id] && this.users[res.id].focus.isFocusing) {
+            let rowIdIdx = this.getRowIdxFromRowId(
+                this.users[res.id].focus.rowId
+              ),
+              colIdIdx = this.getColIdxFromColId(
+                this.users[res.id].focus.colId
+              );
+            if (rowIdIdx > -1 && colIdIdx > -1) {
+              let index = this.rowData[rowIdIdx][colIdIdx].focuses.indexOf(
+                res.id
+              );
+              this.rowData[rowIdIdx][colIdIdx].focuses.splice(index, 1);
+            }
           }
 
+          let res_content_focus = JSON.parse(res_content.focus);
+
           // (common) 해당 user가 없으면 추가, 있으면 교체
-          this.users[res.userName] = {
-            isFocusing: res_content.isFocusing,
-            rowId: res_content.rowId,
-            colId: res_content.colId,
+          this.users[res.id] = {
+            name: res_content.name,
+            imgNo: res_content.imgNo,
+            focus: {
+              isFocusing: res_content_focus.isFocusing,
+              rowId: res_content_focus.rowId,
+              colId: res_content_focus.colId,
+            },
           };
 
           // 1-2. 요청한 사람이
           // isFocusing = true 라면 : 새 focus를 push 해줌.
-          if (res_content.isFocusing) {
-            rowIdIdx = this.getRowIdxFromRowId(res_content.rowId);
-            colIdIdx = this.getColIdxFromColId(res_content.colId);
+          if (res_content_focus.isFocusing) {
+            let rowIdIdx = this.getRowIdxFromRowId(res_content_focus.rowId),
+              colIdIdx = this.getColIdxFromColId(res_content_focus.colId);
             if (rowIdIdx > -1 && colIdIdx > -1) {
-              this.rowData[rowIdIdx][colIdIdx].focuses.push(res.userName);
+              this.rowData[rowIdIdx][colIdIdx].focuses.push(res.id);
             }
           }
         }
@@ -792,16 +883,6 @@ export default {
         this.callUpdateCol(element);
       }
     },
-    focusHighlight(position) {
-      position;
-    },
-    focusNextLine(row_idx, col_idx) {
-      if (row_idx + 1 == this.document.rows.length) return;
-      let nextLine = document.getElementsByClassName(
-        row_idx + 1 + "_" + col_idx
-      );
-      nextLine[0].focus();
-    },
     pressEnter(evt, row_idx, col_idx, cell) {
       if (evt.charCode === 13) {
         if (!evt.shiftKey) {
@@ -809,9 +890,9 @@ export default {
           if (row_idx + 1 != this.document.rows.length) {
             // can blur
             let nextLine = document.getElementsByClassName(
-              row_idx + 1 + "_" + col_idx
+              row_idx + 1 + "_" + col_idx + "_" + this.focus.isDrawer
             );
-            nextLine[0].focus();
+            if (nextLine.length > 0) nextLine[0].focus();
             return;
           }
         } else {
@@ -819,9 +900,9 @@ export default {
           if (row_idx != 0) {
             // can blur
             let nextLine = document.getElementsByClassName(
-              row_idx - 1 + "_" + col_idx
+              row_idx - 1 + "_" + col_idx + "_" + this.focus.isDrawer
             );
-            nextLine[0].focus();
+            if (nextLine.length > 0) nextLine[0].focus();
             return;
           }
         }
@@ -834,36 +915,38 @@ export default {
       }
     },
     refreshReq() {
-      const req = { userName: this.userName, content: null };
+      const req = { id: this.myId, content: null };
       this.stompClient.send(
         "/pub/" + this.projectId + "/refresh",
         {},
         JSON.stringify(req)
       );
     },
-    setFocus(rowId, colId) {
+    setFocus(rowId, colId, isDrawer) {
       this.focus = {
         isFocusing: true,
         rowId: rowId,
         colId: colId,
+        isDrawer: isDrawer,
       };
       this.focusReq(1);
     },
     clearFocus() {
       let active_tag = document.activeElement.tagName;
-      if (active_tag == "INPUT") return;
+      if (active_tag == "INPUT" || active_tag == "TEXTAREA") return;
       else {
         this.focus = {
           isFocusing: false,
           rowId: "",
           colId: "",
+          isDrawer: false,
         };
         this.focusReq(1);
       }
     },
     focusReq(type) {
       let req = {
-        userName: this.userName,
+        id: this.myId,
         content: null,
       };
 
@@ -878,9 +961,13 @@ export default {
       } else if (type == 1) {
         // 1. 내 focus를 전송함.
         req.content = JSON.stringify({
-          isFocusing: this.focus.isFocusing,
-          rowId: this.focus.rowId,
-          colId: this.focus.colId,
+          name: this.myName,
+          imgNo: this.imgNo,
+          focus: JSON.stringify({
+            isFocusing: this.focus.isFocusing,
+            rowId: this.focus.rowId,
+            colId: this.focus.colId,
+          }),
         });
         this.stompClient.send(
           "/pub/" + this.projectId + "/focus",
@@ -911,6 +998,7 @@ export default {
           res_doc.rows.forEach((rowId) => {
             let ith_row = [];
             res_doc.cols.forEach((col) => {
+<<<<<<< HEAD
               if (col.category !== "PAYLOAD") {
                 let colId = col.uuid;
                 let colWidth = col.width;
@@ -921,23 +1009,33 @@ export default {
                   focuses: [],
                 });
               }
+=======
+              let colId = col.uuid;
+              let colWidth = col.width;
+              ith_row.push({
+                rowId: rowId,
+                colId: colId,
+                width: colWidth,
+                focuses: [],
+              });
+>>>>>>> 2403c981705f78937f7fe3fa1e8f6f94231516ac
             });
             this.rowData.push(ith_row);
             this.rowActive.push(false);
           });
 
           // this.users를 순회하며 공동 작업중인 user들의 focus를 채워줌
-          for (let userName in this.users) {
-            let info = this.users[userName];
-            if (info.isFocusing) {
-              let rowIdIdx = this.getRowIdxFromRowId(info.rowId);
-              let colIdIdx = this.getColIdxFromColId(info.colId);
+          for (let id in this.users) {
+            let info = this.users[id];
+            if (info.focus.isFocusing) {
+              let rowIdIdx = this.getRowIdxFromRowId(info.focus.rowId);
+              let colIdIdx = this.getColIdxFromColId(info.focus.colId);
               // -1일 경우 가리키던 row/col가 사라졌다는 뜻
 
               if (rowIdIdx == -1 || colIdIdx == -1) {
-                this.users[userName].isFocusing = false;
+                this.users[id].focus.isFocusing = false;
               } else {
-                this.rowData[rowIdIdx][colIdIdx].focuses.push(userName);
+                this.rowData[rowIdIdx][colIdIdx].focuses.push(id);
               }
             }
           }
@@ -1135,6 +1233,13 @@ export default {
       element.name = this.updateColName;
       this.callUpdateCol(element);
     },
+    focusesLength(rowId, colId) {
+      let rowIdIdx = this.getRowIdxFromRowId(rowId),
+        colIdIdx = this.getColIdxFromColId(colId);
+      if (rowIdIdx > -1 && colIdIdx > -1)
+        return this.rowData[rowIdIdx][colIdIdx].focuses.length;
+      return 0;
+    },
   },
 };
 </script>
@@ -1159,6 +1264,11 @@ export default {
 }
 .active {
   outline: 2px solid skyblue;
+  border-radius: 5px;
+}
+
+.drawer-input {
+  padding: 3px 10px;
 }
 .col-width-handle {
   position: absolute;
