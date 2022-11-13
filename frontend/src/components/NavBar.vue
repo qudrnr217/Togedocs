@@ -2,7 +2,7 @@
   <q-header>
     <div class="navbar">
       <div class="navbar-pages">
-        <router-link :to="{ name: 'select' }">
+        <router-link :to="{ name: 'select' }" style="color: var(--coral)">
           <div>프로젝트 선택</div></router-link
         >
         <router-link :to="{ name: 'docs' }">
@@ -18,8 +18,9 @@
             border-radius: 50%;
 
             background: var(--cultured);
-          "></div>
-        <div>{사용자닉네임}</div>
+          "
+        ></div>
+        <div style="color: var(--coral)">{사용자닉네임}</div>
       </div>
     </div>
   </q-header>
@@ -37,10 +38,9 @@ export default {
   height: 3rem;
   width: 100vw;
 
-  margin-bottom: 20px;
   align-items: center;
   background: none;
-  box-shadow: 2px 2px lightgrey;
+  box-shadow: 4px 4px var(--cultured);
   font-weight: bold;
   justify-content: space-between;
 }
