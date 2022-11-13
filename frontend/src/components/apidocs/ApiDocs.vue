@@ -4,6 +4,117 @@
       <q-page class="row">
         <div class="col q-ma-xs">
           <div class="column full-height">
+            <div class="q-pa-xs row" style="min-width: 650px">
+              <div class="q-pa-sm col-7" style="background-color: pink">
+                <div class="row title">Project Title</div>
+                <div class="row desc">
+                  <div class="col">Project Description</div>
+                  <div class="col">Project Base URL</div>
+                </div>
+              </div>
+              <div class="q-pa-sm col-5" style="background-color: skyblue">
+                <div class="row justify-end">
+                  <div class="" style="position: relative">
+                    <q-avatar
+                      v-if="Object.keys(users).length > avatarLimit"
+                      size="40px"
+                      class="overlapping"
+                      :style="`right: 0px`"
+                      ><q-tooltip>
+                        <div v-for="(v, i) in 3" :key="i">user name</div>
+                      </q-tooltip>
+                      <img :src="`https://dummyimage.com/200`" />
+                    </q-avatar>
+                    <q-avatar
+                      v-for="(value, i) in getAvatarList()"
+                      :key="i"
+                      size="40px"
+                      class="overlapping"
+                      :style="`right: ${(i + 1) * 30}px`"
+                    >
+                      <img :src="`https://picsum.photos/200`" />
+                      <q-tooltip>user name</q-tooltip>
+                    </q-avatar>
+                  </div>
+                  <div class="" style="padding: 0px 10px">
+                    <q-btn label="멤버 관리" style="min-width: 95px">
+                      <q-popup-proxy>
+                        <q-card>
+                          <q-card-section>
+                            <div class="text-h6">팀원 목록</div>
+                            <q-scroll-area
+                              style="height: 175px; background-color: yellow"
+                              :thumb-style="thumbStyle"
+                            >
+                              <q-list>
+                                <q-item
+                                  v-for="(value, i) in 5"
+                                  :key="i"
+                                  style="min-height: 35px"
+                                >
+                                  <q-item-section avatar>
+                                    <q-avatar size="30px">
+                                      <img
+                                        src="https://cdn.quasar.dev/img/avatar6.jpg"
+                                      />
+                                    </q-avatar>
+                                  </q-item-section>
+                                  <q-item-section>Jane</q-item-section
+                                  ><q-item-section side
+                                    ><q-select
+                                      borderless
+                                      v-model="model"
+                                      :options="options"
+                                  /></q-item-section>
+                                </q-item> </q-list
+                            ></q-scroll-area>
+                          </q-card-section>
+                          <q-separator />
+                          <q-card-section>
+                            <div class="text-h6">초대하기</div>
+                            <q-btn>
+                              <q-icon left :name="farClipboard" />
+                              <div>초대코드 복사하기</div>
+                            </q-btn>
+                          </q-card-section>
+                        </q-card>
+                        <!-- </q-banner> -->
+                      </q-popup-proxy>
+                      <q-dialog v-model="confirm" persistent>
+                        <q-card>
+                          <q-card-section class="row items-center">
+                            <q-avatar
+                              icon="signal_wifi_off"
+                              color="primary"
+                              text-color="white"
+                            />
+                            <span class="q-ml-sm"
+                              >You are currently not connected to any
+                              network.</span
+                            >
+                          </q-card-section>
+
+                          <q-card-actions align="right">
+                            <q-btn
+                              flat
+                              label="Cancel"
+                              color="primary"
+                              v-close-popup
+                            />
+                            <q-btn
+                              flat
+                              label="Turn on Wifi"
+                              color="primary"
+                              v-close-popup
+                            />
+                          </q-card-actions>
+                        </q-card>
+                      </q-dialog>
+                    </q-btn>
+                  </div>
+                </div>
+              </div>
+            </div>
             <q-scroll-area
               class="col q-pa-sm"
               visible
@@ -440,10 +551,15 @@ import {
   fasGripLinesVertical,
   fasAnglesRight,
   fasGripVertical,
+  farClipboard,
+  fasArrowRightFromBracket,
+  fasCircleXmark,
 } from "@quasar/extras/fontawesome-v6";
 import {
   mdiDragVerticalVariant,
   mdiArrowLeftBottomBold,
+  mdiExitToApp,
+  mdiCloseCircle,
 } from "@quasar/extras/mdi-v6";
 
 export default {
@@ -464,6 +580,8 @@ export default {
     });
 
     return {
+      model: ref(null),
+      options: ["Google", "Facebook", "Twitter", "Apple", "Oracle"],
       // TODO: 나중에 자동으로 받아와서 채우는 걸로 변경
       projectId: ref(1),
       document: ref({
@@ -506,7 +624,7 @@ export default {
       myId: ref(0),
       myName: ref("user_" + 0),
       users: ref({}),
-
+      avatarLimit: 3,
       focus: ref({
         isFocusing: false,
         rowId: "",
@@ -536,8 +654,13 @@ export default {
       fasGripLinesVertical,
       fasAnglesRight,
       fasGripVertical,
+      farClipboard,
+      fasArrowRightFromBracket,
+      fasCircleXmark,
       mdiDragVerticalVariant,
       mdiArrowLeftBottomBold,
+      mdiExitToApp,
+      mdiCloseCircle,
     };
   },
   mounted() {
@@ -695,6 +818,11 @@ export default {
     window.removeEventListener("beforeunload", this.unLoadEvent);
   },
   methods: {
+    getAvatarList() {
+      return this.avatarLimit
+        ? Object.keys(this.users).slice(0, this.avatarLimit)
+        : Object.keys(this.users);
+    },
     // getColIdxFromColId와 getRowIdxFromRowId는 없을 시 -1을 반환함.
     // 호출할 때마다 -1에 대한 예외처리를 해줘야 함.
     getColIdxFromColId(colId) {
@@ -1104,6 +1232,12 @@ export default {
 </script>
 
 <style scoped>
+.title {
+  font-size: 25px;
+}
+.desc {
+  font-size: 13px;
+}
 .cell {
   position: relative;
   background: whitesmoke;
@@ -1170,5 +1304,9 @@ export default {
 }
 .dragging-item {
   cursor: grabbing !important;
+}
+.overlapping {
+  border: white;
+  position: absolute;
 }
 </style>
