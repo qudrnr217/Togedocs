@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.security.Principal;
 
 
@@ -30,17 +31,15 @@ public class UserController {
         return "<h1>Test</h1>";
     }
 
+    @Transactional
     @PatchMapping("/info")
     public ResponseEntity<?> modifyUser(@RequestBody UserRequest.ModifyUserRequest userRequest, Principal principal ){
         UserResponse.Id response;
-
+        System.out.println("hi");
         String providerId = principal.getName();
         System.out.println(providerId);
 
         response = userService.modifyUser(userRequest,providerId);
-
-
-
 
         return ResponseEntity.status(200).body(response);
     }
