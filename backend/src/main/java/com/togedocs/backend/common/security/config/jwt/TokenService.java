@@ -28,12 +28,14 @@ public class TokenService{
 
 
 //    @Override
-    public Token generateToken(String email) {
+    public Token generateToken(int userId, String name, int imgNo) {
         long tokenPeriod = 1000L * 60L * 10L;
         long refreshPeriod = 1000L * 60L * 60L * 24L * 30L * 3L;
-        System.out.println("email: "+email);
-        Claims claims = Jwts.claims().setSubject(email);
-        claims.put("email",email);
+//        System.out.println("email: "+email);
+        Claims claims = Jwts.claims().setSubject(name);
+        claims.put("name",name);
+        claims.put("userId",userId);
+        claims.put("imgNo",imgNo);
 
         Date now = new Date();
         Token token = new Token(
@@ -70,7 +72,7 @@ public class TokenService{
         }
     }
     public String getUid(String token) {
-//        System.out.println(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token));
+        System.out.println(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token));
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 }

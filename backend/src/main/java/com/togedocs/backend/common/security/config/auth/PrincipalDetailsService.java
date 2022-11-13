@@ -2,7 +2,7 @@ package com.togedocs.backend.common.security.config.auth;
 
 
 import com.togedocs.backend.domain.entity.User;
-import com.togedocs.backend.common.security.repository.UserRepository;
+import com.togedocs.backend.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,9 +19,9 @@ public class PrincipalDetailsService implements UserDetailsService {
 
     //시큐리티 세션(내부 Authentication(내부 UserDetails))
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String providerId) throws UsernameNotFoundException {
 
-        User userEntitiy =userRepository.findByUsername(username);
+        User userEntitiy =userRepository.findByProviderId(providerId);
         if(userEntitiy != null){
             //유저가 있을 경우
             return new PrincipalDetails(userEntitiy);
