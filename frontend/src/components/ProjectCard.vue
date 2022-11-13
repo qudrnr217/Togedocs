@@ -1,9 +1,10 @@
 <template>
-  <div class="container row justify-around black05">
+  <div class="container row justify-around">
     <div>
-      <q-avatar class="col-md-2" size="7vw">
+      <q-avatar class="col-md-2" size="6vw">
         <img
-          src="https://secure.gravatar.com/avatar/20bbf5d322e0760a476480837f6cc85e?s=180&d=identicon" />
+          src="https://secure.gravatar.com/avatar/20bbf5d322e0760a476480837f6cc85e?s=180&d=identicon"
+        />
       </q-avatar>
     </div>
     <div class="col-md-6">
@@ -14,25 +15,21 @@
         </div>
       </div>
     </div>
-    <div class="col-md-2 column">
-      <div class="timetable">
-        <b>시작일</b>
-        <div>{2022.11.07}</div>
-        <b>종료일</b>
-        <div>{2022.11.08}</div>
-      </div>
-    </div>
+    <div class="col-md-2 column"></div>
     <div class="col-md-2 column">
       <q-btn
-        class="col q-ma-md"
+        class="col q-ma-md bold padding"
+        color="accent"
         rounded
         label="프로젝트 이동"
-        @click="goToProjectUrl" />
+        @click="goToProjectUrl"
+      />
       <q-btn
-        class="col q-ma-md"
+        class="col q-ma-md bold"
         rounded
         label="API 문서 이동"
-        @click="goToApiDocs" />
+        @click="goToApiDocs"
+      />
     </div>
   </div>
 </template>
@@ -56,33 +53,40 @@ export default {
 .container {
   width: 80vw;
   height: 20vh;
-  background: linear-gradient(25deg, #b8ceef, #c0f5fb, #f8f8ba);
+  background: rgb(255, 255, 255);
   display: flex;
   align-items: center;
   margin: 1rem 0 1rem 0;
-  border-radius: 8px;
-  box-shadow: 5px 5px lightgrey;
+  border-radius: 20px;
+  box-shadow: 5px 5px rgb(0, 4, 255);
 }
 img {
-  margin-left: 20px;
-  margin-right: 20px;
   height: 10vh;
   border-radius: 50%;
   background-size: contain;
   background-repeat: no-repeat;
 }
 .title {
-  font-size: 4vh;
+  font-size: 3.5vh;
   font-weight: bolder;
 }
 .title-detail {
+  padding-left: 5px;
   font-size: 2vh;
   font-size: 500;
-  font-weight: bold;
+  font-weight: 300px;
+  color: rgb(120, 120, 120);
 }
 .timetable {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+.bold {
+  font-weight: 600;
+}
+
+.padding {
+  margin-bottom: 0;
 }
 </style>

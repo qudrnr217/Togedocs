@@ -29,7 +29,7 @@
               ><q-tooltip class="bg-positive"
                 >새로운 프로젝트를 생성합니다</q-tooltip
               >
-              <div style="font-size: 30px">+</div></q-btn
+              <div style="font-size: 20px">+</div></q-btn
             >
           </div>
           <div v-for="(project, idx) in projects" :key="idx">
@@ -51,20 +51,23 @@
                 filled
                 type="url"
                 v-model="newProject.title"
-                label="프로젝트 이름" />
+                label="프로젝트 이름"
+              />
               <q-input
                 class="col"
                 clearable
                 filled
                 v-model="newProject.url"
-                label="프로젝트 URL" />
+                label="프로젝트 URL"
+              />
               <q-input
                 class="col"
                 clearable
                 filled
                 autogrow
                 v-model="newProject.desc"
-                label="프로젝트 설명" />
+                label="프로젝트 설명"
+              />
               <div class="row justify-between">
                 <q-input
                   class="col-5"
@@ -73,20 +76,23 @@
                   v-model="newProject.date.from"
                   mask="date"
                   :rules="['date']"
-                  label="프로젝트 시작일">
+                  label="프로젝트 시작일"
+                >
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy
                         cover
                         transition-show="scale"
-                        transition-hide="scale">
+                        transition-hide="scale"
+                      >
                         <q-date minimal v-model="newProject.date.from">
                           <div class="row items-center justify-end">
                             <q-btn
                               v-close-popup
                               label="Close"
                               color="primary"
-                              flat />
+                              flat
+                            />
                           </div>
                         </q-date>
                       </q-popup-proxy>
@@ -101,20 +107,23 @@
                   v-model="newProject.date.to"
                   mask="date"
                   :rules="['date']"
-                  label="프로젝트 종료일">
+                  label="프로젝트 종료일"
+                >
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy
                         cover
                         transition-show="scale"
-                        transition-hide="scale">
+                        transition-hide="scale"
+                      >
                         <q-date minimal v-model="newProject.date.to">
                           <div class="row items-center justify-end">
                             <q-btn
                               v-close-popup
                               label="Close"
                               color="primary"
-                              flat />
+                              flat
+                            />
                           </div>
                         </q-date>
                       </q-popup-proxy>
@@ -133,13 +142,15 @@
               label="취소"
               color="primary"
               v-close-popup
-              @click="resetCreateNewProjectDialog" />
+              @click="resetCreateNewProjectDialog"
+            />
             <q-btn
               flat
               label="생성"
               color="primary"
               v-close-popup
-              @click="createNewProject" />
+              @click="createNewProject"
+            />
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -197,10 +208,13 @@ export default {
   /* padding: 2rem; */
 }
 .project-list {
+  padding-top: 0;
+  background-color: var(--cultured);
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100vw;
+  padding-top: 30px;
 }
 .create-project-btn {
   margin-right: 1rem;
@@ -227,11 +241,11 @@ export default {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 }
 .shadow {
   width: 100vw;
-  height: 5px;
+  height: 1px;
 
   background: linear-gradient(
     180deg,
