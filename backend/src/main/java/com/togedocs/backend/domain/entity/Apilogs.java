@@ -22,5 +22,6 @@ public class Apilogs {
     private ObjectId id;
 
     private Long projectId;
+    // String: rowId, List: rowId에 해당하는 log의 배열
     private Map<String, List<LogDto>> log;
 }
