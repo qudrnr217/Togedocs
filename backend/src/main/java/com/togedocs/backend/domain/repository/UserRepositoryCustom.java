@@ -9,7 +9,11 @@ public interface UserRepositoryCustom {
     long updateByUserInfo(User userEntity, UserRequest.ModifyUserRequest userRequest);
 
 
-    List<User> getUserInfo(Long id);
 
-    List<Long> getProjectInfo(Long id);
+    List<Long> getProjectId(Long id);
+
+    List<String> getNames(Long projectId, Long id);
+
+
+    List<Integer> getImgNo(Long projectId);
 }

@@ -3,6 +3,7 @@ package com.togedocs.backend.domain.repository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import com.togedocs.backend.api.dto.UserRequest;
+import com.togedocs.backend.domain.entity.QProject;
 import com.togedocs.backend.domain.entity.QProjectUser;
 import com.togedocs.backend.domain.entity.QUser;
 import com.togedocs.backend.domain.entity.User;
@@ -30,38 +31,46 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
                 .execute();
     }
 
-    //User가 참여하고있는 project
+
     @Override
-    public List<User> getUserInfo(Long id) {
-        QUser user = QUser.user;
+    public List<Long> getProjectId(Long user_id) {
         QProjectUser projectUser = QProjectUser.projectUser;
+        QUser user = QUser.user;
 
-        List<User> users = jpaQueryFactory.select(user)
-                .from(user)
-                .join(projectUser)
-                .on(user.id.eq(projectUser.project.id))
-                //join -> project 로 들어가
-                .where(projectUser.user.id.eq(id))
+        List<Long> projectIds = jpaQueryFactory.select(projectUser.project.id)
+                .from(projectUser)
+                .join(user)
+                .on(user.id.eq(projectUser.user.id))
+                .where(projectUser.user.id.eq(user_id))
                 .fetch();
-
-
-
-        return users;
+        return projectIds;
     }
 
     @Override
-    public List<Long> getProjectInfo(Long id) {
-        QUser user = QUser.user;
+    public List<String> getNames(Long projectId, Long id) {
         QProjectUser projectUser = QProjectUser.projectUser;
+        QUser user = QUser.user;
 
-        List<Long> projects = jpaQueryFactory.select(projectUser.project.id)
-                .from(user)
-                .join(projectUser)
-                .on(user.id.eq(projectUser.project.id))
-                .where(projectUser.user.id.eq(id))
+        List<String> names = jpaQueryFactory.select(user.name)
+                .from(projectUser)
+                .join(user)
+                .on(projectUser.user.id.eq(user.id))
+                .where(projectUser.project.id.eq(projectId))
                 .fetch();
 
-        return projects;
+        return names;
+    }
+
+    @Override
+    public List<Integer> getImgNo(Long projectId) {
+        QProject project =QProject.project;
+
+        List<Integer> imgNos = jpaQueryFactory.select(project.imgNo)
+                .from(project)
+                .where(project.id.eq(projectId))
+                .fetch();
+
+        return imgNos;
     }
 
 

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.security.Principal;
+import java.util.List;
 
 
 @RestController
@@ -46,10 +47,11 @@ public class UserController {
 
     @GetMapping("/project")
     public ResponseEntity<?> getProjectInfo(Principal principal){
-        UserResponse.Info response;
+        List<UserResponse.Info> response;
         String providerId = principal.getName();
         response=userService.getUserInfo(providerId);
-
+        System.out.println("유저 멤버 주세요!");
+        System.out.println(response);
         return ResponseEntity.status(200).body(response);
     }
 }
