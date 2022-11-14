@@ -2,19 +2,17 @@ package com.togedocs.backend.api.dto;
 
 import lombok.*;
 
-public class ApilogsDto {
+public class ApilogsRequest {
 
     @Getter
     @Builder
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class LogDto {
+    public static class NewLogDto {
         private int userId;
-        private String logTime;
+        // logTime은 service에서 생성
         private int statusCode;
         private String url;
-        private String pathVariable;
-        private String queryParams;
         private String requestBody;
         private String responseBody;
     }

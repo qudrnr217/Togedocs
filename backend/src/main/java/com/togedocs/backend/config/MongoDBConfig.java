@@ -1,24 +1,15 @@
 package com.togedocs.backend.config;
 
-
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import com.togedocs.backend.domain.DateTimeConverter.LocalDateTimeReadConverter;
-import com.togedocs.backend.domain.DateTimeConverter.LocalDateTimeWriteConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.core.convert.*;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Configuration
 public class MongoDBConfig {

@@ -1,7 +1,8 @@
 package com.togedocs.backend.api.service;
 
 import com.mongodb.client.result.UpdateResult;
-import com.togedocs.backend.api.dto.ApilogsDto;
+import com.togedocs.backend.api.dto.ApilogsRequest;
+import com.togedocs.backend.api.dto.ApilogsResponse;
 import com.togedocs.backend.api.exception.IdNotFoundException;
 import com.togedocs.backend.domain.entity.LogDto;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,9 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class ApilogsService {
@@ -20,14 +24,29 @@ public class ApilogsService {
 
     private final String APILOGS = "apilogs";
 
-        public ApilogsDto.LogDto addLog(Long projectId, String rowId, ApilogsDto.LogDto request) throws IdNotFoundException {
-            Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
-            Update update = new Update();
-            LogDto  logDto = LogDto.build(request.getUserId(),request.getLogTime(),request.getStatusCode(),request.getUrl(),request.getPathVariable(),request.getQueryParams(),request.getRequestBody(),request.getResponseBody());
-            update.push("log."+rowId, logDto);
-            UpdateResult updateResult = mongoTemplate.updateFirst(query,update,APILOGS);
+    public ApilogsResponse.NewLogDto addLog(Long projectId, String rowId, ApilogsRequest.NewLogDto request) throws IdNotFoundException {
 
-            if(updateResult.getMatchedCount()==0) throw new IdNotFoundException("projectId");
-            return request;
-        }
+        Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
+        Update update = new Update();
+        String newLogTime = LocalDateTime.now().toString();
+        LogDto logDto = LogDto.build(newLogTime, request.getUserId(), request.getStatusCode(), request.getUrl(), request.getRequestBody(), request.getResponseBody());
+        update.push("log." + rowId, logDto);
+        UpdateResult updateResult = mongoTemplate.updateFirst(query, update, APILOGS);
+
+        if (updateResult.getMatchedCount() == 0) throw new IdNotFoundException("projectId");
+        return ApilogsResponse.NewLogDto.build(projectId, rowId, newLogTime);
+    }
+
+    public ApilogsResponse.LogsOfOneApi getLogsOfOneApi(Long projectId, String rowId) {
+
+        Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
+        List<LogDto> logDtos = mongoTemplate.findDistinct(query, "log." + rowId, APILOGS, LogDto.class);
+
+        // exception 발생 x :
+        // projectId가 잘못됨 + rowId가 잘못됨 + 둘다 맞지만 log가 0개
+        // 위 세 개의 상황 모두 log size = 0 으로 response가 반환되기 때문에 구분할 수 없음. (인 것 같음...)
+//        System.out.println(logDtos);
+
+        return ApilogsResponse.LogsOfOneApi.build(logDtos);
+    }
 }
