@@ -28,12 +28,14 @@ public class TokenService{
 
 
 //    @Override
-    public Token generateToken(String email) {
+    public Token generateToken(Long userId, String name, int imgNo, String email) {
         long tokenPeriod = 1000L * 60L * 10L;
         long refreshPeriod = 1000L * 60L * 60L * 24L * 30L * 3L;
-        System.out.println("email: "+email);
+//        System.out.println("email: "+email);
         Claims claims = Jwts.claims().setSubject(email);
-        claims.put("email",email);
+        claims.put("name",name);
+        claims.put("userId",userId);
+        claims.put("imgNo",imgNo);
 
         Date now = new Date();
         Token token = new Token(
@@ -41,11 +43,6 @@ public class TokenService{
                         .setClaims(claims)
                         .setIssuedAt(now)
                         .setExpiration(new Date(now.getTime() + tokenPeriod))
-//                        .setSubject(email)
-//                        .setHeaderParam("typ", "JWT")
-//                        .setExpiration(new Date(now.getTime()+tokenPeriod))
-//                        .setIssuedAt(new Date(System.currentTimeMillis()))
-//                        .claim("email",email)
                         .signWith(SignatureAlgorithm.HS256, secretKey)
                         .compact(),
                 Jwts.builder()
@@ -70,7 +67,7 @@ public class TokenService{
         }
     }
     public String getUid(String token) {
-//        System.out.println(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token));
+        System.out.println(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token));
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 }

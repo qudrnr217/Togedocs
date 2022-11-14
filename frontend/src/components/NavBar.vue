@@ -18,7 +18,8 @@
             border-radius: 50%;
 
             background: var(--cultured);
-          "></div>
+          "
+        ></div>
         <div style="color: var(--coral)">{사용자닉네임}</div>
       </div>
     </div>
