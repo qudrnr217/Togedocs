@@ -1,35 +1,14 @@
 <template>
-  <div class="container row justify-around">
-    <div>
-      <q-avatar class="col-md-2" size="6vw">
-        <img
-          src="https://secure.gravatar.com/avatar/20bbf5d322e0760a476480837f6cc85e?s=180&d=identicon"
-        />
-      </q-avatar>
+  <div class="container">
+    <div class="imgcontainer">
+      <img src="@/assets/dogs.jpg" alt="" />
     </div>
-    <div class="col-md-6">
-      <div class="column">
-        <div class="title">{{ projectItem.desc }}</div>
-        <div class="title-detail">
-          {{ projectItem.members.join(", ") }}
-        </div>
+
+    <div class="projectinfo">
+      <div class="title">{{ projectItem.desc }}</div>
+      <div class="title-detail">
+        {{ projectItem.members.join(", ") }}
       </div>
-    </div>
-    <div class="col-md-2 column"></div>
-    <div class="col-md-2 column">
-      <q-btn
-        class="col q-ma-md bold padding"
-        color="accent"
-        rounded
-        label="프로젝트 이동"
-        @click="goToProjectUrl"
-      />
-      <q-btn
-        class="col q-ma-md bold"
-        rounded
-        label="API 문서 이동"
-        @click="goToApiDocs"
-      />
     </div>
   </div>
 </template>
@@ -51,42 +30,61 @@ export default {
 
 <style scoped>
 .container {
-  width: 80vw;
-  height: 20vh;
-  background: rgb(255, 255, 255);
+  background: var(--white);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  margin: 1rem 0 1rem 0;
+  justify-content: space-between;
+  margin-bottom: 2rem;
   border-radius: 20px;
-  box-shadow: 5px 5px rgb(0, 4, 255);
+
+  border-style: solid;
+  overflow: hidden;
+
+  border-width: thin;
+  border-color: lightgray;
 }
 img {
-  height: 10vh;
-  border-radius: 50%;
+  height: 20vh;
+  width: 30vw;
+
+  object-fit: cover;
+
   background-size: contain;
   background-repeat: no-repeat;
 }
 .title {
-  font-size: 3.5vh;
+  font-size: 2vh;
+  width: 30vw;
   font-weight: bolder;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
 }
 .title-detail {
   padding-left: 5px;
-  font-size: 2vh;
+  width: 30vw;
+  font-size: 1.5vh;
   font-size: 500;
   font-weight: 300px;
   color: rgb(120, 120, 120);
-}
-.timetable {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.bold {
-  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
 }
 
-.padding {
-  margin-bottom: 0;
+.imgcontainer {
+}
+.projectinfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--white);
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
 }
 </style>

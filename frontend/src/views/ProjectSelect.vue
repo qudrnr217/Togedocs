@@ -9,7 +9,10 @@
       </div>
       <div class="header">
         <div class="profileimg">
-          <img src="@/assets/logo.png" alt="" />
+          <img
+            src="@/assets/togedog.jpg"
+            alt=""
+            style="width: 100%; border-radius: 20px" />
         </div>
         <div class="username">{사용자이름} 님 반갑습니다.</div>
       </div>
@@ -32,8 +35,10 @@
               <div style="font-size: 20px">+</div></q-btn
             >
           </div>
-          <div v-for="(project, idx) in projects" :key="idx">
-            <project-card :projectItem="project"></project-card>
+          <div class="cards">
+            <div v-for="(project, idx) in projects" :key="idx" class="card">
+              <project-card :projectItem="project"></project-card>
+            </div>
           </div>
         </div>
       </q-page-container>
@@ -51,23 +56,20 @@
                 filled
                 type="url"
                 v-model="newProject.title"
-                label="프로젝트 이름"
-              />
+                label="프로젝트 이름" />
               <q-input
                 class="col"
                 clearable
                 filled
                 v-model="newProject.url"
-                label="프로젝트 URL"
-              />
+                label="프로젝트 URL" />
               <q-input
                 class="col"
                 clearable
                 filled
                 autogrow
                 v-model="newProject.desc"
-                label="프로젝트 설명"
-              />
+                label="프로젝트 설명" />
               <div class="row justify-between">
                 <q-input
                   class="col-5"
@@ -76,23 +78,20 @@
                   v-model="newProject.date.from"
                   mask="date"
                   :rules="['date']"
-                  label="프로젝트 시작일"
-                >
+                  label="프로젝트 시작일">
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy
                         cover
                         transition-show="scale"
-                        transition-hide="scale"
-                      >
+                        transition-hide="scale">
                         <q-date minimal v-model="newProject.date.from">
                           <div class="row items-center justify-end">
                             <q-btn
                               v-close-popup
                               label="Close"
                               color="primary"
-                              flat
-                            />
+                              flat />
                           </div>
                         </q-date>
                       </q-popup-proxy>
@@ -107,23 +106,20 @@
                   v-model="newProject.date.to"
                   mask="date"
                   :rules="['date']"
-                  label="프로젝트 종료일"
-                >
+                  label="프로젝트 종료일">
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy
                         cover
                         transition-show="scale"
-                        transition-hide="scale"
-                      >
+                        transition-hide="scale">
                         <q-date minimal v-model="newProject.date.to">
                           <div class="row items-center justify-end">
                             <q-btn
                               v-close-popup
                               label="Close"
                               color="primary"
-                              flat
-                            />
+                              flat />
                           </div>
                         </q-date>
                       </q-popup-proxy>
@@ -142,15 +138,13 @@
               label="취소"
               color="primary"
               v-close-popup
-              @click="resetCreateNewProjectDialog"
-            />
+              @click="resetCreateNewProjectDialog" />
             <q-btn
               flat
               label="생성"
               color="primary"
               v-close-popup
-              @click="createNewProject"
-            />
+              @click="createNewProject" />
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -278,5 +272,10 @@ button {
   outline: 0;
   background: none;
   color: var(--charcoal);
+}
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
 }
 </style>
