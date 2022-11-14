@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="center">
     <div class="main">
       <div class="titletext">TogeDocs</div>
 
@@ -10,7 +10,7 @@
         </div>
       </button>
     </div>
-    <router-link :to="{ name: 'projectview' }">To test jh</router-link>
+    <router-link :to="{ path: 'select' }">To test jh</router-link>
   </div>
 </template>
 
@@ -60,8 +60,7 @@ export default {
   width: 80vw;
   height: 80vh;
   margin: auto;
-  border: 0.5px solid var(--charcoal);
-  box-shadow: -5px 5px 4px 5px var(--charcoal);
+
   border-radius: 5px;
   background-image: url("@/assets/togedog.jpg");
   background-size: cover;
@@ -84,8 +83,18 @@ export default {
 .button {
   background: var(--cultured);
   color: var(--charcoal);
+  height: 15%;
+  width: 60%;
+  margin-bottom: 20px;
 
   border-radius: 10px;
   border-color: var(--cultured);
+}
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  flex-direction: column;
 }
 </style>

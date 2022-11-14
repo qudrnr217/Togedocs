@@ -3,7 +3,7 @@
     <div class="navbar">
       <div class="navbar-pages">
         <router-link :to="{ name: 'select' }" style="color: var(--coral)">
-          <div>프로젝트 선택</div></router-link
+          <div>Home</div></router-link
         >
         <router-link :to="{ name: 'docs' }">
           <div>공유 api 문서</div></router-link
@@ -20,6 +20,7 @@
             background: var(--cultured);
           "></div>
         <div style="color: var(--coral)">{사용자닉네임}</div>
+        <div>...</div>
       </div>
     </div>
   </q-header>
@@ -45,7 +46,8 @@ export default {
 }
 .navbar-pages {
   display: flex;
-  width: 60vw;
+  width: 65%;
+
   justify-content: space-evenly;
   flex-direction: row;
   align-items: center;
@@ -53,10 +55,10 @@ export default {
 
 .navbar-users {
   display: flex;
+  width: 35%;
   margin-right: 20px;
   align-items: center;
 
-  width: 20vw;
   justify-content: space-evenly;
 }
 </style>

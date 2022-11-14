@@ -1,15 +1,19 @@
 <template>
-  <div class="container">
-    <div class="imgcontainer">
-      <img src="@/assets/dogs.jpg" alt="" />
-    </div>
+  <div>
+    <router-link :to="{ path: 'projectview/docs' }">
+      <div class="container">
+        <div class="imgcontainer">
+          <img src="@/assets/dogs.jpg" alt="" />
+        </div>
 
-    <div class="projectinfo">
-      <div class="title">{{ projectItem.desc }}</div>
-      <div class="title-detail">
-        {{ projectItem.members.join(", ") }}
+        <div class="projectinfo">
+          <div class="title">{{ projectItem.desc }}</div>
+          <div class="title-detail">
+            {{ projectItem.members.join(", ") }}
+          </div>
+        </div>
       </div>
-    </div>
+    </router-link>
   </div>
 </template>
 <script>
