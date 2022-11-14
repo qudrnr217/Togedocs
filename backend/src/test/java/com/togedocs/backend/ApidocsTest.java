@@ -84,27 +84,5 @@ public class ApidocsTest {
 
     @Test
     public void testsw() {
-        String rowId = "second";
-        LogDto logDto = new LogDto();
-        logDto.builder()
-                .userId(1)
-                .logTime(LocalDateTime.now().toString())
-                .statusCode(200)
-                .url("url")
-                .pathVariable("pv")
-                .queryParams("qp")
-                .responseBody("rb")
-                .requestBody("rb2")
-                .build();
-
-        Query query = new Query().addCriteria(Criteria.where("projectId").is(1L));
-
-        Update update = new Update();
-        update.push("log."+rowId,logDto);
-//        mongoTemplate.updateFirst(query,update,"apilogs");
-
-
-        Apilogs apilogs = mongoTemplate.findOne(query, Apilogs.class, "apilogs");
-        System.out.println(apilogs.getLog().get("first").get(0));
     }
 }
