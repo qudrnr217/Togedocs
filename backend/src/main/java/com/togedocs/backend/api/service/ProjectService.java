@@ -118,6 +118,12 @@ public class ProjectService {
         // 2. user 정보 꺼내기
         User user = userRepository.findByProviderId(loginUserProviderId);
 
+        //TODO 만약 user가 있다면 넣지 않아야함. 있다면 어떻게 return해야할지 잘 모르겠음.
+        Optional<ProjectUser> isUser=projectUserRepository.findByProjectIdAndUserId(project.getId(),user.getId());
+//       if(isUser.isEmpty()) {
+//
+//       }
+
         // 3. Project user insert하기 (기본 role은 member)
         ProjectUser projectUser = ProjectUser.builder()
                 .project(project)
@@ -126,6 +132,9 @@ public class ProjectService {
                 .build();
         projectUserRepository.save(projectUser);
         return ProjectResponse.ProjectUser.build(project.getId(), user.getId(), projectUser.getRole());
+
+
+
     }
 
 
@@ -151,12 +160,21 @@ public class ProjectService {
             throw new AccessDeniedException("Login User is not ADMIN");
         }
 
-        // TODO 2. 삭제 후 매니저가 1명 이상 남아있어야 함
+        // TODO 2. 삭제 후 매니저가 1명 이상 남아있어야 함 -> 어차피 내가 admin이라 1명 이상이 됨.
+
+        //2. 만약 삭제 대상이 admin이라면 삭제 x
+//        ProjectUser targetUser = findProjectUser(projectId,userId);
+//        if(targetUser.getRole()==ProjectUserRole.ADMIN){
+//            throw new AccessDeniedException("ADMIN can't erase ADMIN")
+//        }
 
         // 3. project user 삭제
         ProjectUser projectUser = findProjectUser(projectId, userId);
         projectUserRepository.deleteById(projectUser.getId());
         return ProjectResponse.Id.build(projectId);
+        //TODO 왜 return 했을 때 아무것도 안오는지 확인 해야할 듯.
+
+
     }
 
 
@@ -172,6 +190,7 @@ public class ProjectService {
 
         // 2. project user role 업데이트
         // TODO 고려할 점 : 다른 매니저를 강등할 수 있는지? 혹은 MEMBER -> ADMIN만 가능?
+        // TODO ->
         Long updatedResult = projectUserRepository.updateMemberRole(projectId, request);
         if (updatedResult == 0) {
             throw new IdNotFoundException("projectId and userId");

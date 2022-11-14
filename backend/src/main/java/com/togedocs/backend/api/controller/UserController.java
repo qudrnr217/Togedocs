@@ -44,4 +44,12 @@ public class UserController {
         return ResponseEntity.status(200).body(response);
     }
 
+    @GetMapping("/project")
+    public ResponseEntity<?> getProjectInfo(Principal principal){
+        UserResponse.Info response;
+        String providerId = principal.getName();
+        response=userService.getUserInfo(providerId);
+
+        return ResponseEntity.status(200).body(response);
+    }
 }
