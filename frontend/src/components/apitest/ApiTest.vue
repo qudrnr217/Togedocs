@@ -274,7 +274,7 @@
               {{ dateTimeFilter(log.logTime) }}
             </q-item-section>
             <q-item-section>
-              {{ log.userId }}
+              {{ log.userName }}
             </q-item-section>
           </q-item>
         </div>
@@ -292,6 +292,17 @@ import { biDashCircle, biPlusCircle } from "@quasar/extras/bootstrap-icons";
 export default {
   components: { DragCol },
   methods: {
+    loadLogList() {
+      getLogs(
+        { pathVariable: { projectId: this.projectId, rowId: this.rowId } },
+        (response) => {
+          this.logList = response.data.logs;
+        },
+        (e) => {
+          console.warn(e);
+        }
+      );
+    },
     dateTimeFilter(time) {
       return time.substring(0, 16).replaceAll("T", " ").replaceAll("-", "/");
     },
@@ -414,6 +425,7 @@ export default {
             });
           break;
       }
+      this.loadLogList();
     },
     OptionSelect(data) {
       //Request의 타입을 설정
@@ -527,9 +539,8 @@ export default {
     responsedata(newdata) {
       //responsedata가 변경됐을 경우 작동
       //성공했을 경우의 response 처리
-      this.res = newdata.data;
-      if (newdata.data != null) {
-        this.res = JSON.stringify(this.res);
+      if (newdata && newdata.data) {
+        this.res = JSON.stringify(newdata.data);
         this.statusCode = newdata.status;
         this.responseHeader = JSON.stringify(newdata.headers);
         this.responseCookie = JSON.stringify(newdata.cookies);
@@ -553,27 +564,28 @@ export default {
         //Save 버튼으로 변경
 
         //이 부분에 DB에 로그 저장하는 로직이 들어가야 함.
-        let method = newdata.config.method,
+        let userName = this.$store.getters.userName,
+          method = newdata.config.method,
           url = newdata.request.responseURL,
           requestBody = newdata.config.data,
           statusCode = newdata.request.status,
           responseBody = newdata.request.response;
         let logRequestBody = {
-          userId: 1,
+          userName: userName,
           method: method,
           url: url,
-          requestBody: requestBody,
+          requestBody: requestBody ? requestBody : "",
           statusCode: statusCode,
           responseBody: responseBody,
         };
         addLog(
           {
             pathVariable: { projectId: this.projectId, rowId: this.rowId },
-            requestBody: { logRequestBody },
+            requestBody: logRequestBody,
           },
           (response) => {
-            console.log("Add Log Success!");
-            console.log(response);
+            // success !
+            response;
           },
           (e) => {
             console.warn(e);
@@ -666,15 +678,7 @@ export default {
       /**Log 불러와야 하는 부분 */
 
       if (this.rowId) {
-        getLogs(
-          { pathVariable: { projectId: this.projectId, rowId: this.rowId } },
-          (response) => {
-            this.logList = response.data.logs;
-          },
-          (e) => {
-            console.warn(e);
-          }
-        );
+        this.loadLogList();
       }
 
       /******* 강제설정 데이터 있던 부분(삭제됨)*/
@@ -696,6 +700,7 @@ export default {
 
     //vuex에 데이터 저장하는 방식 (이후 이 페이지에서는 사라져야 함)
     this.$store.commit("SET_USERID", 0);
+    this.$store.commit("SET_USERNAME", "내이름");
     this.$store.commit("SET_PROJECTID", 1);
 
     //vuex에 저장된 데이터 불러오기
