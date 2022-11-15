@@ -257,7 +257,7 @@
               {{ log.statusCode }}
             </q-item-section>
             <q-item-section>
-              {{ log.logTime }}
+              {{ dateTimeFilter(log.logTime) }}
             </q-item-section>
             <q-item-section>
               {{ log.userId }}
@@ -278,6 +278,9 @@ import { biDashCircle, biPlusCircle } from "@quasar/extras/bootstrap-icons";
 export default {
   components: { DragCol },
   methods: {
+    dateTimeFilter(time) {
+      return time.substring(0, 16).replaceAll("T", " ").replaceAll("-", "/");
+    },
     Test() {
       this.isBtnClicked = true;
       // Request의 값에 따라 다른 함수 실행(axios)
