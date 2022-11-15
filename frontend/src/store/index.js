@@ -6,8 +6,8 @@ import projectStore from "@/store/modules/projectStore.js";
 export default createStore({
   state: {
     apiStoreList: [],
-    userId: "",
-    projectId: "",
+    userId: 0,
+    projectId: 1,
   },
   getters: {
     userId: (state) => state.userId,
