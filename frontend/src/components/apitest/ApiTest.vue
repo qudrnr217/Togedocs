@@ -1,17 +1,15 @@
 <template>
   <div id="All">
-    <div style="height: 9%"></div>
+    <div style="height: 8%"></div>
     <div id="Top">
-      <div style="font-weight: bold">프로젝트 이름1</div>
+      <div class="q-px-md text-bold text-h6">{{ projectTitle }}</div>
     </div>
 
     <div id="Maincontainer">
       <drag-col width="100%" height="100%" :leftPercent="20" :sliderWidth="15">
         <template #left>
           <div id="Left">
-            <div id="apiListAll">
-              <div style="font-weight: bold; font-size: 15px">api 목록</div>
-
+            <q-scroll-area id="apiListAll" :thumb-style="thumbstyle">
               <div v-for="(item, index) in apiList" v-bind:key="index">
                 <div v-if="index == 0">
                   <hr style="border-bottom: 0px" />
@@ -41,7 +39,7 @@
                   </q-item>
                 </div>
               </div>
-            </div>
+            </q-scroll-area>
           </div>
         </template>
 
@@ -545,6 +543,8 @@ export default {
 
   data() {
     return {
+      projectTitle: "",
+
       typeSelect: "",
       methodType: "",
       index: "",
@@ -589,6 +589,17 @@ export default {
         url: "",
         requestBody: "",
         responseBody: "",
+      },
+
+      // scroll
+      thumbstyle: {
+        right: "3px",
+        bottom: "3px",
+        borderRadius: "5px",
+        background: "gray",
+        width: "6px",
+        height: "6px",
+        opacity: 0.5,
       },
     };
   },
@@ -767,6 +778,7 @@ export default {
     //var apiListMount = [];
     getDocs({ pathVariable: { projectId: this.projectId } }, (data) => {
       let document = data.data;
+      this.projectTitle = document.title;
       for (let rowId of document.rows) {
         // one -> 이름
         // two -> method
@@ -992,6 +1004,7 @@ export default {
 }
 #apiListAll {
   white-space: nowrap;
+  height: 100%;
 }
 #apiListDetail {
   cursor: pointer;
