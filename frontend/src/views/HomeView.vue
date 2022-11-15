@@ -21,14 +21,17 @@ import { shell } from "electron";
 export default {
   methods: {
     login() {
-      shell.openExternal("http://localhost:8081/oauth2/authorization/google");
+      // shell.openExternal("http://localhost:8081/oauth2/authorization/google");
+      shell.openExternal(
+        "http://k7a404.p.ssafy.io:8081/oauth2/authorization/google"
+      );
     },
   },
   mounted() {
     console.log("hi");
     let _this = this;
     console.log(_this);
-    window.addEventListener("login-successful", event => {
+    window.addEventListener("login-successful", (event) => {
       console.log(event);
       _this.$router.push({ name: "select" });
     });

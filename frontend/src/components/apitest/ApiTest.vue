@@ -6,14 +6,7 @@
     </div>
 
     <div id="Maincontainer">
-      <drag-col
-        @isDragging="isDragging"
-        @dragging="draggingCol"
-        width="100%"
-        height="100%"
-        leftPercent="20"
-        sliderWidth="15"
-      >
+      <drag-col width="100%" height="100%" :leftPercent="20" :sliderWidth="15">
         <template #left>
           <div id="Left">
             <div id="apiListAll">
@@ -92,7 +85,7 @@
                   >PathVariable</q-tab
                 >
                 <q-tab id="ReqeustOptionsDetail" @click="OptionSelect('Params')"
-                  >Params</q-tab
+                  >QueryParams</q-tab
                 >
                 <q-tab
                   id="ReqeustOptionsDetail"
@@ -162,7 +155,7 @@
                     <thead>
                       <tr>
                         <th class="text-left">key</th>
-                        <th class="text-left">Params</th>
+                        <th class="text-left">QueryParams</th>
                         <th></th>
                       </tr>
                     </thead>
@@ -275,13 +268,13 @@
         >
           <q-item clickable @click="logListDetail(index)" v-ripple>
             <q-item-section avatar>
-              {{ log.status }}
+              {{ log.statusCode }}
             </q-item-section>
             <q-item-section>
-              {{ log.time }}
+              {{ dateTimeFilter(log.logTime) }}
             </q-item-section>
             <q-item-section>
-              {{ log.user }}
+              {{ log.userId }}
             </q-item-section>
           </q-item>
         </div>
@@ -294,13 +287,14 @@
 import axios from "axios";
 import { DragCol } from "vue-resizer";
 import { getDocs } from "@/api/apidocs.js";
+import { getLogs, addLog } from "@/api/apitest.js";
 import { biDashCircle, biPlusCircle } from "@quasar/extras/bootstrap-icons";
 export default {
   components: { DragCol },
-  props: {
-    msg: String,
-  },
   methods: {
+    dateTimeFilter(time) {
+      return time.substring(0, 16).replaceAll("T", " ").replaceAll("-", "/");
+    },
     Test() {
       this.isBtnClicked = true;
       // Request의 값에 따라 다른 함수 실행(axios)
@@ -341,14 +335,12 @@ export default {
       URL = newURL;
 
       //QueryParams
-      console.log(this.QueryParams);
 
       //Params JSON 에러 시 에러메시지 출력
       var paramJson = {};
 
       for (let QueryParam of this.QueryParams) {
         paramJson[QueryParam.key] = QueryParam.value;
-        console.log(paramJson);
       }
 
       try {
@@ -476,8 +468,6 @@ export default {
     },
 
     deleteRow(type, rowIndex) {
-      console.log(type);
-      console.log(rowIndex);
       if (type == "PathVariable") {
         this.PathVariables.splice(rowIndex, 1);
       } else {
@@ -485,7 +475,6 @@ export default {
       }
     },
     addRow(type) {
-      console.log(type);
       if (type == "PathVariable") {
         this.PathVariables.push({ key: "", value: "" });
       } else {
@@ -560,14 +549,38 @@ export default {
       }
 
       if (this.isBtnClicked) {
-        console.log("버튼클릭한거");
         //로컬스토리지에 한거 저장함
         //Save 버튼으로 변경
 
         //이 부분에 DB에 로그 저장하는 로직이 들어가야 함.
-      } else {
-        console.log("로그누른거");
+        let method = newdata.config.method,
+          url = newdata.request.responseURL,
+          requestBody = newdata.config.data,
+          statusCode = newdata.request.status,
+          responseBody = newdata.request.response;
+        let logRequestBody = {
+          userId: 1,
+          method: method,
+          url: url,
+          requestBody: requestBody,
+          statusCode: statusCode,
+          responseBody: responseBody,
+        };
+        addLog(
+          {
+            pathVariable: { projectId: this.projectId, rowId: this.rowId },
+            requestBody: { logRequestBody },
+          },
+          (response) => {
+            console.log("Add Log Success!");
+            console.log(response);
+          },
+          (e) => {
+            console.warn(e);
+          }
+        );
       }
+      // else console.log("로그누른거");
     },
     index(newindex) {
       //다른 api 선택했을 경우 그거에 맞춰서 전부 초기화
@@ -632,7 +645,6 @@ export default {
         //PathVariable 로직
         let localStoragePathVariables = storageValueLoad.PathVariables;
         for (let URLpathVariable of this.PathVariables) {
-          console.log("PV로직");
           var isExist = false;
           for (let localStoragePathVariable of storageValueLoad.PathVariables) {
             if (localStoragePathVariable.key == URLpathVariable.key) {
@@ -653,8 +665,17 @@ export default {
 
       /**Log 불러와야 하는 부분 */
 
-      /**this.logList 라는 배열에 Log들이 담기면 됨 */
-      /** */
+      if (this.rowId) {
+        getLogs(
+          { pathVariable: { projectId: this.projectId, rowId: this.rowId } },
+          (response) => {
+            this.logList = response.data.logs;
+          },
+          (e) => {
+            console.warn(e);
+          }
+        );
+      }
 
       /******* 강제설정 데이터 있던 부분(삭제됨)*/
 
@@ -682,22 +703,21 @@ export default {
     this.projectId = testprojectID;
     //var apiListMount = [];
     getDocs({ pathVariable: { projectId: this.projectId } }, (data) => {
-      let rowIdList = data.data.rows;
-      for (let rowId of rowIdList) {
+      let document = data.data;
+      for (let rowId of document.rows) {
         // one -> 이름
         // two -> method
         // three -> URL
         var obj = {
           rowId: rowId,
-          type: data.data.data[rowId].two,
-          name: data.data.data[rowId].one,
+          type: document.data[rowId].two,
+          name: document.data[rowId].one,
           Header: `{
-
 }`,
           PathVariable: "",
           Params: "",
           RequestBody: "",
-          RequestURL: data.data.data[rowId].three,
+          RequestURL: document.data[rowId].three,
         };
 
         this.apiList.push(obj);
@@ -753,7 +773,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #KeyValueInput {
   width: 98%;
