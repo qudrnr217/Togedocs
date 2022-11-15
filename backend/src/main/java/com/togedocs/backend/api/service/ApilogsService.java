@@ -41,7 +41,7 @@ public class ApilogsService {
         Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
         Update update = new Update();
         String logTime = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toString();
-        LogDto logDto = LogDto.build(logTime, request.getUserId(), request.getMethod(), request.getUrl(), request.getRequestBody(), request.getStatusCode(), request.getResponseBody());
+        LogDto logDto = LogDto.build(logTime, request.getUserName(), request.getMethod(), request.getUrl(), request.getRequestBody(), request.getStatusCode(), request.getResponseBody());
         update.push("log." + rowId, logDto);
         UpdateResult updateResult = mongoTemplate.updateFirst(query, update, APILOGS);
 
