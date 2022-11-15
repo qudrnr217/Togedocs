@@ -13,19 +13,33 @@
               <div style="font-weight: bold; font-size: 15px">api 목록</div>
 
               <div v-for="(item, index) in apiList" v-bind:key="index">
-                <q-item
-                  clickable
-                  @click="apiListDetail(index)"
-                  :active="index === nowIndex"
-                  v-ripple
-                >
-                  <q-item-section avatar>
-                    {{ item.type }}
-                  </q-item-section>
-                  <q-item-section>
-                    {{ item.name }}
-                  </q-item-section>
-                </q-item>
+                <div v-if="index == 0">
+                  <hr style="border-bottom: 0px" />
+                  <q-item style="font-weight: bold" dense>
+                    <q-item-section avatar>
+                      {{ item.type }}
+                    </q-item-section>
+                    <q-item-section>
+                      {{ item.name }}
+                    </q-item-section>
+                  </q-item>
+                  <hr style="border-bottom: 0px" />
+                </div>
+                <div v-else>
+                  <q-item
+                    clickable
+                    @click="apiListDetail(index)"
+                    :active="index === nowIndex"
+                    v-ripple
+                  >
+                    <q-item-section avatar>
+                      {{ item.type }}
+                    </q-item-section>
+                    <q-item-section>
+                      {{ item.name }}
+                    </q-item-section>
+                  </q-item>
+                </div>
               </div>
             </div>
           </div>
@@ -680,9 +694,14 @@ export default {
       RequestURL: "",
     };
 
-    // TODO: vuex에서 가져오기 구현해야 함.
-    this.projectId = 1;
+    //vuex에 데이터 저장하는 방식 (이후 이 페이지에서는 사라져야 함)
+    this.$store.commit("SET_USERID", 0);
+    this.$store.commit("SET_PROJECTID", 1);
 
+    //vuex에 저장된 데이터 불러오기
+    var testprojectID = this.$store.getters.projectId;
+    this.projectId = testprojectID;
+    //var apiListMount = [];
     getDocs({ pathVariable: { projectId: this.projectId } }, (data) => {
       let document = data.data;
       for (let rowId of document.rows) {
