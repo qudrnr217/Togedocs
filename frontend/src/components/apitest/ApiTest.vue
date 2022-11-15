@@ -291,9 +291,127 @@ export default {
       this.isBtnClicked = true;
       // Request의 값에 따라 다른 함수 실행(axios)
       // 다른 부분을 활성화한 채 테스트 버튼을 클릭했을 경우 PathVariable, Params, RequestBody의 값을 보고 실행
-      if (this.PathVariables.length != 0) this.PathVariablebtn();
-      else if (this.QueryParams.length != 0) this.Paramsbtn();
-      else this.RequestBodybtn();
+      // --> Method Type으로 변경
+      this.apiSend(this.methodType);
+
+      // if (this.PathVariables.length != 0) this.PathVariablebtn();
+      // else if (this.QueryParams.length != 0) this.Paramsbtn();
+      // else this.RequestBodybtn();
+    },
+    apiSend(methodType) {
+      //Header 설정. Json 오류날 경우 {}로 초기화
+      var HeaderJson;
+      try {
+        HeaderJson = JSON.parse(this.Header);
+      } catch {
+        HeaderJson = "{}";
+      }
+
+      // PathVariable이 들어갈 부분에 대한 URL 수정
+      var URL = this.apiURL;
+
+      var pvCount = 0;
+      var newURL = "";
+      var start = false;
+      for (var i = 0; i < URL.length; i++) {
+        if (URL[i] == "{") {
+          start = true;
+        }
+        if (!start) newURL += URL[i];
+        if (URL[i] == "}") {
+          start = false;
+
+          newURL += this.PathVariables[pvCount].value;
+          pvCount++;
+        }
+        if (URL[i] == "{") {
+          start = true;
+        }
+      }
+      URL = newURL;
+
+      //QueryParams
+      console.log(this.QueryParams);
+
+      //Params JSON 에러 시 에러메시지 출력
+      var paramJson = {};
+
+      for (let QueryParam of this.QueryParams) {
+        paramJson[QueryParam.key] = QueryParam.value;
+        console.log(paramJson);
+      }
+
+      try {
+        paramJson = JSON.parse(paramJson);
+      } catch {
+        this.res = "Params JSON error";
+      }
+
+      //RequestBody
+      //RequestBody JSON 세팅
+      var PostJson;
+      try {
+        PostJson = JSON.parse(this.RequestBody);
+      } catch {
+        this.res = "RequestBody JSON error";
+      }
+
+      switch (methodType) {
+        case "GET":
+          axios
+            .get(URL, { params: paramJson, headers: HeaderJson })
+            .then((data) => {
+              this.responsedata = data;
+            })
+            .catch((error) => {
+              this.responsedata = error;
+            });
+          break;
+
+        case "POST":
+          axios
+            .post(URL, PostJson, { params: paramJson, headers: HeaderJson })
+            .then((data) => {
+              this.responsedata = data;
+            })
+            .catch((error) => {
+              this.responsedata = error;
+            });
+          break;
+
+        case "PUT":
+          axios
+            .put(URL, PostJson, { params: paramJson, headers: HeaderJson })
+            .then((data) => {
+              this.responsedata = data;
+            })
+            .catch((error) => {
+              this.responsedata = error;
+            });
+          break;
+
+        case "PATCH":
+          axios
+            .patch(URL, PostJson, { params: paramJson, headers: HeaderJson })
+            .then((data) => {
+              this.responsedata = data;
+            })
+            .catch((error) => {
+              this.responsedata = error;
+            });
+          break;
+
+        case "DELETE":
+          axios
+            .delete(URL, { params: paramJson, headers: HeaderJson })
+            .then((data) => {
+              this.responsedata = data;
+            })
+            .catch((error) => {
+              this.responsedata = error;
+            });
+          break;
+      }
     },
     PathVariablebtn() {
       //PathVariable 버튼
