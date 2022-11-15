@@ -14,6 +14,7 @@ import java.util.Map;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Apidocs {
 
     @Id
