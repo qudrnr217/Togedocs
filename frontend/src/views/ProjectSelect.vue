@@ -9,7 +9,10 @@
       </div>
       <div class="header">
         <div class="profileimg">
-          <img src="@/assets/logo.png" alt="" />
+          <img
+            src="@/assets/togedog.jpg"
+            alt=""
+            style="width: 100%; border-radius: 20px" />
         </div>
         <div class="username">{사용자이름} 님 반갑습니다.</div>
       </div>
@@ -29,11 +32,13 @@
               ><q-tooltip class="bg-positive"
                 >새로운 프로젝트를 생성합니다</q-tooltip
               >
-              <div style="font-size: 30px">+</div></q-btn
+              <div style="font-size: 20px">+</div></q-btn
             >
           </div>
-          <div v-for="(project, idx) in projects" :key="idx">
-            <project-card :projectItem="project"></project-card>
+          <div class="cards">
+            <div v-for="(project, idx) in projects" :key="idx" class="card">
+              <project-card :projectItem="project"></project-card>
+            </div>
           </div>
         </div>
       </q-page-container>
@@ -197,10 +202,13 @@ export default {
   /* padding: 2rem; */
 }
 .project-list {
+  padding-top: 0;
+  background-color: var(--cultured);
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100vw;
+  padding-top: 30px;
 }
 .create-project-btn {
   margin-right: 1rem;
@@ -227,11 +235,11 @@ export default {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 }
 .shadow {
   width: 100vw;
-  height: 5px;
+  height: 1px;
 
   background: linear-gradient(
     180deg,
@@ -264,5 +272,10 @@ button {
   outline: 0;
   background: none;
   color: var(--charcoal);
+}
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
 }
 </style>
