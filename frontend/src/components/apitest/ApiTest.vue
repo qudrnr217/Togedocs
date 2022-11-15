@@ -1,6 +1,6 @@
 <template>
   <div id="All">
-    <div style="height: 12%"></div>
+    <div style="height: 9%"></div>
     <div id="Top">
       <div style="font-weight: bold">프로젝트 이름1</div>
     </div>
@@ -40,10 +40,17 @@
 
         <template #right>
           <div id="Main">
-            <div id="apiName">
-              <div style="text-align: left; font-size: 15px">{{ apiName }}</div>
+            <div id="MainTop">
+              <div id="apiName">
+                <div style="text-align: left; font-size: 15px">
+                  {{ apiName }}
+                </div>
+              </div>
+              <q-btn color="primary" id="savebtn" @click="saveLocalStorage"
+                >Save</q-btn
+              >
             </div>
-
+            <hr style="border-bottom: 0px" />
             <div id="TypeURL">
               <select id="RequestType" v-model="methodType">
                 <option value="GET">GET</option>
@@ -499,9 +506,9 @@ export default {
       console.log(type);
       console.log(rowIndex);
       if (type == "PathVariable") {
-        this.PathVariables.splice(rowIndex, rowIndex + 1);
+        this.PathVariables.splice(rowIndex, 1);
       } else {
-        this.QueryParams.splice(rowIndex, rowIndex + 1);
+        this.QueryParams.splice(rowIndex, 1);
       }
     },
     addRow(type) {
@@ -582,7 +589,7 @@ export default {
       if (this.isBtnClicked) {
         console.log("버튼클릭한거");
         //로컬스토리지에 한거 저장함
-        this.saveLocalStorage();
+        //Save 버튼으로 변경
 
         //이 부분에 DB에 로그 저장하는 로직이 들어가야 함.
       } else {
@@ -650,15 +657,20 @@ export default {
         this.Params = storageValueLoad.Params;
         this.Header = storageValueLoad.Header;
         //PathVariable 로직
+        let localStoragePathVariables = storageValueLoad.PathVariables;
         for (let URLpathVariable of this.PathVariables) {
           console.log("PV로직");
-          console.log(URLpathVariable);
-          // for (let localStoragePathVariable of storageValueLoad.PathVariables) {
-          //   if (localStoragePathVariable.key != URLpathVariable.key) {
-          //     this.PathVariables.push(URLpathVariable);
-          //   }
-          // }
+          var isExist = false;
+          for (let localStoragePathVariable of storageValueLoad.PathVariables) {
+            if (localStoragePathVariable.key == URLpathVariable.key) {
+              isExist = true;
+            }
+          }
+          if (!isExist) {
+            localStoragePathVariables.push(URLpathVariable);
+          }
         }
+        this.PathVariables = localStoragePathVariables;
 
         //QueryParam은 URL 문자열 처리가 없기 때문에 그냥 불러옴.
         this.QueryParams = storageValueLoad.QueryParams;
@@ -668,9 +680,6 @@ export default {
 
       /**Log 불러와야 하는 부분 */
 
-      console.log("rowID확인");
-      console.log(this.rowId);
-      console.log(this.projectId);
       /**this.logList 라는 배열에 Log들이 담기면 됨 */
       /** */
 
@@ -809,7 +818,17 @@ export default {
   background-color: #ffffff;
 }
 #apiName {
+  flex: 74;
+}
+#savebtn {
+  flex: 8;
+  font-size: 10px;
+}
+#MainTop {
   height: 4%;
+  display: flex;
+  width: 99%;
+  margin: 0 auto;
 }
 #TypeURL {
   height: 6%;
@@ -885,7 +904,7 @@ export default {
 }
 #RequestParent {
   width: 100%;
-  height: 70%;
+  height: 80%;
   display: flex;
   justify-content: center;
 }
