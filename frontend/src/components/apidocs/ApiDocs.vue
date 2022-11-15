@@ -21,24 +21,30 @@
                       class="overlapping"
                       :style="`right: 0px`"
                       ><q-tooltip>
-                        <div v-for="(v, i) in 3" :key="i">user name</div>
+                        <div v-for="(v, i) in getOtherAvatarList()" :key="i">
+                          {{ users[v].name }}
+                        </div>
                       </q-tooltip>
                       <img :src="`https://dummyimage.com/200`" />
                     </q-avatar>
                     <q-avatar
-                      v-for="(value, i) in getAvatarList()"
+                      v-for="(v, i) in getAvatarList()"
                       :key="i"
                       size="40px"
                       class="overlapping"
                       :style="`right: ${(i + 1) * 30}px`"
                     >
                       <img :src="`https://picsum.photos/200`" />
-                      <q-tooltip>user name</q-tooltip>
+                      <q-tooltip>{{ users[v].name }}</q-tooltip>
                     </q-avatar>
                   </div>
                   <div class="" style="padding: 0px 10px">
-                    <q-btn label="멤버 관리" style="min-width: 95px">
-                      <q-popup-proxy>
+                    <q-btn
+                      label="멤버 관리"
+                      style="min-width: 95px"
+                      @click="callMemberManage"
+                    >
+                      <q-popup-proxy style="min-width: 230px">
                         <q-card>
                           <q-card-section>
                             <div class="text-h6">팀원 목록</div>
@@ -48,31 +54,71 @@
                             >
                               <q-list>
                                 <q-item
-                                  v-for="(value, i) in 5"
+                                  v-for="(v, i) in memberManage.members"
                                   :key="i"
-                                  style="min-height: 35px"
+                                  style="padding: 8px 10px"
                                 >
-                                  <q-item-section avatar>
+                                  <q-item-section
+                                    avatar
+                                    style="min-width: 40px"
+                                  >
                                     <q-avatar size="30px">
                                       <img
                                         src="https://cdn.quasar.dev/img/avatar6.jpg"
                                       />
                                     </q-avatar>
                                   </q-item-section>
-                                  <q-item-section>Jane</q-item-section
-                                  ><q-item-section side
-                                    ><q-select
-                                      borderless
-                                      v-model="model"
-                                      :options="options"
-                                  /></q-item-section>
-                                </q-item> </q-list
-                            ></q-scroll-area>
+                                  <q-item-section>{{ v.name }}</q-item-section
+                                  ><q-item-section side>
+                                    <q-btn-dropdown
+                                      unelevated
+                                      size="sm"
+                                      style="padding: 4px 8px"
+                                      color="white"
+                                      text-color="black"
+                                      :label="v.role"
+                                    >
+                                      <q-list>
+                                        <q-item
+                                          clickable
+                                          v-close-popup
+                                          @click="onItemClick"
+                                        >
+                                          <q-item-section>
+                                            <q-item-label>Admin</q-item-label>
+                                          </q-item-section>
+                                        </q-item>
+
+                                        <q-item
+                                          clickable
+                                          v-close-popup
+                                          @click="onItemClick"
+                                        >
+                                          <q-item-section>
+                                            <q-item-label>Member</q-item-label>
+                                          </q-item-section>
+                                        </q-item>
+                                        <q-separator />
+                                        <q-item
+                                          clickable
+                                          v-close-popup
+                                          @click="onItemClick"
+                                        >
+                                          <q-item-section>
+                                            <q-item-label>Remove</q-item-label>
+                                          </q-item-section>
+                                        </q-item>
+                                      </q-list>
+                                    </q-btn-dropdown>
+                                  </q-item-section>
+                                </q-item>
+                              </q-list></q-scroll-area
+                            >
                           </q-card-section>
                           <q-separator />
                           <q-card-section>
                             <div class="text-h6">초대하기</div>
-                            <q-btn>
+                            <q-btn @click="copyCode">
                               <q-icon left :name="farClipboard" />
                               <div>초대코드 복사하기</div>
                             </q-btn>
@@ -296,7 +342,13 @@
                       <div
                         @mouseover="rowActive[index] = true"
                         @mouseleave="rowActive[index] = false"
-                        class="q-pa-sm q-ma-xs text-right cell-no handle-row drag-item"
+                        class="
+                          q-pa-sm q-ma-xs
+                          text-right
+                          cell-no
+                          handle-row
+                          drag-item
+                        "
                       >
                         <template v-if="!rowActive[index]">
                           {{ index + 1 }}
@@ -580,8 +632,7 @@ export default {
     });
 
     return {
-      model: ref(null),
-      options: ["Google", "Facebook", "Twitter", "Apple", "Oracle"],
+      options: ["Admin", "Member", "Remove"],
       // TODO: 나중에 자동으로 받아와서 채우는 걸로 변경
       projectId: ref(1),
       document: ref({
@@ -634,6 +685,7 @@ export default {
 
       editing_content: ref(""),
 
+      memberManage: ref({}),
       thumbStyle: {
         right: "3px",
         bottom: "3px",
@@ -822,6 +874,9 @@ export default {
       return this.avatarLimit
         ? Object.keys(this.users).slice(0, this.avatarLimit)
         : Object.keys(this.users);
+    },
+    getOtherAvatarList() {
+      return Object.keys(this.users).slice(this.avatarLimit);
     },
     // getColIdxFromColId와 getRowIdxFromRowId는 없을 시 -1을 반환함.
     // 호출할 때마다 -1에 대한 예외처리를 해줘야 함.
@@ -1226,6 +1281,23 @@ export default {
       if (rowIdIdx > -1 && colIdIdx > -1)
         return this.rowData[rowIdIdx][colIdIdx].focuses.length;
       return 0;
+    },
+    callMemberManage() {
+      this.memberManage["members"] = [
+        { id: 1, name: "AAA", imgNo: 1, role: "ADMIN" },
+        { id: 2, name: "BBB", imgNo: 2, role: "Member" },
+        { id: 3, name: "CCC", imgNo: 3, role: "Member" },
+        { id: 4, name: "DDD", imgNo: 4, role: "Member" },
+      ];
+      this.memberManage["code"] = "RANDOM CODE";
+    },
+    async copyCode() {
+      try {
+        await navigator.clipboard.writeText(this.memberManage["code"]);
+        alert("copied");
+      } catch ($e) {
+        alert("cannot copy");
+      }
     },
   },
 };
