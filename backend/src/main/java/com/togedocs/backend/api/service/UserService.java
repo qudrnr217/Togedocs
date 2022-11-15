@@ -41,7 +41,7 @@ public class UserService {
         List<Long> projectIds = userRepository.getProjectId(userEntity.getId());
         List<UserResponse.Info> list = new ArrayList<>();
         for (Long projectId : projectIds) {
-            System.out.println("ProjectId: " + projectId);
+//            System.out.println("ProjectId: " + projectId);
             //이름, imgNo
             List<String> names = userRepository.getNames(projectId, userEntity.getId());
             int imgNos = userRepository.getImgNo(projectId);
