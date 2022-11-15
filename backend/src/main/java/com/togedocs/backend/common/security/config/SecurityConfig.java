@@ -4,7 +4,7 @@ import com.togedocs.backend.common.security.config.jwt.JwtAuthFilter;
 import com.togedocs.backend.common.security.config.jwt.OAuth2SuccessHandler;
 import com.togedocs.backend.common.security.config.jwt.TokenService;
 import com.togedocs.backend.common.security.config.oauth.PrincipalOauth2UserService;
-import com.togedocs.backend.common.security.repository.UserRepository;
+import com.togedocs.backend.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,6 +45,7 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .authorizeRequests()
                 .antMatchers("/api/user/**").authenticated()
+                .antMatchers("/api/project/**").authenticated()
 //                .antMatchers("/manager/**").access("hasRole('DVELOPER')")
 //                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
                 .anyRequest().permitAll()

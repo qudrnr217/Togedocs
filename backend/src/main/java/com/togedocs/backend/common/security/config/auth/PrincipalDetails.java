@@ -1,6 +1,6 @@
 package com.togedocs.backend.common.security.config.auth;
 
-import com.togedocs.backend.api.dto.User;
+import com.togedocs.backend.domain.entity.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,7 +36,8 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         collect.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return user.getRole();
+//                return user.getRole();
+                return null;
             }
         });
         return collect;
@@ -44,12 +45,12 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return null;
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return user.getProviderId();
     }
 
     //계정이 만료 되었는지.

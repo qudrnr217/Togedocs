@@ -1,13 +1,28 @@
 package com.togedocs.backend.api.controller;
 
-import com.togedocs.backend.api.dto.ApidocsRequest;
-import com.togedocs.backend.api.dto.Token;
+import com.togedocs.backend.api.dto.UserRequest;
+import com.togedocs.backend.api.dto.UserResponse;
+import com.togedocs.backend.api.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
+
+import javax.transaction.Transactional;
+import java.security.Principal;
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/user")
+@RequiredArgsConstructor
 public class UserController {
+
+    private final UserService userService;
     @GetMapping("/getToken")
     public String getToken(){
 
@@ -17,12 +32,26 @@ public class UserController {
         return "<h1>Test</h1>";
     }
 
-//    {email: "",
-//    profileImage: "",
-//    projects: [
-//        {
-//            name:""
-//        }...]
-//    }
+    @Transactional
+    @PatchMapping("/info")
+    public ResponseEntity<?> modifyUser(@RequestBody UserRequest.ModifyUserRequest userRequest, Principal principal ){
+        UserResponse.Id response;
+        System.out.println("hi");
+        String providerId = principal.getName();
+        System.out.println(providerId);
 
+        response = userService.modifyUser(userRequest,providerId);
+
+        return ResponseEntity.status(200).body(response);
+    }
+
+    @GetMapping("/project")
+    public ResponseEntity<?> getProjectInfo(Principal principal){
+        List<UserResponse.Info> response;
+        String providerId = principal.getName();
+        response=userService.getUserInfo(providerId);
+        System.out.println("유저 멤버 주세요!");
+        System.out.println(response);
+        return ResponseEntity.status(200).body(response);
+    }
 }
