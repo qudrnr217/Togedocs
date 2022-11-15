@@ -162,16 +162,17 @@ public class ApidocsService {
 
     public ApidocsResponse.ProjectInfo updateProjectInfo(Long projectId, ApidocsRequest.UpdateProjectInfoRequest request) throws NotEnoughArgsException, IdNotFoundException {
 
-        if (request.getTitle() == null || request.getDesc() == null) throw new NotEnoughArgsException();
+        if (request.getTitle() == null || request.getDesc() == null || request.getBaseUrl() == null) throw new NotEnoughArgsException();
 
         Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
         Update update = new Update();
         update.set("title", request.getTitle());
         update.set("desc", request.getDesc());
+        update.set("baseUrl", request.getBaseUrl());
         UpdateResult updateResult = mongoTemplate.updateFirst(query, update, APIDOCS);
 
         if (updateResult.getMatchedCount() == 0) throw new IdNotFoundException("projectId");
-        return ApidocsResponse.ProjectInfo.build(projectId, request.getTitle(), request.getDesc());
+        return ApidocsResponse.ProjectInfo.build(projectId, request.getTitle(), request.getDesc(), request.getBaseUrl());
     }
 
     public ApidocsResponse.Ids updateCol(Long projectId, String colId, ApidocsRequest.UpdateColRequest request) throws NotEnoughArgsException, IdNotFoundException {

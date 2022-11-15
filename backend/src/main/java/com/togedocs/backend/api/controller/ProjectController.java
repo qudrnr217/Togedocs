@@ -62,9 +62,9 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}/members")
-    public ResponseEntity<?> getMemberManageInfo(@PathVariable Long projectId, Principal principal) {
+    public ResponseEntity<?> getMemberManageInfo(@PathVariable Long projectId) {
         ProjectResponse.MemberManageInfo response;
-        String providerId = principal.getName();
+        String providerId = "";
         try {
             response = projectService.getMemberManagerInfo(projectId, providerId);
         } catch (IdNotFoundException e) {
@@ -78,8 +78,8 @@ public class ProjectController {
     @Transactional
     @DeleteMapping("/{projectId}/member/{userId}")
     public ResponseEntity<?> removeMember(@PathVariable Long projectId, @PathVariable Long userId, Principal principal) {
-        ProjectResponse.Id response;
-        String providerId = principal.getName();
+        ProjectResponse.MemberManageInfo response;
+        String providerId = "";
         try {
             response = projectService.removeMember(projectId, userId, providerId);
         } catch (IdNotFoundException e) {
@@ -87,14 +87,14 @@ public class ProjectController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
-        return ResponseEntity.status(204).body(response);
+        return ResponseEntity.status(200).body(response);
     }
 
     @Transactional
     @PatchMapping("/{projectId}/member")
-    public ResponseEntity<?> updateMemberRole(@PathVariable Long projectId, @RequestBody ProjectRequest.UpdateMemberRoleRequest request, Principal principal) {
-        ProjectResponse.Id response;
-        String providerId = principal.getName();
+    public ResponseEntity<?> updateMemberRole(@PathVariable Long projectId, @RequestBody ProjectRequest.UpdateMemberRoleRequest request) {
+        ProjectResponse.MemberManageInfo response;
+        String providerId = "";
         try {
             response = projectService.updateMemberRole(projectId, request, providerId);
         } catch (IdNotFoundException e) {

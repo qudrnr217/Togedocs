@@ -40,6 +40,7 @@ public class ApidocsRequest {
     public static class UpdateProjectInfoRequest {
         private String title;
         private String desc;
+        private String baseUrl;
     }
 
     @Getter

@@ -151,7 +151,7 @@ public class ProjectService {
         return ProjectResponse.MemberManageInfo.build(projectId, members, code);
     }
 
-    public ProjectResponse.Id removeMember(Long projectId, Long userId, String loginUserProviderId) throws IdNotFoundException {
+    public ProjectResponse.MemberManageInfo removeMember(Long projectId, Long userId, String loginUserProviderId) throws IdNotFoundException {
         // TODO 리턴 타입 미정
         // 1. user 확인 (admin)
         User user = userRepository.findByProviderId(loginUserProviderId);
@@ -171,15 +171,12 @@ public class ProjectService {
         // 3. project user 삭제
         ProjectUser projectUser = findProjectUser(projectId, userId);
         projectUserRepository.deleteById(projectUser.getId());
-        return ProjectResponse.Id.build(projectId);
-        //TODO 왜 return 했을 때 아무것도 안오는지 확인 해야할 듯.
-
-
+        return getMemberManagerInfo(projectId, loginUserProviderId);
     }
 
 
     @Transactional
-    public ProjectResponse.Id updateMemberRole(Long projectId, ProjectRequest.UpdateMemberRoleRequest request, String loginUserProviderId) throws IdNotFoundException {
+    public ProjectResponse.MemberManageInfo updateMemberRole(Long projectId, ProjectRequest.UpdateMemberRoleRequest request, String loginUserProviderId) throws IdNotFoundException {
         // TODO 리턴 타입 미정
         // 1. user 확인 (admin)
         User user = userRepository.findByProviderId(loginUserProviderId);
@@ -189,12 +186,10 @@ public class ProjectService {
         }
 
         // 2. project user role 업데이트
-        // TODO 고려할 점 : 다른 매니저를 강등할 수 있는지? 혹은 MEMBER -> ADMIN만 가능?
-        // TODO ->
         Long updatedResult = projectUserRepository.updateMemberRole(projectId, request);
         if (updatedResult == 0) {
             throw new IdNotFoundException("projectId and userId");
         }
-        return ProjectResponse.Id.build(projectId);
+        return getMemberManagerInfo(projectId, loginUserProviderId);
     }
 }
