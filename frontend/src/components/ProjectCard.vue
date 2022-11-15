@@ -7,9 +7,12 @@
         </div>
 
         <div class="projectinfo">
-          <div class="title">{{ projectItem.desc }}</div>
-          <div class="title-detail">
+          <div class="title">{{ projectItem.title }}</div>
+          <div class="title-name">
             {{ projectItem.members.join(", ") }}
+          </div>
+          <div class="title-detail">
+            {{ projectItem.desc }}
           </div>
         </div>
       </div>
@@ -59,16 +62,15 @@ img {
 }
 .title {
   font-size: 2vh;
-  width: 30vw;
+  width: 28vw;
   font-weight: bolder;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
 }
-.title-detail {
-  padding-left: 5px;
-  width: 30vw;
+.title-name {
+  width: 28vw;
   font-size: 1.5vh;
   font-size: 500;
   font-weight: 300px;
@@ -90,5 +92,20 @@ img {
   width: 100%;
   height: 100%;
   border-radius: 20px;
+}
+
+.title-detail {
+  margin-top: 5px;
+  height: 4.5vh;
+  width: 28vw;
+  font-size: 1.5vh;
+  text-overflow: hidden;
+
+  word-break: break-word;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  color: black;
 }
 </style>
