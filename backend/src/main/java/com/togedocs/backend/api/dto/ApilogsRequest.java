@@ -10,7 +10,7 @@ public class ApilogsRequest {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class LogDto {
         // logTime은 service에서 생성
-        private int userId;
+        private String userName;
 
         private String method;
         private String url;
