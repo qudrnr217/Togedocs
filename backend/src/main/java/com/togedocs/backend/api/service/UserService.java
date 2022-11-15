@@ -2,10 +2,13 @@ package com.togedocs.backend.api.service;
 
 import com.togedocs.backend.api.dto.UserRequest;
 import com.togedocs.backend.api.dto.UserResponse;
+import com.togedocs.backend.domain.entity.Apidocs;
 import com.togedocs.backend.domain.entity.User;
 import com.togedocs.backend.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,7 +20,8 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    private MongoTemplate mongoTemplate;
+
+    private final MongoTemplate mongoTemplate;
 
     public UserResponse.Id modifyUser(UserRequest.ModifyUserRequest userRequest, String providerId) {
         System.out.println("providerId; " + providerId);
@@ -28,7 +32,7 @@ public class UserService {
         return UserResponse.Id.builder().id((int) num).build();
     }
 
-    public List<UserResponse.Info> getUserInfo(String providerId){
+    public List<UserResponse.Info> getUserInfo(String providerId) {
         User userEntity = userRepository.findByProviderId(providerId);
 
 //        Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
@@ -36,17 +40,19 @@ public class UserService {
         //user가 참여하고있는 프로젝트 id
         List<Long> projectIds = userRepository.getProjectId(userEntity.getId());
         List<UserResponse.Info> list = new ArrayList<>();
-        for(Long projectId : projectIds){
-            System.out.println("ProjectId: "+projectId);
+        for (Long projectId : projectIds) {
+            System.out.println("ProjectId: " + projectId);
             //이름, imgNo
-            List<String> names = userRepository.getNames(projectId,userEntity.getId());
-            List<Integer> imgNos = userRepository.getImgNo(projectId);
+            List<String> names = userRepository.getNames(projectId, userEntity.getId());
+            int imgNos = userRepository.getImgNo(projectId);
             //title
-
+            Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
+            Apidocs apidocs = mongoTemplate.findOne(query, Apidocs.class, "apidocs");
+            String title = apidocs.getTitle();
             //desc
-
+            String desc = apidocs.getDesc();
             //Info 정보 넣기
-            list.add(UserResponse.Info.build(projectId,names,imgNos));
+            list.add(UserResponse.Info.build(projectId,title,desc, names, imgNos));
 //            return UserResponse.Info.build(projectId,names,imgNos);
         }
 

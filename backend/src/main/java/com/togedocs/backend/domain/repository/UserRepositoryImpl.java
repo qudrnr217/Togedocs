@@ -62,15 +62,15 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
     }
 
     @Override
-    public List<Integer> getImgNo(Long projectId) {
+    public int getImgNo(Long projectId) {
         QProject project =QProject.project;
 
-        List<Integer> imgNos = jpaQueryFactory.select(project.imgNo)
+        int imgNo = jpaQueryFactory.select(project.imgNo)
                 .from(project)
                 .where(project.id.eq(projectId))
-                .fetch();
+                .fetchOne();
 
-        return imgNos;
+        return imgNo;
     }
 
 

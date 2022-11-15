@@ -14,6 +14,5 @@ public interface UserRepositoryCustom {
 
     List<String> getNames(Long projectId, Long id);
 
-
-    List<Integer> getImgNo(Long projectId);
+    int getImgNo(Long projectId);
 }

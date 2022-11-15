@@ -21,16 +21,18 @@ public class UserResponse {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Info {
         private long projectId;
-        //        private String title;
-//        private String desc;
+        private String title;
+        private String desc;
         private List<String> names ;
-        private List<Integer> imgNos;
+        private int imgNo;
 
-        public static UserResponse.Info build(Long projectId,List<String> names, List<Integer> imgNos) {
+        public static UserResponse.Info build(Long projectId,String title, String desc,List<String> names, int imgNo) {
             return Info.builder()
                     .projectId(projectId)
+                    .title(title)
+                    .desc(desc)
+                    .imgNo(imgNo)
                     .names(names)
-                    .imgNos(imgNos)
                     .build();
         }
     }
