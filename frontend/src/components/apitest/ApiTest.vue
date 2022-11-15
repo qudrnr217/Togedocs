@@ -1,6 +1,6 @@
 <template>
   <div id="All">
-    <div style="height: 12%"></div>
+    <div style="height: 9%"></div>
     <div id="Top">
       <div style="font-weight: bold">프로젝트 이름1</div>
     </div>
@@ -40,10 +40,17 @@
 
         <template #right>
           <div id="Main">
-            <div id="apiName">
-              <div style="text-align: left; font-size: 15px">{{ apiName }}</div>
+            <div id="MainTop">
+              <div id="apiName">
+                <div style="text-align: left; font-size: 15px">
+                  {{ apiName }}
+                </div>
+              </div>
+              <q-btn color="primary" id="savebtn" @click="saveLocalStorage"
+                >Save</q-btn
+              >
             </div>
-
+            <hr style="border-bottom: 0px" />
             <div id="TypeURL">
               <select id="RequestType" v-model="methodType">
                 <option value="GET">GET</option>
@@ -284,12 +291,17 @@ export default {
       this.isBtnClicked = true;
       // Request의 값에 따라 다른 함수 실행(axios)
       // 다른 부분을 활성화한 채 테스트 버튼을 클릭했을 경우 PathVariable, Params, RequestBody의 값을 보고 실행
-      if (this.PathVariables.length != 0) this.PathVariablebtn();
-      else if (this.QueryParams.length != 0) this.Paramsbtn();
-      else this.RequestBodybtn();
+      // --> Method Type으로 변경
+      this.apiSend(this.methodType);
     },
-    PathVariablebtn() {
-      //PathVariable 버튼
+    apiSend(methodType) {
+      //Header 설정. Json 오류날 경우 {}로 초기화
+      var HeaderJson;
+      try {
+        HeaderJson = JSON.parse(this.Header);
+      } catch {
+        HeaderJson = "{}";
+      }
 
       // PathVariable이 들어갈 부분에 대한 URL 수정
       var URL = this.apiURL;
@@ -312,42 +324,9 @@ export default {
           start = true;
         }
       }
-
       URL = newURL;
-      console.log("PV테스트" + URL);
-      //Header 설정. Json 오류날 경우 {}로 초기화
-      var HeaderJson;
-      try {
-        HeaderJson = JSON.parse(this.Header);
-      } catch {
-        HeaderJson = "{}";
-      }
 
-      //axios 동작
-      if (this.methodType == "GET") {
-        axios
-          .get(URL, { headers: HeaderJson })
-          .then((data) => {
-            this.responsedata = data;
-          })
-          .catch((error) => {
-            this.responsedata = error;
-          });
-      } else if (this.methodType == "DELETE") {
-        axios
-          .delete(URL, { headers: HeaderJson })
-          .then((data) => {
-            this.responsedata = data;
-          })
-          .catch((error) => {
-            this.responsedata = error;
-          });
-      }
-    },
-    Paramsbtn() {
-      //Params 버튼
-      var URL = this.apiURL;
-
+      //QueryParams
       console.log(this.QueryParams);
 
       //Params JSON 에러 시 에러메시지 출력
@@ -364,39 +343,7 @@ export default {
         this.res = "Params JSON error";
       }
 
-      //Header 설정. Json 오류날 경우 {}로 초기화
-      var HeaderJson;
-      try {
-        HeaderJson = JSON.parse(this.Header);
-      } catch {
-        HeaderJson = "{}";
-      }
-
-      //axios 동작
-      if (this.methodType == "GET") {
-        axios
-          .get(URL, { params: paramJson, headers: HeaderJson })
-          .then((data) => {
-            this.responsedata = data;
-          })
-          .catch((error) => {
-            this.responsedata = error;
-          });
-      } else if (this.methodType == "DELETE") {
-        axios
-          .delete(URL, { params: paramJson, headers: HeaderJson })
-          .then((data) => {
-            this.responsedata = data;
-          })
-          .catch((error) => {
-            this.responsedata = error;
-          });
-      }
-    },
-    RequestBodybtn() {
-      //RequestBody 버튼
-      var URL = this.apiURL;
-
+      //RequestBody
       //RequestBody JSON 세팅
       var PostJson;
       try {
@@ -405,42 +352,61 @@ export default {
         this.res = "RequestBody JSON error";
       }
 
-      //Header Json 세팅. 오류나면 {}로 초기화함
-      var HeaderJson;
-      try {
-        HeaderJson = JSON.parse(this.Header);
-      } catch {
-        HeaderJson = "{}";
-      }
+      switch (methodType) {
+        case "GET":
+          axios
+            .get(URL, { params: paramJson, headers: HeaderJson })
+            .then((data) => {
+              this.responsedata = data;
+            })
+            .catch((error) => {
+              this.responsedata = error;
+            });
+          break;
 
-      //axios 동작
-      if (this.methodType == "POST") {
-        axios
-          .post(URL, PostJson, { headers: HeaderJson })
-          .then((data) => {
-            this.responsedata = data;
-          })
-          .catch((error) => {
-            this.responsedata = error;
-          });
-      } else if (this.methodType == "PUT") {
-        axios
-          .put(URL, PostJson, { headers: HeaderJson })
-          .then((data) => {
-            this.responsedata = data;
-          })
-          .catch((error) => {
-            this.responsedata = error;
-          });
-      } else if (this.methodType == "PATCH") {
-        axios
-          .patch(URL, PostJson, { headers: HeaderJson })
-          .then((data) => {
-            this.responsedata = data;
-          })
-          .catch((error) => {
-            this.responsedata = error;
-          });
+        case "POST":
+          axios
+            .post(URL, PostJson, { params: paramJson, headers: HeaderJson })
+            .then((data) => {
+              this.responsedata = data;
+            })
+            .catch((error) => {
+              this.responsedata = error;
+            });
+          break;
+
+        case "PUT":
+          axios
+            .put(URL, PostJson, { params: paramJson, headers: HeaderJson })
+            .then((data) => {
+              this.responsedata = data;
+            })
+            .catch((error) => {
+              this.responsedata = error;
+            });
+          break;
+
+        case "PATCH":
+          axios
+            .patch(URL, PostJson, { params: paramJson, headers: HeaderJson })
+            .then((data) => {
+              this.responsedata = data;
+            })
+            .catch((error) => {
+              this.responsedata = error;
+            });
+          break;
+
+        case "DELETE":
+          axios
+            .delete(URL, { params: paramJson, headers: HeaderJson })
+            .then((data) => {
+              this.responsedata = data;
+            })
+            .catch((error) => {
+              this.responsedata = error;
+            });
+          break;
       }
     },
     OptionSelect(data) {
@@ -499,9 +465,9 @@ export default {
       console.log(type);
       console.log(rowIndex);
       if (type == "PathVariable") {
-        this.PathVariables.splice(rowIndex, rowIndex + 1);
+        this.PathVariables.splice(rowIndex, 1);
       } else {
-        this.QueryParams.splice(rowIndex, rowIndex + 1);
+        this.QueryParams.splice(rowIndex, 1);
       }
     },
     addRow(type) {
@@ -582,7 +548,7 @@ export default {
       if (this.isBtnClicked) {
         console.log("버튼클릭한거");
         //로컬스토리지에 한거 저장함
-        this.saveLocalStorage();
+        //Save 버튼으로 변경
 
         //이 부분에 DB에 로그 저장하는 로직이 들어가야 함.
       } else {
@@ -650,15 +616,20 @@ export default {
         this.Params = storageValueLoad.Params;
         this.Header = storageValueLoad.Header;
         //PathVariable 로직
+        let localStoragePathVariables = storageValueLoad.PathVariables;
         for (let URLpathVariable of this.PathVariables) {
           console.log("PV로직");
-          console.log(URLpathVariable);
-          // for (let localStoragePathVariable of storageValueLoad.PathVariables) {
-          //   if (localStoragePathVariable.key != URLpathVariable.key) {
-          //     this.PathVariables.push(URLpathVariable);
-          //   }
-          // }
+          var isExist = false;
+          for (let localStoragePathVariable of storageValueLoad.PathVariables) {
+            if (localStoragePathVariable.key == URLpathVariable.key) {
+              isExist = true;
+            }
+          }
+          if (!isExist) {
+            localStoragePathVariables.push(URLpathVariable);
+          }
         }
+        this.PathVariables = localStoragePathVariables;
 
         //QueryParam은 URL 문자열 처리가 없기 때문에 그냥 불러옴.
         this.QueryParams = storageValueLoad.QueryParams;
@@ -668,9 +639,6 @@ export default {
 
       /**Log 불러와야 하는 부분 */
 
-      console.log("rowID확인");
-      console.log(this.rowId);
-      console.log(this.projectId);
       /**this.logList 라는 배열에 Log들이 담기면 됨 */
       /** */
 
@@ -809,7 +777,17 @@ export default {
   background-color: #ffffff;
 }
 #apiName {
+  flex: 74;
+}
+#savebtn {
+  flex: 8;
+  font-size: 10px;
+}
+#MainTop {
   height: 4%;
+  display: flex;
+  width: 99%;
+  margin: 0 auto;
 }
 #TypeURL {
   height: 6%;
@@ -885,7 +863,7 @@ export default {
 }
 #RequestParent {
   width: 100%;
-  height: 70%;
+  height: 80%;
   display: flex;
   justify-content: center;
 }
