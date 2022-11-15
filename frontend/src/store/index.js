@@ -7,7 +7,7 @@ export default createStore({
   state: {
     apiStoreList: [],
     userId: 0,
-    projectId: 1,
+    projectId: 0,
   },
   getters: {
     userId: (state) => state.userId,
