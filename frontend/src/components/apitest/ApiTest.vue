@@ -87,22 +87,27 @@
                   v-model="Header"
                 />
 
-                <div
-                  id="PathVariableInput"
-                  v-show="typeSelect == 'PathVariable'"
-                >
-                  <q-markup-table dense id="PathVariableTable">
+                <div id="KeyValueInput" v-show="typeSelect == 'PathVariable'">
+                  <q-markup-table dense id="KeyValueTable">
                     <thead>
                       <tr>
                         <th class="text-left">key</th>
                         <th class="text-left">PathVariable</th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody
                       v-for="(item, index) in PathVariables"
                       v-bind:key="index"
                     >
-                      <td>{{ item.key }}</td>
+                      <td>
+                        <q-input
+                          dense
+                          outlined
+                          id="PathVariableTableInput"
+                          v-model="item.key"
+                        ></q-input>
+                      </td>
                       <td>
                         <q-input
                           dense
@@ -111,15 +116,74 @@
                           v-model="item.value"
                         ></q-input>
                       </td>
+                      <td>
+                        <q-icon
+                          class="q-pa-sm q-ma-xs cursor-pointer"
+                          @click="deleteRow('PathVariable', index)"
+                          :name="biDashCircle"
+                        />
+                      </td>
                     </tbody>
+                    <tfoot>
+                      <td>
+                        <q-icon
+                          class="q-pa-sm q-ma-xs cursor-pointer"
+                          @click="addRow('PathVariable')"
+                          :name="biPlusCircle"
+                        />
+                      </td>
+                    </tfoot>
                   </q-markup-table>
                 </div>
 
-                <textarea
-                  id="ParamsInput"
-                  v-show="typeSelect == 'Params'"
-                  v-model="Params"
-                />
+                <div id="KeyValueInput" v-show="typeSelect == 'Params'">
+                  <q-markup-table dense id="KeyValueTable">
+                    <thead>
+                      <tr>
+                        <th class="text-left">key</th>
+                        <th class="text-left">Params</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody
+                      v-for="(item, index) in QueryParams"
+                      v-bind:key="index"
+                    >
+                      <td>
+                        <q-input
+                          dense
+                          outlined
+                          id="QueryParamsTableInput"
+                          v-model="item.key"
+                        ></q-input>
+                      </td>
+                      <td>
+                        <q-input
+                          dense
+                          outlined
+                          id="QueryParamsTableInput"
+                          v-model="item.value"
+                        ></q-input>
+                      </td>
+                      <td>
+                        <q-icon
+                          class="q-pa-sm q-ma-xs cursor-pointer"
+                          @click="deleteRow('QueryParams', index)"
+                          :name="biDashCircle"
+                        />
+                      </td>
+                    </tbody>
+                    <tfoot>
+                      <td>
+                        <q-icon
+                          class="q-pa-sm q-ma-xs cursor-pointer"
+                          @click="addRow('QueryParams')"
+                          :name="biPlusCircle"
+                        />
+                      </td>
+                    </tfoot>
+                  </q-markup-table>
+                </div>
 
                 <textarea
                   id="RequestBodyInput"
@@ -209,6 +273,7 @@
 import axios from "axios";
 import { DragCol } from "vue-resizer";
 import { getDocs } from "@/api/apidocs.js";
+import { biDashCircle, biPlusCircle } from "@quasar/extras/bootstrap-icons";
 export default {
   components: { DragCol },
   props: {
@@ -220,7 +285,7 @@ export default {
       // Request의 값에 따라 다른 함수 실행(axios)
       // 다른 부분을 활성화한 채 테스트 버튼을 클릭했을 경우 PathVariable, Params, RequestBody의 값을 보고 실행
       if (this.PathVariables.length != 0) this.PathVariablebtn();
-      else if (this.Params != "") this.Paramsbtn();
+      else if (this.QueryParams.length != 0) this.Paramsbtn();
       else this.RequestBodybtn();
     },
     PathVariablebtn() {
@@ -281,12 +346,20 @@ export default {
     },
     Paramsbtn() {
       //Params 버튼
-      var URL = this.apiURL + this.apinextURL;
+      var URL = this.apiURL;
+
+      console.log(this.QueryParams);
 
       //Params JSON 에러 시 에러메시지 출력
-      var paramJson;
+      var paramJson = {};
+
+      for (let QueryParam of this.QueryParams) {
+        paramJson[QueryParam.key] = QueryParam.value;
+        console.log(paramJson);
+      }
+
       try {
-        paramJson = JSON.parse(this.Params);
+        paramJson = JSON.parse(paramJson);
       } catch {
         this.res = "Params JSON error";
       }
@@ -322,7 +395,7 @@ export default {
     },
     RequestBodybtn() {
       //RequestBody 버튼
-      var URL = this.apiURL + this.apinextURL;
+      var URL = this.apiURL;
 
       //RequestBody JSON 세팅
       var PostJson;
@@ -398,32 +471,87 @@ export default {
       this.responseHeader = this.logList[index].responseHeader;
       this.responseCookie = this.logList[index].responseCookie;
     },
+    saveLocalStorage() {
+      //프로젝트 번호와 api 번호에 맞춤
+      //method, URL은 변경 여부 확인을 위해 저장
+      //저장해야 할 것 : Params, RequestBody, Header, PathVariables
+      var storageKey = {
+        projectId: this.projectId,
+        rowId: this.rowId,
+      };
+      var storageValue = {
+        Header: this.Header,
+        PathVariables: this.PathVariables,
+        RequestBody: this.RequestBody,
+        Params: this.Params,
+        method: this.methodType,
+        apiURL: this.apiURL,
+        QueryParams: this.QueryParams,
+      };
+      storageKey = JSON.stringify(storageKey);
+      storageValue = JSON.stringify(storageValue);
+
+      localStorage.removeItem(storageKey);
+      localStorage.setItem(storageKey, storageValue);
+    },
+
+    deleteRow(type, rowIndex) {
+      console.log(type);
+      console.log(rowIndex);
+      if (type == "PathVariable") {
+        this.PathVariables.splice(rowIndex, rowIndex + 1);
+      } else {
+        this.QueryParams.splice(rowIndex, rowIndex + 1);
+      }
+    },
+    addRow(type) {
+      console.log(type);
+      if (type == "PathVariable") {
+        this.PathVariables.push({ key: "", value: "" });
+      } else {
+        this.QueryParams.push({ key: "", value: "" });
+      }
+    },
   },
 
   data() {
     return {
-      apiURL: "",
       typeSelect: "",
       methodType: "",
-      apinextURL: "",
-      PathVariable: "",
-      Params: "",
-      RequestBody: "",
-      Header: "",
-      responsedata: "",
-      res: "",
-      ResponseTypeSelect: "",
       index: "",
       apiList: [],
       apiName: "",
       beforetype: "",
-      PathVariables: [],
       nowIndex: 0,
+      projectId: 0,
+      rowId: "",
+
+      //Request
+      apiURL: "",
+      PathVariable: "",
+      Params: "",
+      RequestBody: "",
+      PathVariables: [],
+      QueryParams: [],
+      Header: "",
+
+      //Response
       statusCode: "",
+      responsedata: "",
+      res: "",
+      ResponseTypeSelect: "",
       responseHeader: "",
       responseCookie: "",
-      logList: [],
+
+      // icon
+      biDashCircle,
+      biPlusCircle,
+
+      // SEND 버튼 클릭 여부
       isBtnClicked: false,
+
+      //log
+      logList: [],
     };
   },
   watch: {
@@ -453,6 +581,9 @@ export default {
 
       if (this.isBtnClicked) {
         console.log("버튼클릭한거");
+        //로컬스토리지에 한거 저장함
+        this.saveLocalStorage();
+
         //이 부분에 DB에 로그 저장하는 로직이 들어가야 함.
       } else {
         console.log("로그누른거");
@@ -468,12 +599,14 @@ export default {
       this.apiURL = this.apiList[newindex].RequestURL;
       this.apiName = this.apiList[newindex].name;
       this.statusCode = "";
+      this.rowId = this.apiList[newindex].rowId;
 
       var URLtemp = this.apiURL;
       var newURL = "";
       var temp = "";
       var start = false;
       this.PathVariables = [];
+      this.QueryParams = [];
 
       //PathVariable 세팅을 위한 문자열 처리 '{}'를 인식함
       for (var i = 0; i < URLtemp.length; i++) {
@@ -499,81 +632,49 @@ export default {
         }
       }
 
+      //localStorage로 확인. rowId로 불러오기
+      let storageKey = {
+        projectId: this.projectId,
+        rowId: this.rowId,
+      };
+      let storageValueLoad = localStorage.getItem(JSON.stringify(storageKey));
+
+      storageValueLoad = JSON.parse(storageValueLoad);
+
+      if (
+        storageValueLoad != null &&
+        storageKey.rowId == this.rowId &&
+        storageValueLoad.method == this.methodType
+      ) {
+        this.RequestBody = storageValueLoad.RequestBody;
+        this.Params = storageValueLoad.Params;
+        this.Header = storageValueLoad.Header;
+        //PathVariable 로직
+        for (let URLpathVariable of this.PathVariables) {
+          console.log("PV로직");
+          console.log(URLpathVariable);
+          // for (let localStoragePathVariable of storageValueLoad.PathVariables) {
+          //   if (localStoragePathVariable.key != URLpathVariable.key) {
+          //     this.PathVariables.push(URLpathVariable);
+          //   }
+          // }
+        }
+
+        //QueryParam은 URL 문자열 처리가 없기 때문에 그냥 불러옴.
+        this.QueryParams = storageValueLoad.QueryParams;
+      } else {
+        //localStorage.removeItem(storageKey);
+      }
+
       /**Log 불러와야 하는 부분 */
+
+      console.log("rowID확인");
+      console.log(this.rowId);
+      console.log(this.projectId);
       /**this.logList 라는 배열에 Log들이 담기면 됨 */
       /** */
 
-      /******* 강제설정 데이터 시작 (삭제 필요)*/
-      if (newindex == 1) {
-        //Logs 1, 2, 3은 강제설정 데이터
-        var Log1 = new Object();
-        Log1.time = "2022.11.18 10:18";
-        Log1.status = "200";
-        Log1.user = "강병국";
-
-        var Log2 = new Object();
-        Log2.time = "2022.11.15 12:18";
-        Log2.status = "Error";
-        Log2.user = "홍인호";
-        Log2.Params = "";
-        Log2.RequestBody = `{
-  "userId": "asdf",
-  "userPassword": "asdf"
-}`;
-        Log2.Header = `{
-
-}`;
-        Log2.responsedata = `AxiosError: Network Error`;
-        Log2.PathVariables = [];
-        Log2.statusCode = "Error";
-        Log2.responseHeader = "";
-        Log2.responseCookie = "";
-
-        var Log3 = new Object();
-        Log3.time = "2022.11.11 16:18";
-        Log3.status = "404";
-        Log3.user = "홍인호";
-
-        this.logList = [
-          Log1,
-          Log2,
-          Log3,
-          Log3,
-          Log3,
-          Log3,
-          Log3,
-          Log3,
-          Log3,
-          Log3,
-          Log3,
-          Log3,
-          Log3,
-        ];
-      } else if (newindex == 4) {
-        Log3 = new Object();
-        Log3.time = "2022.11.11 16:18";
-        Log3.status = "200";
-        Log3.user = "홍인호";
-        (Log3.Params = ""),
-          (Log3.RequestBody = `{
-}`);
-        Log3.Header = `{
-
-}`;
-        Log3.responsedata = ``;
-        Log3.PathVariables = [];
-        var tempPV = new Object();
-        tempPV.key = "projectId";
-        tempPV.value = 1;
-        Log3.PathVariables.push(tempPV);
-        console.log(Log3.PathVariables);
-        Log3.statusCode = "200";
-        Log3.responseHeader = `{"cache-control":"no-cache, no-store, max-age=0, must-revalidate","content-type":"application/json;charset=UTF-8","expires":"0","pragma":"no-cache"}`;
-
-        this.logList = [Log3];
-      } else {
-        this.logList = [];
-      }
+      /******* 강제설정 데이터 있던 부분(삭제됨)*/
 
       /******* 강제설정 데이터 끝*/
     },
@@ -591,23 +692,25 @@ export default {
     };
 
     var testprojectID = 1;
-
+    this.projectId = testprojectID;
     //var apiListMount = [];
-    getDocs({ pathVariable: { projectId: testprojectID } }, (data) => {
-      for (let key in data.data.data) {
+    getDocs({ pathVariable: { projectId: this.projectId } }, (data) => {
+      let rowIdList = data.data.rows;
+      for (let rowId of rowIdList) {
         // one -> 이름
         // two -> method
         // three -> URL
         var obj = {
-          type: data.data.data[key].two,
-          name: data.data.data[key].one,
+          rowId: rowId,
+          type: data.data.data[rowId].two,
+          name: data.data.data[rowId].one,
           Header: `{
 
 }`,
           PathVariable: "",
           Params: "",
           RequestBody: "",
-          RequestURL: data.data.data[key].three,
+          RequestURL: data.data.data[rowId].three,
         };
 
         this.apiList.push(obj);
@@ -627,6 +730,7 @@ export default {
     this.apiURL = this.apiList[this.index].RequestURL;
     this.apiName = this.apiList[this.index].name;
     this.beforetype = "PathVariable";
+    this.rowId = this.apiList[this.index].rowId;
 
     //PathVariable 문자열 처리
     var URLtemp = this.apiURL;
@@ -664,7 +768,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#PathVariableInput {
+#KeyValueInput {
   width: 98%;
   height: 100%;
   resize: none;
@@ -673,7 +777,7 @@ export default {
   border: 1px solid #000000;
   margin: 0px auto;
 }
-#PathVariableTable {
+#KeyValueTable {
   height: 100%;
 }
 #ParamsInput {
