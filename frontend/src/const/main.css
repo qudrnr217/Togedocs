@@ -9,9 +9,13 @@ body {
   padding: 0;
 }
 :root {
-  --azure: #097bedff;
+  --azure: rgb(8, 0, 253);
   --coral: #fd8355ff;
   --cultured: #f9f9f9ff;
   --white: #ffffffff;
   --charcoal: #213e51ff;
 }
+/*
+  사용법
+  var(--cultured);
+*/

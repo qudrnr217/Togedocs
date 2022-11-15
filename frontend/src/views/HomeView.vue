@@ -1,60 +1,39 @@
 <template>
   <div>
-    <div
-      style="
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        box-sizing: border-box;
+    <div class="main">
+      <div class="titletext">TogeDocs</div>
 
-        width: 80vw;
-        height: 80vh;
-        margin: auto;
-
-        background: var(--white);
-        border: 0.5px solid var(--charcoal);
-        box-shadow: -5px 5px 4px 5px var(--charcoal);
-        border-radius: 5px;
-      ">
-      <div class="spacing">
-        <div
-          class="service title"
-          style="
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 8px;
-            gap: 8px;
-          ">
-          <img src="@/assets/dogs.jpg" alt="" style="width: 25vw" />
-          <div style="font-size: 8vw">TogeDocs</div>
+      <button @click="login()" class="button">
+        <div class="login" style="">
+          <img src="@/assets/gitlab.png" alt="" class="gitlablogo" />
+          <div class="login">로그인</div>
         </div>
-        <router-link :to="{ name: 'select' }">
-          <div
-            style="
-              display: flex;
-              flex-direction: row;
-              align-items: center;
-              justify-content: center;
-              padding: 8px 12px;
-              gap: 64px;
-
-              background: var(--cultured);
-              border-radius: 10px;
-            ">
-            <img src="@/assets/gitlab.png" alt="" class="gitlablogo" />
-            <div class="login">로그인</div>
-          </div>
-        </router-link>
-      </div>
+      </button>
     </div>
-    <router-link :to="{ name: 'testjh' }">To test jh</router-link>
+    <router-link :to="{ name: 'projectview' }">To test jh</router-link>
   </div>
 </template>
 
 <script>
-export default {};
+import { shell } from "electron";
+// import { access } from "fs";
+// import router from "vue";
+export default {
+  methods: {
+    login() {
+      shell.openExternal("http://localhost:8081/oauth2/authorization/google");
+    },
+  },
+  mounted() {
+    console.log("hi");
+    let _this = this;
+    console.log(_this);
+    window.addEventListener("login-successful", event => {
+      console.log(event);
+      _this.$router.push({ name: "select" });
+    });
+  },
+};
 </script>
 
 <style scoped>
@@ -70,5 +49,43 @@ export default {};
   gap: 60px;
   width: 75vw;
   overflow: hidden;
+}
+.main {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+
+  width: 80vw;
+  height: 80vh;
+  margin: auto;
+  border: 0.5px solid var(--charcoal);
+  box-shadow: -5px 5px 4px 5px var(--charcoal);
+  border-radius: 5px;
+  background-image: url("@/assets/togedog.jpg");
+  background-size: cover;
+}
+.titletext {
+  font-size: 8vw;
+  color: var(--cultured);
+}
+.login {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  gap: 64px;
+
+  background: none;
+  border-radius: 10px;
+}
+.button {
+  background: var(--cultured);
+  color: var(--charcoal);
+
+  border-radius: 10px;
+  border-color: var(--cultured);
 }
 </style>

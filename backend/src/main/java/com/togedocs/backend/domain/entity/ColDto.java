@@ -9,7 +9,6 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class ColDto {
     private String uuid;
     private String name;
@@ -25,15 +24,5 @@ public class ColDto {
                 .width(width)
                 .category(category)
                 .build();
-    }
-
-    @Override
-    public String toString() {
-        return "ColDto{" +
-                "uuid='" + uuid + '\'' +
-                ", name='" + name + '\'' +
-                ", type='" + type + '\'' +
-                ", width=" + width +
-                '}';
     }
 }

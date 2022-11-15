@@ -24,10 +24,11 @@
     "stompjs": "^2.3.3",
     "store-js": "^2.0.4",
     "vue": "^3.2.13",
+    "vue-resizer": "^1.1.9",
     "vue-router": "^4.1.6",
-    "vuex-persistedstate": "^4.1.0",
     "vuedraggable": "^4.1.0",
-    "vuex": "^4.1.0"
+    "vuex": "^4.1.0",
+    "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
