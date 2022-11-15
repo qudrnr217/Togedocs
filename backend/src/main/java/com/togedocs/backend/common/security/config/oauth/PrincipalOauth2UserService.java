@@ -1,9 +1,9 @@
 package com.togedocs.backend.common.security.config.oauth;
 
 
-import com.togedocs.backend.api.dto.User;
+import com.togedocs.backend.domain.entity.User;
 import com.togedocs.backend.common.security.config.auth.PrincipalDetails;
-import com.togedocs.backend.common.security.repository.UserRepository;
+import com.togedocs.backend.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -37,23 +37,23 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         //회원가입을 강제로 진행해볼 예정.
         String provider=userRequest.getClientRegistration().getRegistrationId(); //google
-        String providerId = oauth2User.getAttribute("sub");
-        String username = provider+"_"+providerId; //google_103823801447068230340
-        String password =bCryptPasswordEncoder.encode("겟인데어");
+        String sub = oauth2User.getAttribute("sub");
+        String providerId = provider+"_"+sub; //google_103823801447068230340
         String email = oauth2User.getAttribute("email");
-        String role = "ROLE_USER";
+        String name = oauth2User.getAttribute("name");
+        int imgNo = 1;
 
 
-        User userEntity = userRepository.findByUsername(username);
+
+        User userEntity = userRepository.findByProviderId(providerId);
         if(userEntity == null){
             System.out.println("구글로그인이 최초입니다.");
             userEntity = User.builder()
-                    .username(username)
-                    .password(password)
-                    .email(email)
-                    .role(role)
-                    .provider(provider)
+                    .imgNo(imgNo)
                     .providerId(providerId)
+                    .email(email)
+                    .provider(provider)
+                    .name(name)
                     .build();
             userRepository.save(userEntity);
 

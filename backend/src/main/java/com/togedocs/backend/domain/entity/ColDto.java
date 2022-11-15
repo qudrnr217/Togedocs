@@ -9,7 +9,6 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class ColDto {
     private String uuid;
     private String name;
