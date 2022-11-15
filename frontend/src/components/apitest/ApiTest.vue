@@ -280,6 +280,45 @@
         </div>
       </details>
     </div>
+    <q-dialog v-model="dialog">
+      <q-card>
+        <q-card-section><div class="text-h6">Log Detail</div></q-card-section>
+        <q-card-section class="q-py-none">
+          <q-markup-table wrap-cells="false">
+            <tbody>
+              <tr>
+                <td>User</td>
+                <td>{{ dialogContent.userName }}</td>
+              </tr>
+              <tr>
+                <td>Time</td>
+                <td>{{ dialogContent.logTime }}</td>
+              </tr>
+              <tr>
+                <td>URL</td>
+                <td>{{ dialogContent.url }}</td>
+              </tr>
+              <tr></tr>
+              <tr>
+                <td>StatusCode</td>
+                <td>{{ dialogContent.statusCode }}</td>
+              </tr>
+              <tr>
+                <td>RequestBody</td>
+                <td>{{ dialogContent.requestBody }}</td>
+              </tr>
+              <tr>
+                <td>ResponseBody</td>
+                <td>{{ dialogContent.responseBody }}</td>
+              </tr>
+            </tbody>
+          </q-markup-table>
+        </q-card-section>
+        <q-card-section align="right"
+          ><q-btn flat label="돌아가기" color="primary" v-close-popup
+        /></q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -425,7 +464,6 @@ export default {
             });
           break;
       }
-      this.loadLogList();
     },
     OptionSelect(data) {
       //Request의 타입을 설정
@@ -454,6 +492,16 @@ export default {
       this.PathVariables = this.logList[index].PathVariables;
       this.responseHeader = this.logList[index].responseHeader;
       this.responseCookie = this.logList[index].responseCookie;
+
+      this.dialog = true;
+      this.dialogContent = {
+        statusCode: this.logList[index].statusCode,
+        logTime: this.logList[index].logTime,
+        userName: this.logList[index].userName,
+        url: this.logList[index].url,
+        requestBody: this.logList[index].requestBody,
+        responseBody: this.logList[index].responseBody,
+      };
     },
     saveLocalStorage() {
       //프로젝트 번호와 api 번호에 맞춤
@@ -533,6 +581,15 @@ export default {
 
       //log
       logList: [],
+      dialog: false,
+      dialogContent: {
+        statusCode: "",
+        logTime: "",
+        userName: "",
+        url: "",
+        requestBody: "",
+        responseBody: "",
+      },
     };
   },
   watch: {
@@ -586,6 +643,7 @@ export default {
           (response) => {
             // success !
             response;
+            this.loadLogList();
           },
           (e) => {
             console.warn(e);
