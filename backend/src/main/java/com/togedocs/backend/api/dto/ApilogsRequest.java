@@ -8,12 +8,15 @@ public class ApilogsRequest {
     @Builder
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class NewLogDto {
-        private int userId;
+    public static class LogDto {
         // logTime은 service에서 생성
-        private int statusCode;
+        private int userId;
+
+        private String method;
         private String url;
         private String requestBody;
+
+        private int statusCode;
         private String responseBody;
     }
 }
