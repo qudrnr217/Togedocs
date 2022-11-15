@@ -254,13 +254,13 @@
         >
           <q-item clickable @click="logListDetail(index)" v-ripple>
             <q-item-section avatar>
-              {{ log.status }}
+              {{ log.statusCode }}
             </q-item-section>
             <q-item-section>
-              {{ log.time }}
+              {{ log.logTime }}
             </q-item-section>
             <q-item-section>
-              {{ log.user }}
+              {{ log.userId }}
             </q-item-section>
           </q-item>
         </div>
@@ -273,6 +273,7 @@
 import axios from "axios";
 import { DragCol } from "vue-resizer";
 import { getDocs } from "@/api/apidocs.js";
+import { getLogs } from "@/api/apitest.js";
 import { biDashCircle, biPlusCircle } from "@quasar/extras/bootstrap-icons";
 export default {
   components: { DragCol },
@@ -287,6 +288,8 @@ export default {
       if (this.PathVariables.length != 0) this.PathVariablebtn();
       else if (this.QueryParams.length != 0) this.Paramsbtn();
       else this.RequestBodybtn();
+
+      console.log(this.PathVariable, this.Params, this.RequestBody);
     },
     PathVariablebtn() {
       //PathVariable 버튼
@@ -668,11 +671,18 @@ export default {
 
       /**Log 불러와야 하는 부분 */
 
-      console.log("rowID확인");
-      console.log(this.rowId);
-      console.log(this.projectId);
-      /**this.logList 라는 배열에 Log들이 담기면 됨 */
-      /** */
+      if (this.rowId) {
+        getLogs(
+          { pathVariable: { projectId: this.projectId, rowId: this.rowId } },
+          (response) => {
+            this.logList = response.data.logs;
+            console.log(this.logList);
+          },
+          (e) => {
+            console.warn(e);
+          }
+        );
+      }
 
       /******* 강제설정 데이터 있던 부분(삭제됨)*/
 
