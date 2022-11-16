@@ -70,9 +70,5 @@ public class UserService {
 
     }
 
-    public String getMyName(String providerId) {
-        User userEntity = userRepository.findByProviderId(providerId);
 
-        return userEntity.getName();
-    }
 }

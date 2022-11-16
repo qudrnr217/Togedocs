@@ -45,14 +45,6 @@ public class UserController {
         return ResponseEntity.status(200).body(response);
     }
 
-    @GetMapping("/myname")
-    public ResponseEntity<?> getMyName(Principal principal){
-        String response;
-        String providerId= principal.getName();
-        response = userService.getMyName(providerId);
-
-        return ResponseEntity.status(200).body(response);
-    }
 
     @GetMapping("/project")
     public ResponseEntity<?> getProjectInfo(Principal principal){
