@@ -4,6 +4,163 @@
       <q-page class="row">
         <div class="col q-ma-xs">
           <div class="column full-height">
+            <div class="q-pa-xs row" style="min-width: 650px">
+              <div class="q-pa-sm col-7" style="background-color: pink">
+                <div class="row title">Project Title</div>
+                <div class="row desc">
+                  <div class="col">Project Description</div>
+                  <div class="col">Project Base URL</div>
+                </div>
+              </div>
+              <div class="q-pa-sm col-5" style="background-color: skyblue">
+                <div class="row justify-end">
+                  <div class="" style="position: relative">
+                    <q-avatar
+                      v-if="Object.keys(users).length > avatarLimit"
+                      size="40px"
+                      class="overlapping"
+                      :style="`right: 0px`"
+                      ><q-tooltip>
+                        <div v-for="(v, i) in getOtherAvatarList()" :key="i">
+                          {{ users[v].name }}
+                        </div>
+                      </q-tooltip>
+                      <img :src="`https://dummyimage.com/200`" />
+                    </q-avatar>
+                    <q-avatar
+                      v-for="(v, i) in getAvatarList()"
+                      :key="i"
+                      size="40px"
+                      class="overlapping"
+                      :style="`right: ${(i + 1) * 30}px`"
+                    >
+                      <img :src="`https://picsum.photos/200`" />
+                      <q-tooltip>{{ users[v].name }}</q-tooltip>
+                    </q-avatar>
+                  </div>
+                  <div class="" style="padding: 0px 10px">
+                    <q-btn
+                      label="멤버 관리"
+                      style="min-width: 95px"
+                      @click="callMemberManage"
+                    >
+                      <q-popup-proxy style="min-width: 230px">
+                        <q-card>
+                          <q-card-section>
+                            <div class="text-h6">팀원 목록</div>
+                            <q-scroll-area
+                              style="height: 175px; background-color: yellow"
+                              :thumb-style="thumbStyle"
+                            >
+                              <q-list>
+                                <q-item
+                                  v-for="(v, i) in memberManage.members"
+                                  :key="i"
+                                  style="padding: 8px 10px"
+                                >
+                                  <q-item-section
+                                    avatar
+                                    style="min-width: 40px"
+                                  >
+                                    <q-avatar size="30px">
+                                      <img
+                                        src="https://cdn.quasar.dev/img/avatar6.jpg"
+                                      />
+                                    </q-avatar>
+                                  </q-item-section>
+                                  <q-item-section>{{ v.name }}</q-item-section
+                                  ><q-item-section side>
+                                    <q-btn-dropdown
+                                      unelevated
+                                      size="sm"
+                                      style="padding: 4px 8px"
+                                      color="white"
+                                      text-color="black"
+                                      :label="v.role"
+                                    >
+                                      <q-list>
+                                        <q-item
+                                          clickable
+                                          v-close-popup
+                                          @click="onItemClick"
+                                        >
+                                          <q-item-section>
+                                            <q-item-label>Admin</q-item-label>
+                                          </q-item-section>
+                                        </q-item>
+
+                                        <q-item
+                                          clickable
+                                          v-close-popup
+                                          @click="onItemClick"
+                                        >
+                                          <q-item-section>
+                                            <q-item-label>Member</q-item-label>
+                                          </q-item-section>
+                                        </q-item>
+                                        <q-separator />
+                                        <q-item
+                                          clickable
+                                          v-close-popup
+                                          @click="onItemClick"
+                                        >
+                                          <q-item-section>
+                                            <q-item-label>Remove</q-item-label>
+                                          </q-item-section>
+                                        </q-item>
+                                      </q-list>
+                                    </q-btn-dropdown>
+                                  </q-item-section>
+                                </q-item>
+                              </q-list></q-scroll-area
+                            >
+                          </q-card-section>
+                          <q-separator />
+                          <q-card-section>
+                            <div class="text-h6">초대하기</div>
+                            <q-btn @click="copyCode">
+                              <q-icon left :name="farClipboard" />
+                              <div>초대코드 복사하기</div>
+                            </q-btn>
+                          </q-card-section>
+                        </q-card>
+                        <!-- </q-banner> -->
+                      </q-popup-proxy>
+                      <q-dialog v-model="confirm" persistent>
+                        <q-card>
+                          <q-card-section class="row items-center">
+                            <q-avatar
+                              icon="signal_wifi_off"
+                              color="primary"
+                              text-color="white"
+                            />
+                            <span class="q-ml-sm"
+                              >You are currently not connected to any
+                              network.</span
+                            >
+                          </q-card-section>
+
+                          <q-card-actions align="right">
+                            <q-btn
+                              flat
+                              label="Cancel"
+                              color="primary"
+                              v-close-popup
+                            />
+                            <q-btn
+                              flat
+                              label="Turn on Wifi"
+                              color="primary"
+                              v-close-popup
+                            />
+                          </q-card-actions>
+                        </q-card>
+                      </q-dialog>
+                    </q-btn>
+                  </div>
+                </div>
+              </div>
+            </div>
             <q-scroll-area
               class="col q-pa-sm"
               visible
@@ -205,7 +362,7 @@
                         >
                           <q-input
                             dense
-                            borderless=""
+                            borderless
                             :style="{
                               width: cell.width - 15 + 'px',
                             }"
@@ -290,17 +447,55 @@
             >
             </q-btn>
             <br />
-            <q-markup-table>
-              <tr v-for="(col, colId) in document.cols" :key="colId">
-                <td>
-                  <strong>{{ col.name }}</strong>
+            <q-markup-table class="q-py-sm">
+              <tr v-for="(col, col_idx) in document.cols" :key="col_idx">
+                <td style="width: 130px; vertical-align: top">
+                  <div style="height: 44px" class="column justify-center">
+                    <strong>{{ col.name }}</strong>
+                  </div>
                 </td>
                 <td>
                   <div
-                    class="drawer-input"
-                    :class="{ active: isFocused(drawerRowId, col.uuid) }"
+                    class="drawer-input cell"
+                    style="position: relative"
+                    :class="{
+                      active: focusesLength(drawerRowId, col.uuid) > 0,
+                    }"
                   >
                     <q-input
+                      v-if="col.uuid == 'd-three' || col.uuid == 'd-two'"
+                      type="textarea"
+                      borderless
+                      autogrow
+                      dense
+                      :class="
+                        getRowIdxFromRowId(drawerRowId) +
+                        '_' +
+                        getColIdxFromColId(col.uuid) +
+                        '_true'
+                      "
+                      @keypress.enter="
+                        callUpdateCell(
+                          drawerRowId,
+                          col.uuid,
+                          document.data[drawerRowId][col.uuid]
+                        )
+                      "
+                      @focus="setFocus(drawerRowId, col.uuid, true)"
+                      @blur="
+                        clearFocus(),
+                          callUpdateCell(
+                            drawerRowId,
+                            col.uuid,
+                            document.data[drawerRowId][col.uuid]
+                          )
+                      "
+                      v-model="document.data[drawerRowId][col.uuid]"
+                      class="hoverable"
+                    />
+                    <q-input
+                      v-else
+                      borderless
                       dense
                       type="text"
                       :class="
@@ -326,7 +521,33 @@
                           )
                       "
                       v-model="document.data[drawerRowId][col.uuid]"
+                      class="hoverable"
                     />
+                    <div class="hide">
+                      <template
+                        v-if="focusesLength(drawerRowId, col.uuid) == 1"
+                      >
+                        {{
+                          rowData[getRowIdxFromRowId(drawerRowId)][
+                            getColIdxFromColId(col.uuid)
+                          ].focuses[0]
+                        }}
+                      </template>
+                      <template
+                        v-else-if="focusesLength(drawerRowId, col.uuid) > 1"
+                      >
+                        {{
+                          rowData[getRowIdxFromRowId(drawerRowId)][
+                            getColIdxFromColId(col.uuid)
+                          ].focuses[0]
+                        }},
+                        {{
+                          rowData[getRowIdxFromRowId(drawerRowId)][
+                            getColIdxFromColId(col.uuid)
+                          ].focuses[1]
+                        }}...
+                      </template>
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -336,8 +557,9 @@
         <div
           v-touch-pan.preserveCursor.prevent.mouse.horizontal="resizeDrawer"
           class="q-drawer__resizer"
-        ></div> </q-drawer
-    ></template>
+        ></div>
+      </q-drawer>
+    </template>
   </div>
 </template>
 
@@ -348,7 +570,7 @@ import { BASEURL } from "@/api/index.js";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import draggable from "vuedraggable";
-// import WarningDialog from "./WarningDialog.vue";
+import WarningDialog from "./WarningDialog.vue";
 
 import {
   getDocs,
@@ -375,16 +597,21 @@ import {
   fasGripLinesVertical,
   fasAnglesRight,
   fasGripVertical,
+  farClipboard,
+  fasArrowRightFromBracket,
+  fasCircleXmark,
 } from "@quasar/extras/fontawesome-v6";
 import {
   mdiDragVerticalVariant,
   mdiArrowLeftBottomBold,
+  mdiExitToApp,
+  mdiCloseCircle,
 } from "@quasar/extras/mdi-v6";
 
 export default {
   components: {
     draggable,
-    // WarningDialog,
+    WarningDialog,
   },
   setup() {
     const addColPopup = ref(false);
@@ -399,6 +626,7 @@ export default {
     });
 
     return {
+      options: ["Admin", "Member", "Remove"],
       // TODO: 나중에 자동으로 받아와서 채우는 걸로 변경
       projectId: ref(1),
       document: ref({
@@ -441,7 +669,7 @@ export default {
       myId: ref(0),
       myName: ref("user_" + 0),
       users: ref({}),
-
+      avatarLimit: 3,
       focus: ref({
         isFocusing: false,
         rowId: "",
@@ -451,6 +679,7 @@ export default {
 
       editing_content: ref(""),
 
+      memberManage: ref({}),
       thumbStyle: {
         right: "3px",
         bottom: "3px",
@@ -471,8 +700,13 @@ export default {
       fasGripLinesVertical,
       fasAnglesRight,
       fasGripVertical,
+      farClipboard,
+      fasArrowRightFromBracket,
+      fasCircleXmark,
       mdiDragVerticalVariant,
       mdiArrowLeftBottomBold,
+      mdiExitToApp,
+      mdiCloseCircle,
     };
   },
   mounted() {
@@ -485,7 +719,7 @@ export default {
     this.socket = new SockJS(BASEURL + "/ws");
     this.stompClient = Stomp.over(this.socket);
 
-    // // TODO: 주석을 해제하면 websocket 관련 console.log가 제거됩니다.
+    // // TODO: 주석을 해제하면 websocket 관련 console log가 제거됩니다.
     // this.stompClient.debug = null;
 
     this.stompClient.connect({}, () => {
@@ -576,7 +810,6 @@ export default {
 
           // 1-0. 내가 보냈다면 변경하지 않아도 됨.
           // TODO: 내 ID 관련 수정할 사항이 많이 생길 듯
-          console.log("TEST", res.id, this.myId);
           if (res.id == this.myId) return;
 
           // 1-1. 요청한 사람이...
@@ -631,6 +864,14 @@ export default {
     window.removeEventListener("beforeunload", this.unLoadEvent);
   },
   methods: {
+    getAvatarList() {
+      return this.avatarLimit
+        ? Object.keys(this.users).slice(0, this.avatarLimit)
+        : Object.keys(this.users);
+    },
+    getOtherAvatarList() {
+      return Object.keys(this.users).slice(this.avatarLimit);
+    },
     // getColIdxFromColId와 getRowIdxFromRowId는 없을 시 -1을 반환함.
     // 호출할 때마다 -1에 대한 예외처리를 해줘야 함.
     getColIdxFromColId(colId) {
@@ -741,7 +982,7 @@ export default {
     },
     clearFocus() {
       let active_tag = document.activeElement.tagName;
-      if (active_tag == "INPUT") return;
+      if (active_tag == "INPUT" || active_tag == "TEXTAREA") return;
       else {
         this.focus = {
           isFocusing: false,
@@ -822,13 +1063,13 @@ export default {
           // this.users를 순회하며 공동 작업중인 user들의 focus를 채워줌
           for (let id in this.users) {
             let info = this.users[id];
-            if (info.isFocusing) {
-              let rowIdIdx = this.getRowIdxFromRowId(info.rowId);
-              let colIdIdx = this.getColIdxFromColId(info.colId);
+            if (info.focus.isFocusing) {
+              let rowIdIdx = this.getRowIdxFromRowId(info.focus.rowId);
+              let colIdIdx = this.getColIdxFromColId(info.focus.colId);
               // -1일 경우 가리키던 row/col가 사라졌다는 뜻
 
               if (rowIdIdx == -1 || colIdIdx == -1) {
-                this.users[id].isFocusing = false;
+                this.users[id].focus.isFocusing = false;
               } else {
                 this.rowData[rowIdIdx][colIdIdx].focuses.push(id);
               }
@@ -1028,22 +1269,41 @@ export default {
       element.name = this.updateColName;
       this.callUpdateCol(element);
     },
-    isFocused(rowId, colId) {
+    focusesLength(rowId, colId) {
       let rowIdIdx = this.getRowIdxFromRowId(rowId),
         colIdIdx = this.getColIdxFromColId(colId);
-      if (
-        rowIdIdx > -1 &&
-        colIdIdx > -1 &&
-        this.rowData[rowIdIdx][colIdIdx].focuses.length != 0
-      )
-        return true;
-      return false;
+      if (rowIdIdx > -1 && colIdIdx > -1)
+        return this.rowData[rowIdIdx][colIdIdx].focuses.length;
+      return 0;
+    },
+    callMemberManage() {
+      this.memberManage["members"] = [
+        { id: 1, name: "AAA", imgNo: 1, role: "ADMIN" },
+        { id: 2, name: "BBB", imgNo: 2, role: "Member" },
+        { id: 3, name: "CCC", imgNo: 3, role: "Member" },
+        { id: 4, name: "DDD", imgNo: 4, role: "Member" },
+      ];
+      this.memberManage["code"] = "RANDOM CODE";
+    },
+    async copyCode() {
+      try {
+        await navigator.clipboard.writeText(this.memberManage["code"]);
+        alert("copied");
+      } catch ($e) {
+        alert("cannot copy");
+      }
     },
   },
 };
 </script>
 
 <style scoped>
+.title {
+  font-size: 25px;
+}
+.desc {
+  font-size: 13px;
+}
 .cell {
   position: relative;
   background: whitesmoke;
@@ -1110,5 +1370,9 @@ export default {
 }
 .dragging-item {
   cursor: grabbing !important;
+}
+.overlapping {
+  border: white;
+  position: absolute;
 }
 </style>
