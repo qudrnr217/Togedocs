@@ -1,21 +1,20 @@
 <template>
   <div>
     <div class="projectheader">
-      <div class="buttons">
-        <button>회원정보수정</button>
-        <router-link :to="{ name: 'home' }">
-          <button>로그아웃</button>
-        </router-link>
+      <div class="buttons q-gutter-sm">
+        <q-btn @click="showModifyUserInfoModal()">회원정보수정</q-btn>
+        <!-- logout 함수는 미구현. this.$router.push로 home으로 돌아가게 해야할듯 -->
+        <q-btn @click="logout()">로그아웃</q-btn>
       </div>
       <div class="header">
         <div class="profileimg">
-          <img
-            src="@/assets/togedog.jpg"
-            alt=""
+          <!-- @/assets/togedog.jpg -->
+          <q-img
+            :src="imgUrl(imgNo)"
             style="width: 100%; border-radius: 20px"
           />
         </div>
-        <div class="username">{사용자이름} 님 반갑습니다.</div>
+        <div class="username">{{ userName }} 님 반갑습니다.</div>
       </div>
 
       <div class="shadow"></div>
@@ -44,8 +43,8 @@
           </div>
         </div>
       </q-page-container>
-      <q-dialog v-model="createNewProjectBtnClicked" persistent>
-        <q-card class="createNewProjectDialog">
+      <q-dialog v-model="createPjtModal" persistent>
+        <q-card class="modal">
           <q-card-section>
             <div class="text-h6">새 프로젝트 생성</div>
           </q-card-section>
@@ -59,7 +58,7 @@
                   style="height: 100px; width: 100px; border-radius: 5px"
                 />
                 <div>
-                  <q-btn dense @click="makeImgNo()">RESET</q-btn>
+                  <q-btn dense @click="makeImgNo(1)">RESET</q-btn>
                 </div>
               </div>
               <q-input
@@ -98,32 +97,103 @@
           </q-card-actions>
         </q-card>
       </q-dialog>
+      <q-dialog v-model="modifyUserInfoModal" persistent>
+        <q-card class="modal">
+          <q-card-section>
+            <div class="text-h6">회원정보 수정</div>
+          </q-card-section>
+          <q-separator />
+          <q-card-section>
+            <div class="q-gutter-md">
+              <div class="text-center q-gutter-xs">
+                <q-img
+                  :src="imgUrl(modifyUserInfo.imgNo)"
+                  spinner-color="white"
+                  style="height: 100px; width: 100px; border-radius: 5px"
+                />
+                <div>
+                  <q-btn dense @click="makeImgNo(2)">RESET</q-btn>
+                </div>
+              </div>
+              <q-input
+                label="이름"
+                filled
+                type="text"
+                v-model="modifyUserInfo.name"
+              />
+            </div>
+          </q-card-section>
+
+          <q-separator />
+
+          <q-card-actions align="right">
+            <q-btn flat label="취소" color="primary" v-close-popup />
+            <q-btn
+              flat
+              label="생성"
+              color="primary"
+              v-close-popup
+              @click="doModifyUserInfo()"
+            />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </q-layout>
   </div>
 </template>
 
 <script>
+import { ref } from "vue";
 import ProjectCard from "@/components/ProjectCard.vue";
 import { getProjects, postNewProject } from "@/api/project";
 import { mapState, mapActions, mapMutations } from "vuex";
+import jwt_decode from "jwt-decode";
 
 export default {
   data() {
     return {
-      projects: [],
+      imgNo: ref(""),
+      userName: ref(""),
 
-      createNewProjectBtnClicked: false,
-      newProject: {
+      projects: ref([]),
+
+      createPjtModal: ref(false),
+      newProject: ref({
         imgNo: "",
         title: "",
         desc: "",
-      },
+      }),
+
+      modifyUserInfoModal: ref(false),
+      modifyUserInfo: ref({
+        imgNo: "",
+        name: "",
+      }),
     };
   },
   components: {
     ProjectCard,
   },
   mounted() {
+    let token = localStorage.getItem("accessToken");
+    if (token) {
+      let userInfo = jwt_decode(token.substring(7));
+      this.imgNo = userInfo.imgNo;
+      this.userId = userInfo.userId;
+      this.userName = userInfo.name;
+      this.$store.commit("SET_USERNAME", userInfo.name);
+      this.$store.commit("SET_USERID", userInfo.userId);
+      this.$store.commit("SET_IMGNO", userInfo.imgNo);
+    } else {
+      // 테스트용. 로그인을 안하고 넘어오면 이 부분이 실행됨.
+      // 최종 배포 후 else 아래는 모두 지울 것.
+      this.userId = this.$store.getters.userId;
+      this.userName = this.$store.getters.userName;
+      this.$store.commit("SET_IMGNO", Math.random() * 10);
+      this.imgNo = this.$store.getters.imgNo;
+      // 여기까지
+    }
+
     getProjects().then((data) => {
       console.log(data);
       this.projects = data.data;
@@ -138,6 +208,26 @@ export default {
     createNewProject() {
       postNewProject(this.newProject);
     },
+    makeImgNo(type) {
+      let imgNo = Math.floor(Math.random() * 10); // 0 ~ 9 까지의 난수 생성
+      if (type == 1) {
+        this.newProject.imgNo = imgNo;
+      } else {
+        this.modifyUserInfo.imgNo = imgNo;
+      }
+    },
+    imgUrl(imgNo) {
+      return "https://placeimg.com/100/100/nature?t=" + imgNo / 10;
+    },
+    showCreatePjtModal() {
+      this.createPjtModal = true;
+      this.makeImgNo(1);
+    },
+    showModifyUserInfoModal() {
+      this.modifyUserInfoModal = true;
+      this.modifyUserInfo.imgNo = this.imgNo;
+      this.modifyUserInfo.name = this.userName;
+    },
     resetCreatePjtModal() {
       this.newProject = {
         imgNo: null,
@@ -145,16 +235,9 @@ export default {
         desc: null,
       };
     },
-    makeImgNo() {
-      let imgNo = Math.floor(Math.random() * 10); // 0 ~ 9 까지의 난수 생성
-      this.newProject.imgNo = imgNo;
-    },
-    imgUrl(imgNo) {
-      return "https://placeimg.com/100/100/nature?t=" + imgNo / 10;
-    },
-    showCreatePjtModal() {
-      this.createNewProjectBtnClicked = true;
-      this.makeImgNo();
+    doModifyUserInfo() {
+      // axios 호출
+      console.log("modify user info");
     },
   },
 };
@@ -186,7 +269,7 @@ export default {
   font-size: 1rem;
   margin-left: 10rem;
 }
-.createNewProjectDialog {
+.modal {
   min-width: 40vw;
   overflow: hidden;
 }
