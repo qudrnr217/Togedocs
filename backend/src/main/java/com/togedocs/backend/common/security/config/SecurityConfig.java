@@ -6,6 +6,7 @@ import com.togedocs.backend.common.security.config.jwt.TokenService;
 import com.togedocs.backend.common.security.config.oauth.PrincipalOauth2UserService;
 import com.togedocs.backend.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+//import org.springframework.web.cors.CorsConfiguration;
+//import org.springframework.web.cors.CorsConfigurationSource;
+//import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+//import org.springframework.web.filter.CorsFilter;
+
+import java.util.Arrays;
 //import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @Configuration
@@ -27,6 +34,7 @@ public class SecurityConfig {
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final TokenService tokenService;
 
+//    private final CorsFilter corsFilter;
     private final UserRepository userRepository;
 
     @Bean
@@ -38,9 +46,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
         http.csrf().disable();
+
 //        http.authorizeRequests()
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //세션을 사용하지 않겠다는 뜻임.
                 .and()
+//                .addFilter(corsFilter)
                 .formLogin().disable()
                 .httpBasic().disable()
                 .authorizeRequests()
@@ -53,15 +63,21 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthFilter(tokenService, userRepository),UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login()
 //                .loginPage("http://localhost:8080/")
-//                .defaultSuccessUrl("myapp://")
+                .defaultSuccessUrl("myapp://")
                 .userInfoEndpoint().userService(principalOauth2UserService)
                 .and()
                 .successHandler(oAuth2SuccessHandler);
 
 //        http.addFilterBefore(new JwtAuthFilter(tokenService,userRepository), UsernamePasswordAuthenticationFilter.class);
 
+
+
+
         return http.build();
     }
+
+
+
 
     /*
     기존: WebSecurityConfigurerAdapter를 상속하고 configure매소드를 오버라이딩하여 설정하는 방법
