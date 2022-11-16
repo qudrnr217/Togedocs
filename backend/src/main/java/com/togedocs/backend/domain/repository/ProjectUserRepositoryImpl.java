@@ -40,4 +40,21 @@ public class ProjectUserRepositoryImpl implements ProjectUserRepositoryCustom {
                 .execute();
         return updatedResult;
     }
+
+    @Override
+    public String getMyRole(Long user_id,Long project_id) {
+        QUser user = QUser.user;
+        QProjectUser projectUser = QProjectUser.projectUser;
+
+        String myname = String.valueOf(jpaQueryFactory.select(projectUser.role)
+                .from(user)
+                .join(projectUser)
+                .on(user.id.eq(projectUser.user.id))
+                .where(projectUser.user.id.eq(user_id).and(projectUser.project.id.eq(project_id)))
+                .fetchOne());
+
+        return myname;
+    }
+
+
 }

@@ -147,7 +147,6 @@ import { ref } from "vue";
 import ProjectCard from "@/components/ProjectCard.vue";
 import { mapState, mapActions, mapMutations } from "vuex";
 import { getProjects, postNewProject } from "@/api/project";
-import { mapState, mapActions, mapMutations } from "vuex";
 import jwt_decode from "jwt-decode";
 
 export default {
