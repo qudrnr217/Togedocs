@@ -11,8 +11,4 @@ function withdrawUser(success, fail) {
   return api.delete("/user/withdraw").then(success).catch(fail);
 }
 
-//이름가져오기
-function getMyName(success, fail) {
-  return api.get("/user/myname").then(success).catch(fail);
-}
-export { modifyUserInfo, withdrawUser, getMyName };
+export { modifyUserInfo, withdrawUser };

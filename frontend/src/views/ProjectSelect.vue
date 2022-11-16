@@ -177,7 +177,9 @@ export default {
   mounted() {
     let token = localStorage.getItem("accessToken");
     if (token) {
-      let userInfo = jwt_decode(token.substring(7));
+      let userInfo = jwt_decode(token);
+      console.log("token: ", token);
+      console.log("userinfo: ", userInfo);
       this.imgNo = userInfo.imgNo;
       this.userId = userInfo.userId;
       this.userName = userInfo.name;
