@@ -2,7 +2,9 @@
   <div id="All">
     <div style="height: 8%"></div>
     <div id="Top">
-      <div class="q-px-md text-bold text-h6">{{ projectTitle }}</div>
+      <div class="q-px-md text-bold text-h6" style="text-align: center">
+        {{ projectTitle }}의 ApiTest
+      </div>
     </div>
 
     <div id="Maincontainer">
