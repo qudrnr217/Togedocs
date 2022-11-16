@@ -8,8 +8,8 @@
 
         <div class="projectinfo">
           <div class="title">{{ projectItem.title }}</div>
-          <div class="title-name">
-            {{ projectItem.members.join(", ") }}
+          <div class="title-name" v-for="name in projectItem.names" :key="name">
+            {{ name }}
           </div>
           <div class="title-detail">
             {{ projectItem.desc }}
