@@ -13,7 +13,6 @@ function addLog(payload, success, fail) {
   let projectId = payload.pathVariable.projectId,
     rowId = payload.pathVariable.rowId;
   let requestBody = payload.requestBody;
-  console.log("addLog", requestBody);
   return api
     .post("/logs/" + projectId + "/" + rowId, requestBody)
     .then(success)
