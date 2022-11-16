@@ -13,10 +13,6 @@
 
 <script>
 import { shell } from "electron";
-// import { BASEURL } from "@/api/index.js";
-// import { access } from "fs";
-// import router from "vue";
-// import { getProjects } from "@/api/project";
 export default {
   methods: {
     getDimensions() {
@@ -42,7 +38,7 @@ export default {
     let _this = this;
     console.log(_this);
     window.addEventListener("resize", this.getDimensions);
-    window.addEventListener("login-successful", event => {
+    window.addEventListener("login-successful", (event) => {
       console.log(event);
       _this.$router.push({ name: "select" });
     });
