@@ -2,19 +2,68 @@
   <div>
     <q-page-container>
       <q-page class="row">
-        <div class="col q-ma-xs">
+        <div class="col q-ma-sm">
           <div class="column full-height">
-            <div class="q-pa-xs row" style="min-width: 650px">
-              <div class="q-pa-sm col-7" style="background-color: pink">
-                <div class="row title">Project Title</div>
+            <div class="row shadow-1" style="min-width: 700px">
+              <div class="q-pl-md q-py-sm col-7">
+                <div class="row title">
+                  {{ document.title
+                  }}<q-popup-edit
+                    v-model="document.title"
+                    auto-save
+                    v-slot="scope"
+                    @save="callUpdateTitle"
+                  >
+                    <q-input
+                      v-model="scope.value"
+                      dense
+                      autofocus
+                      @keyup.enter="scope.set"
+                    />
+                  </q-popup-edit>
+                </div>
                 <div class="row desc">
-                  <div class="col">Project Description</div>
-                  <div class="col">Project Base URL</div>
+                  <div class="col">
+                    <div v-if="document.desc">{{ document.desc }}</div>
+                    <div v-else class="blank-input">클릭해서 설명 작성하기</div>
+                    <q-popup-edit
+                      v-model="document.desc"
+                      auto-save
+                      v-slot="scope"
+                      @save="callUpdateDesc"
+                    >
+                      <q-input
+                        v-model="scope.value"
+                        dense
+                        autofocus
+                        @keyup.enter="scope.set"
+                      />
+                    </q-popup-edit>
+                  </div>
+                  <div class="col">
+                    <div v-if="document.baseUrl">{{ document.baseUrl }}</div>
+                    <div v-else class="blank-input">
+                      클릭해서 base URL 설정하기
+                    </div>
+                    <q-popup-edit
+                      v-model="document.baseUrl"
+                      auto-save
+                      v-slot="scope"
+                      @save="callUpdateBaseurl"
+                    >
+                      <q-input
+                        v-model="scope.value"
+                        dense
+                        autofocus
+                        @keyup.enter="scope.set"
+                      />
+                    </q-popup-edit>
+                  </div>
                 </div>
               </div>
-              <div class="q-pa-sm col-5" style="background-color: skyblue">
+              <div class="col-5 self-center">
                 <div class="row justify-end">
-                  <div class="" style="position: relative">
+                  <div style="position: relative">
                     <q-avatar
                       v-if="Object.keys(users).length > avatarLimit"
                       size="40px"
@@ -40,16 +89,20 @@
                   </div>
                   <div class="" style="padding: 0px 10px">
                     <q-btn
+                      outline
+                      rounded
+                      color="primary"
+                      :icon="mdiAccountGroup"
                       label="멤버 관리"
-                      style="min-width: 95px"
-                      @click="callMemberManage"
+                      @click="callGetMemberManageInfo()"
                     >
                       <q-popup-proxy style="min-width: 230px">
                         <q-card>
                           <q-card-section>
                             <div class="text-h6">팀원 목록</div>
+                            <q-separator />
                             <q-scroll-area
-                              style="height: 175px; background-color: yellow"
+                              style="height: 175px"
                               :thumb-style="thumbStyle"
                             >
                               <q-list>
@@ -75,14 +128,17 @@
                                       size="sm"
                                       style="padding: 4px 8px"
                                       color="white"
-                                      text-color="black"
+                                      text-color="primary"
                                       :label="v.role"
+                                      :dropdown-icon="fasCaretDown"
                                     >
                                       <q-list>
                                         <q-item
                                           clickable
                                           v-close-popup
-                                          @click="onItemClick"
+                                          @click="
+                                            callUpdateMemberRole(v.id, 'ADMIN')
+                                          "
                                         >
                                           <q-item-section>
                                             <q-item-label>Admin</q-item-label>
@@ -92,7 +148,9 @@
                                         <q-item
                                           clickable
                                           v-close-popup
-                                          @click="onItemClick"
+                                          @click="
+                                            callUpdateMemberRole(v.id, 'MEMBER')
+                                          "
                                         >
                                           <q-item-section>
                                             <q-item-label>Member</q-item-label>
@@ -102,7 +160,10 @@
                                         <q-item
                                           clickable
                                           v-close-popup
-                                          @click="onItemClick"
+                                          @click="
+                                            (removeMemberDiaglog = true),
+                                              (removeMember = v)
+                                          "
                                         >
                                           <q-item-section>
                                             <q-item-label>Remove</q-item-label>
@@ -112,66 +173,62 @@
                                     </q-btn-dropdown>
                                   </q-item-section>
                                 </q-item>
-                              </q-list></q-scroll-area
-                            >
+                              </q-list>
+                              <q-dialog
+                                v-model="removeMemberDiaglog"
+                                persistent
+                              >
+                                <q-card>
+                                  <q-card-section class="row items-center">
+                                    <q-avatar
+                                      :icon="biExclamationTriangleFill"
+                                      color="primary"
+                                      text-color="white"
+                                    />
+                                    <span class="q-ml-sm"
+                                      >{{ removeMember.name }}님을
+                                      내보내겠습니까?</span
+                                    >
+                                  </q-card-section>
+
+                                  <q-card-actions align="right">
+                                    <q-btn
+                                      flat
+                                      label="취소"
+                                      color="primary"
+                                      v-close-popup
+                                    />
+                                    <q-btn
+                                      flat
+                                      label="확인"
+                                      color="primary"
+                                      @click="callRemoveMember"
+                                      v-close-popup
+                                    />
+                                  </q-card-actions>
+                                </q-card> </q-dialog
+                            ></q-scroll-area>
                           </q-card-section>
                           <q-separator />
-                          <q-card-section>
-                            <div class="text-h6">초대하기</div>
-                            <q-btn @click="copyCode">
-                              <q-icon left :name="farClipboard" />
+                          <q-card-actions vertical align="center">
+                            <q-btn push unelevated @click="copyCode">
+                              <q-icon left :name="farClipboard" size="xs" />
                               <div>초대코드 복사하기</div>
                             </q-btn>
-                          </q-card-section>
-                        </q-card>
-                        <!-- </q-banner> -->
-                      </q-popup-proxy>
-                      <q-dialog v-model="confirm" persistent>
-                        <q-card>
-                          <q-card-section class="row items-center">
-                            <q-avatar
-                              icon="signal_wifi_off"
-                              color="primary"
-                              text-color="white"
-                            />
-                            <span class="q-ml-sm"
-                              >You are currently not connected to any
-                              network.</span
-                            >
-                          </q-card-section>
-
-                          <q-card-actions align="right">
-                            <q-btn
-                              flat
-                              label="Cancel"
-                              color="primary"
-                              v-close-popup
-                            />
-                            <q-btn
-                              flat
-                              label="Turn on Wifi"
-                              color="primary"
-                              v-close-popup
-                            />
                           </q-card-actions>
                         </q-card>
-                      </q-dialog>
+                      </q-popup-proxy>
                     </q-btn>
                   </div>
                 </div>
               </div>
             </div>
             <q-scroll-area
-              class="col q-pa-sm"
+              class="col q-pa-lg"
               visible
               :thumb-style="thumbStyle"
             >
               <div style="overflow: auto">
-                <div>My Name : {{ myName }}</div>
-                <div>My Focus : {{ focus }}</div>
-                <div>Cooperators : {{ users }}</div>
-                projectId: {{ document.projectId }}
-
                 <!-- Columns -->
                 <div class="q-pa-xs row no-wrap">
                   <!-- blank -->
@@ -203,7 +260,7 @@
                           <div
                             v-if="element.category === 'REQUIRED'"
                             v-on:click.right.prevent
-                            class="q-pa-sm cell row handle-col"
+                            class="q-pa-sm col-cell row handle-col"
                             :style="{ width: element.width + 'px' }"
                           >
                             {{ element.name }}
@@ -214,11 +271,12 @@
                           </div>
                           <div
                             v-else
-                            class="q-pa-sm cell row handle-col"
+                            class="q-pa-sm col-cell row handle-col"
                             :style="{ width: element.width + 'px' }"
                           >
                             {{ element.name }}
                             <q-popup-proxy
+                              context-menu
                               @before-show="putColName(element)"
                               @show="moveCursor('putColName')"
                             >
@@ -342,7 +400,13 @@
                       <div
                         @mouseover="rowActive[index] = true"
                         @mouseleave="rowActive[index] = false"
-                        class="q-pa-sm q-ma-xs text-right cell-no handle-row drag-item"
+                        class="
+                          q-pa-sm q-ma-xs
+                          text-right
+                          cell-no
+                          handle-row
+                          drag-item
+                        "
                       >
                         <template v-if="!rowActive[index]">
                           {{ index + 1 }}
@@ -432,12 +496,13 @@
         side="right"
         :width="drawerWidth"
         :breakpoint="0"
-        bordered
-        class="bg-grey-3"
+        elevated
+        style="background: var(--cultured)"
       >
         <div class="column full-height">
           <q-scroll-area class="col q-pa-sm" visible :thumb-style="thumbStyle">
             <q-btn
+              class="q-my-sm"
               flat
               @click="drawer = !drawer"
               round
@@ -447,7 +512,7 @@
             >
             </q-btn>
             <br />
-            <q-markup-table class="q-py-sm">
+            <q-markup-table flat bordered class="q-py-sm">
               <tr v-for="(col, col_idx) in document.cols" :key="col_idx">
                 <td style="width: 130px; vertical-align: top">
                   <div style="height: 44px" class="column justify-center">
@@ -582,6 +647,10 @@ import {
   deleteCol,
   updateCol,
   updateCell,
+  updateProjectInfo,
+  getMemberManageInfo,
+  removeMember,
+  updateMemberRole,
 } from "@/api/apidocs.js";
 
 import {
@@ -592,6 +661,8 @@ import {
   biGripVertical,
   biPlusCircle,
   biAsterisk,
+  biCaretDownFill,
+  biExclamationTriangleFill,
 } from "@quasar/extras/bootstrap-icons";
 import {
   fasGripLinesVertical,
@@ -600,12 +671,16 @@ import {
   farClipboard,
   fasArrowRightFromBracket,
   fasCircleXmark,
+  fasCaretDown,
+  fasUserGear,
 } from "@quasar/extras/fontawesome-v6";
 import {
   mdiDragVerticalVariant,
   mdiArrowLeftBottomBold,
   mdiExitToApp,
   mdiCloseCircle,
+  mdiAccountBoxMultiple,
+  mdiAccountGroup,
 } from "@quasar/extras/mdi-v6";
 
 export default {
@@ -631,6 +706,9 @@ export default {
       projectId: ref(1),
       document: ref({
         projectId: null,
+        title: "",
+        desc: "",
+        baseUrl: "",
         rows: [],
         cols: [],
         data: {},
@@ -679,7 +757,12 @@ export default {
 
       editing_content: ref(""),
 
-      memberManage: ref({}),
+      memberManage: ref({
+        code: "",
+        members: [],
+      }),
+      removeMemberDiaglog: ref(false),
+      removeMember: ref({}),
       thumbStyle: {
         right: "3px",
         bottom: "3px",
@@ -697,20 +780,27 @@ export default {
       biGripVertical,
       biPlusCircle,
       biAsterisk,
+      biCaretDownFill,
+      biExclamationTriangleFill,
       fasGripLinesVertical,
       fasAnglesRight,
       fasGripVertical,
       farClipboard,
       fasArrowRightFromBracket,
       fasCircleXmark,
+      fasCaretDown,
+      fasUserGear,
       mdiDragVerticalVariant,
       mdiArrowLeftBottomBold,
       mdiExitToApp,
       mdiCloseCircle,
+      mdiAccountBoxMultiple,
+      mdiAccountGroup,
     };
   },
   mounted() {
     this.callGetDocs();
+    this.callGetMemberManageInfo();
 
     this.myId = Math.round(Math.random() * 100).toString(); // 나중에 유저를 token에서 가져오자.
     this.myName = "user_" + this.myId;
@@ -1269,6 +1359,51 @@ export default {
       element.name = this.updateColName;
       this.callUpdateCol(element);
     },
+    callUpdateTitle(afterTitle, beforeTitle) {
+      beforeTitle;
+      this.callUpdateProjectInfo(
+        afterTitle,
+        this.document.desc,
+        this.document.baseUrl
+      );
+    },
+    callUpdateDesc(afterDesc, beforeDesc) {
+      beforeDesc;
+      this.callUpdateProjectInfo(
+        this.document.title,
+        afterDesc,
+        this.document.baseUrl
+      );
+    },
+    callUpdateBaseurl(afterBaseUrl, beforeBaseUrl) {
+      beforeBaseUrl;
+      console.log(afterBaseUrl);
+      this.callUpdateProjectInfo(
+        this.document.title,
+        this.document.desc,
+        afterBaseUrl
+      );
+    },
+    callUpdateProjectInfo(title, desc, baseUrl) {
+      updateProjectInfo(
+        {
+          pathVariable: {
+            projectId: this.projectId,
+          },
+          requestBody: {
+            title: title,
+            desc: desc,
+            baseUrl: baseUrl,
+          },
+        },
+        (response) => {
+          response, this.refreshReq();
+        },
+        (error) => {
+          console.warn(error);
+        }
+      );
+    },
     focusesLength(rowId, colId) {
       let rowIdIdx = this.getRowIdxFromRowId(rowId),
         colIdIdx = this.getColIdxFromColId(colId);
@@ -1276,22 +1411,64 @@ export default {
         return this.rowData[rowIdIdx][colIdIdx].focuses.length;
       return 0;
     },
-    callMemberManage() {
-      this.memberManage["members"] = [
-        { id: 1, name: "AAA", imgNo: 1, role: "ADMIN" },
-        { id: 2, name: "BBB", imgNo: 2, role: "Member" },
-        { id: 3, name: "CCC", imgNo: 3, role: "Member" },
-        { id: 4, name: "DDD", imgNo: 4, role: "Member" },
-      ];
-      this.memberManage["code"] = "RANDOM CODE";
-    },
     async copyCode() {
       try {
         await navigator.clipboard.writeText(this.memberManage["code"]);
-        alert("copied");
+
+        this.msg = "클립보드에 초대코드 복사되었습니다!";
+        this.warningDialog = true;
       } catch ($e) {
-        alert("cannot copy");
+        this.msg = "초대코드 복사에 실패했습니다!";
+        this.warningDialog = true;
       }
+    },
+    callGetMemberManageInfo() {
+      getMemberManageInfo(
+        {
+          pathVariable: {
+            projectId: this.projectId,
+          },
+        },
+        (response) => {
+          this.memberManage = response.data;
+        },
+        (error) => {
+          console.warn(error);
+        }
+      );
+    },
+    callRemoveMember() {
+      removeMember(
+        {
+          pathVariable: {
+            projectId: this.projectId,
+            userId: this.removeMember.id,
+          },
+        },
+        (response) => {
+          this.memberManage = response.data;
+        },
+        (error) => {
+          console.warn(error);
+        }
+      );
+    },
+    callUpdateMemberRole(userId, role) {
+      updateMemberRole(
+        {
+          pathVariable: { projectId: this.projectId },
+          requestBody: {
+            userId: userId,
+            role: role,
+          },
+        },
+        (response) => {
+          this.memberManage = response.data;
+        },
+        (error) => {
+          console.warn(error);
+        }
+      );
     },
   },
 };
@@ -1306,7 +1483,12 @@ export default {
 }
 .cell {
   position: relative;
-  background: whitesmoke;
+  outline: 2px solid rgb(240, 240, 240);
+  border-radius: 5px;
+}
+.col-cell {
+  position: relative;
+  background: var(--cultured);
 }
 .cell-no {
   min-width: 30px;
@@ -1345,7 +1527,6 @@ export default {
   bottom: 0;
   left: -2px;
   width: 4px;
-  background-color: red;
   cursor: ew-resize;
 }
 
@@ -1374,5 +1555,8 @@ export default {
 .overlapping {
   border: white;
   position: absolute;
+}
+.blank-input {
+  color: rgb(160, 160, 160);
 }
 </style>
