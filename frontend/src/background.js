@@ -157,7 +157,7 @@ if (gotTheLock) {
     logEverywhere("accesstoken: " + accesstoken);
     logEverywhere("refreshtoken: " + refreshtoken);
     win.webContents.executeJavaScript(
-      `window.localStorage.setItem('accessToken','Bearer ` + `${accesstoken}')`
+      `window.localStorage.setItem('accessToken','${accesstoken}')`
     );
     win.webContents.executeJavaScript(
       `window.localStorage.setItem('refreshToken','${refreshtoken}')`

@@ -183,7 +183,7 @@ export default {
   mounted() {
     //사용자의 이름 가져오기
     getMyName().then((data) => {
-      this.myname = data;
+      this.myname = data.data;
     });
 
     //사용자의 참여하고있는 프로젝트 정보가져오는 api
