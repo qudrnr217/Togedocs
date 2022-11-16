@@ -14,6 +14,11 @@ body {
   --cultured: #f9f9f9ff;
   --white: #ffffffff;
   --charcoal: #213e51ff;
+  --GET: #56a3f1ff;
+  --POST: #53cd84ff;
+  --PUT: #fdc848ff;
+  --PATCH: #b464d3ff;
+  --DELETE: #ef665eff;
 }
 /*
   사용법
