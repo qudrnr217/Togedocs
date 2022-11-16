@@ -153,7 +153,6 @@ import { modifyUserInfo } from "@/api/user";
 export default {
   computed: {
     ...mapState("commonStore", ["userId", "userName", "imgNo"]),
-    ...mapState("projectStore", ["projects"]),
   },
   data() {
     return {
@@ -169,6 +168,8 @@ export default {
         imgNo: "",
         name: "",
       }),
+
+      projects: ref([]),
     };
   },
   components: {
@@ -193,10 +194,7 @@ export default {
       // 여기까지
     }
 
-    getProjects().then((data) => {
-      console.log(data);
-      this.projects = data.data;
-    });
+    this.callGetProject();
   },
   methods: {
     ...mapActions("projectStore", ["FETCH_PROJECTS"]),
@@ -211,6 +209,7 @@ export default {
       };
       postNewProject(params).then((data) => {
         console.log(data);
+        this.callGetProject();
       });
     },
     makeImgNo(type) {
@@ -251,6 +250,12 @@ export default {
       // axios 호출
 
       console.log("modify user info");
+    },
+    callGetProject() {
+      getProjects().then((data) => {
+        console.log(data);
+        this.projects = data.data;
+      });
     },
   },
 };
