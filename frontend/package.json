@@ -31,6 +31,11 @@
     "vuex": "^4.1.0",
     "vuex-persistedstate": "^4.1.0"
   },
+  "overrides": {
+    "vue-cli-plugin-electron-builder": {
+      "electron-builder": "^23.0.3"
+    }
+  },
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
