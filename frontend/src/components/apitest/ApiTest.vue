@@ -203,7 +203,12 @@
               </div>
             </div>
             <hr
-              style="border-bottom: 0px; margin-top: 0px; margin-bottom: 0px"
+              style="
+                border-left: 0;
+                border-bottom: 0px;
+                margin-top: 0px;
+                margin-bottom: 0px;
+              "
             />
             <div id="ResponseBox">
               <div id="ResponseBoxTop" class="q-pa-xs">
@@ -214,8 +219,8 @@
               <q-tabs id="ResponseOptions" dense no-caps align="left">
                 <q-tab
                   id="ResponseOptionsDetail"
-                  @click="ResponseOptionSelect('RequestBody')"
-                  >RequestBody</q-tab
+                  @click="ResponseOptionSelect('ResponseBody')"
+                  >ResponseBody</q-tab
                 >
                 <q-tab
                   id="ResponseOptionsDetail"
@@ -231,7 +236,7 @@
               <div id="ResponseParent">
                 <textarea
                   readonly
-                  v-show="ResponseTypeSelect == 'RequestBody'"
+                  v-show="ResponseTypeSelect == 'ResponseBody'"
                   id="ResponseContent"
                   v-model="res"
                 ></textarea>
@@ -726,6 +731,8 @@ export default {
       this.apiName = this.apiList[newindex].name;
       this.statusCode = "";
       this.rowId = this.apiList[newindex].rowId;
+      this.responseHeader = "";
+      this.responseCookie = "";
 
       var URLtemp = this.apiURL;
       var newURL = "";
@@ -895,7 +902,7 @@ export default {
       }
     }
 
-    this.ResponseTypeSelect = "RequestBody";
+    this.ResponseTypeSelect = "ResponseBody";
   },
 };
 </script>
