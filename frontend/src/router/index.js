@@ -3,8 +3,6 @@ import HomeView from "@/views/HomeView.vue";
 import ApiDocs from "@/views/ApiDocs.vue";
 import ApiTest from "@/views/ApiTest.vue";
 import ProjectSelect from "@/views/ProjectSelect.vue";
-import WebSocket from "@/views/WebSocket.vue";
-import TestJh from "@/components/ProjectCard.vue";
 import ProjectView from "@/views/ProjectView.vue";
 
 const routes = [
@@ -19,37 +17,26 @@ const routes = [
     component: HomeView,
   },
   {
-    path: "/projectview",
+    path: "/project",
     name: "projectview",
     component: ProjectView,
     children: [
       {
-        path: "docs",
+        path: "select",
+        name: "select",
+        component: ProjectSelect,
+      },
+      {
+        path: "docs/:projectId",
         name: "docs",
         component: ApiDocs,
       },
       {
-        path: "test",
+        path: "test/:projectId",
         name: "test",
         component: ApiTest,
       },
     ],
-  },
-
-  {
-    path: "/select",
-    name: "select",
-    component: ProjectSelect,
-  },
-  {
-    path: "/ws",
-    name: "ws",
-    component: WebSocket,
-  },
-  {
-    path: "/testjh",
-    name: "testjh",
-    component: TestJh,
   },
   //   {
   //     path: "/404",
