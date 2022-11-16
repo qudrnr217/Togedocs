@@ -10,7 +10,6 @@ function addRow(payload, success, fail) {
 function addCol(payload, success, fail) {
   let projectId = payload.pathVariable.projectId;
   let data = payload.requestBody;
-
   return api
     .post("/docs/" + projectId + "/cols", { name: data.name, type: data.type })
     .then(success)
@@ -60,6 +59,19 @@ function getDocs(payload, success, fail) {
     .then(success)
     .catch(fail);
 }
+
+function updateProjectInfo(payload, success, fail) {
+  let projectId = payload.pathVariable.projectId;
+  let data = payload.requestBody;
+  return api.patch("/docs/" + projectId, {
+    title: data.title,
+    desc: data.desc,
+    baseUrl: data.baseUrl,
+  })
+    .then(success)
+    .catch(fail);
+}
+
 function updateCol(payload, success, fail) {
   let projectId = payload.pathVariable.projectId;
   let colId = payload.pathVariable.colId;
@@ -75,6 +87,35 @@ function updateCol(payload, success, fail) {
     .catch(fail);
 }
 
+///////////////////////////// PROJECT test용
+function getMemberManageInfo(payload, success, fail) {
+  let projectId = payload.pathVariable.projectId;
+
+  return api.get("/project/" + projectId + "/members")
+    .then(success)
+    .catch(fail);
+}
+
+function removeMember(payload, success, fail) {
+  let projectId = payload.pathVariable.projectId;
+  let userId = payload.pathVariable.userId;
+  return api.delete("/project/" + projectId + "/member/" + userId)
+    .then(success)
+    .catch(fail);
+}
+
+function updateMemberRole(payload, success, fail) {
+  let projectId = payload.pathVariable.projectId;
+  let data = payload.requestBody;
+
+  return api.patch("/project/" + projectId + "/member", {
+    userId: data.userId,
+    role: data.role
+  }).then(success)
+    .catch(fail);
+}
+
+
 export {
   addRow,
   addCol,
@@ -85,4 +126,8 @@ export {
   updateCell,
   getDocs,
   updateCol,
+  updateProjectInfo,
+  getMemberManageInfo,
+  removeMember,
+  updateMemberRole
 };
