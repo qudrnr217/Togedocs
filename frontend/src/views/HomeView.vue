@@ -1,8 +1,10 @@
 <template>
   <div class="center">
     <div class="main">
-      <img id="rotate" src="@/assets/togedog.jpg" alt="" class="poster" />
-      <img @click="login()" src="@/assets/login.png" alt="" class="login" />
+      <div style="width: 100% height: 100%" class="rotate2">
+        <img id="rotate" src="@/assets/togedog.jpg" alt="" class="poster" />
+        <img @click="login()" src="@/assets/login.png" alt="" class="login" />
+      </div>
     </div>
     {{ width }}
     <router-link :to="{ path: 'select' }">To test jh</router-link>
@@ -17,6 +19,8 @@ export default {
   methods: {
     getDimensions() {
       this.width = document.documentElement.clientWidth;
+      let image = document.getElementById("rotate");
+      image.style.transform = "rotate(" + this.width / 3 + "deg)";
     },
     login() {
       shell.openExternal("http://localhost:8081/oauth2/authorization/google");
@@ -26,6 +30,7 @@ export default {
     width: document.documentElement.clientWidth,
   }),
   mounted() {
+    this.getDimensions();
     console.log("hi");
     let _this = this;
     console.log(_this);
@@ -64,7 +69,8 @@ export default {
 
 .login {
   position: absolute;
-  bottom: 15vh;
+  left: 10vw;
+  bottom: 20vh;
   max-height: 20vh;
   max-width: 80vw;
 }
@@ -89,5 +95,15 @@ export default {
   max-height: 80vh;
   max-width: 80vw;
   background-size: cover;
+}
+.rotate2 {
+  animation: rotate_image 30s linear infinite;
+  transform-origin: 70% 50%;
+}
+
+@keyframes rotate_image {
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
