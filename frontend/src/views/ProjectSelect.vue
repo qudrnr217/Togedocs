@@ -166,26 +166,26 @@
 
 <script>
 import ProjectCard from "@/components/ProjectCard.vue";
-import { postNewProject } from "@/api/project";
+import { postNewProject, getProjects } from "@/api/project";
 import { mapState, mapActions, mapMutations } from "vuex";
-import { getProjects } from "@/api/project";
-// import axios from "axios";
 
 export default {
   data() {
     return {
       projects: [],
-      // name: "",
-      // title: "",
-      // desc: "",
-      // names: [],
-      // imgNo: 0,
+      // newProject: {
+      //   title: null,
+      //   url: null,
+      //   desc: null,
+      //   date: { from: null, to: null },
+      // },
     };
   },
   components: {
     ProjectCard,
   },
   mounted() {
+    //사용자의 참여하고있는 프로젝트 정보가져오는 api
     getProjects().then((data) => {
       console.log(data);
       this.projects = data.data;
@@ -197,8 +197,16 @@ export default {
   methods: {
     ...mapActions("projectStore", ["FETCH_PROJECTS"]),
     ...mapMutations("userStore", ["SET_TOKEN"]),
+    //프로젝트 생성 api
     createNewProject() {
-      postNewProject(this.newProject);
+      let params = {
+        title: this.projects.title,
+        desc: this.projects.desc,
+        imgNo: this.projects.imgNo,
+      };
+      postNewProject(params).then((data) => {
+        console.log(data);
+      });
     },
     resetCreateNewProjectDialog() {
       this.newProject = {
