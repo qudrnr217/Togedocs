@@ -148,6 +148,7 @@ import ProjectCard from "@/components/ProjectCard.vue";
 import { mapState, mapActions, mapMutations } from "vuex";
 import { getProjects, postNewProject } from "@/api/project";
 import jwt_decode from "jwt-decode";
+import { modifyUserInfo } from "@/api/user";
 
 export default {
   computed: {
@@ -240,7 +241,15 @@ export default {
       };
     },
     doModifyUserInfo() {
+      let params = {
+        name: modifyUserInfo.name,
+        imgNo: modifyUserInfo.imgNo,
+      };
+      modifyUserInfo(params).then((data) => {
+        console.log(data);
+      });
       // axios 호출
+
       console.log("modify user info");
     },
   },
