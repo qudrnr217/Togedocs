@@ -49,6 +49,7 @@ public class UserController {
     public ResponseEntity<?> getProjectInfo(Principal principal){
         List<UserResponse.Info> response;
         String providerId = principal.getName();
+        System.out.println("유저 provider Id: "+providerId);
         response=userService.getUserInfo(providerId);
         System.out.println("유저 멤버 주세요!");
         System.out.println(response);
