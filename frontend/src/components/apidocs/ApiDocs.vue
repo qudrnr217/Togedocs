@@ -716,7 +716,7 @@ export default {
     this.myName = "user_" + this.myId;
 
     // WEBSOCKET CONNECTION
-    this.socket = new SockJS(BASEURL + "/ws");
+    this.socket = new SockJS(BASEURL + "/api/ws");
     this.stompClient = Stomp.over(this.socket);
 
     // // TODO: 주석을 해제하면 websocket 관련 console log가 제거됩니다.
