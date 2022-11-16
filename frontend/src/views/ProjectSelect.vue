@@ -20,7 +20,7 @@
       <div class="shadow"></div>
     </div>
 
-    <q-layout view="hHh lpR fFf">
+    <q-layout view="hHh lpR fFf" color="warning">
       <q-page-container>
         <div class="project-list">
           <div class="column">
