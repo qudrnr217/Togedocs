@@ -326,9 +326,19 @@ import { DragCol } from "vue-resizer";
 import { getDocs } from "@/api/apidocs.js";
 import { getLogs, addLog } from "@/api/apitest.js";
 import { biDashCircle, biPlusCircle } from "@quasar/extras/bootstrap-icons";
+import { mapMutations, mapState } from "vuex";
 export default {
   components: { DragCol },
+  computed: {
+    ...mapState("commonStore", ["projectId", "userName"]),
+  },
   methods: {
+    ...mapMutations("commonStore", [
+      "SET_USERID",
+      "SET_USERNAME",
+      "SET_PROJECTID",
+    ]),
+
     loadLogList() {
       getLogs(
         { pathVariable: { projectId: this.projectId, rowId: this.rowId } },
@@ -552,7 +562,6 @@ export default {
       apiName: "",
       beforetype: "",
       nowIndex: 0,
-      projectId: 0,
       rowId: "",
 
       //Request
@@ -632,14 +641,13 @@ export default {
         //Save 버튼으로 변경
 
         //이 부분에 DB에 로그 저장하는 로직이 들어가야 함.
-        let userName = this.$store.getters.userName,
-          method = newdata.config.method,
+        let method = newdata.config.method,
           url = newdata.request.responseURL,
           requestBody = newdata.config.data,
           statusCode = newdata.request.status,
           responseBody = newdata.request.response;
         let logRequestBody = {
-          userName: userName,
+          userName: this.userName,
           method: method,
           url: url,
           requestBody: requestBody ? requestBody : "",
@@ -768,13 +776,10 @@ export default {
     };
 
     //vuex에 데이터 저장하는 방식 (이후 이 페이지에서는 사라져야 함)
-    this.$store.commit("SET_USERID", 0);
-    this.$store.commit("SET_USERNAME", "내이름");
-    this.$store.commit("SET_PROJECTID", 1);
+    this.SET_USERID(0);
+    this.SET_USERNAME("내이름");
+    this.SET_PROJECTID(1);
 
-    //vuex에 저장된 데이터 불러오기
-    var testprojectID = this.$store.getters.projectId;
-    this.projectId = testprojectID;
     //var apiListMount = [];
     getDocs({ pathVariable: { projectId: this.projectId } }, (data) => {
       let document = data.data;

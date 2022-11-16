@@ -6,8 +6,7 @@
         <img @click="login()" src="@/assets/login.png" alt="" class="login" />
       </div>
     </div>
-    {{ width }}
-    <router-link :to="{ path: 'select' }">To test jh</router-link>
+    <router-link :to="{ name: 'select' }">To test jh</router-link>
   </div>
 </template>
 
