@@ -33,12 +33,10 @@ export default {
   }),
   mounted() {
     this.getDimensions();
-    console.log("hi");
     let _this = this;
-    console.log(_this);
     window.addEventListener("resize", this.getDimensions);
     window.addEventListener("login-successful", (event) => {
-      console.log(event);
+      event;
       _this.$router.push({ name: "select" });
     });
   },
