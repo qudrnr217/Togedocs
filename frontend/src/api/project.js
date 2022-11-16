@@ -2,8 +2,8 @@ import { apiInstanceWithAuthorization } from "./index.js";
 
 const api = apiInstanceWithAuthorization();
 
-function getProjects(payload, success, fail) {
-  return api.get("/user/project").then(success).catch(fail);
+async function getProjects(success, fail) {
+  return await api.get("/user/project").then(success).catch(fail);
 }
 
 function postNewProject(payload, success, fail) {
