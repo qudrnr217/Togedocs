@@ -6,23 +6,21 @@
     </div>
 
     <div id="Maincontainer">
-      <drag-col width="100%" height="100%" :leftPercent="20" :sliderWidth="15">
+      <drag-col width="100%" height="100%" :leftPercent="20" :sliderWidth="10">
         <template #left>
           <div id="Left">
-            <q-scroll-area id="apiListAll" :thumb-style="thumbstyle">
+            <hr style="border-bottom: 0px; margin-top: 0px" />
+            <q-item style="font-weight: bold" dense>
+              <q-item-section avatar> Api목록 </q-item-section>
+            </q-item>
+            <hr style="border-bottom: 0px" />
+            <q-scroll-area
+              id="apiListAll"
+              :thumb-style="thumbstyle"
+              style="height: 80.5vh"
+            >
               <div v-for="(item, index) in apiList" v-bind:key="index">
-                <div v-if="index == 0">
-                  <hr style="border-bottom: 0px" />
-                  <q-item style="font-weight: bold" dense>
-                    <q-item-section avatar>
-                      {{ item.type }}
-                    </q-item-section>
-                    <q-item-section>
-                      {{ item.name }}
-                    </q-item-section>
-                  </q-item>
-                  <hr style="border-bottom: 0px" />
-                </div>
+                <div v-if="index == 0"></div>
                 <div v-else>
                   <q-item
                     clickable
@@ -45,9 +43,10 @@
 
         <template #right>
           <div id="Main">
+            <hr style="border-bottom: 0; border-left: 0; margin-top: 0" />
             <div id="MainTop">
               <div id="apiName">
-                <div style="text-align: left; font-size: 15px">
+                <div style="text-align: left; font-size: 15px" class="q-pa-xs">
                   {{ apiName }}
                 </div>
               </div>
@@ -55,7 +54,7 @@
                 >Save</q-btn
               >
             </div>
-            <hr style="border-bottom: 0px" />
+            <hr style="border-bottom: 0; border-left: 0" />
             <div id="TypeURL">
               <select id="RequestType" v-model="methodType">
                 <option value="GET">GET</option>
@@ -65,7 +64,7 @@
                 <option value="DELETE">DELETE</option>
               </select>
               <div id="empty"></div>
-              <input id="apiURL" v-model="apiURL" />
+              <input id="apiURL" v-model="apiURL" readonly />
               <div id="empty"></div>
               <q-btn color="primary" id="testbtn" @click="Test">Send</q-btn>
             </div>
@@ -98,7 +97,6 @@
                   v-show="typeSelect == 'RequestHeader'"
                   v-model="Header"
                 />
-
                 <div id="KeyValueInput" v-show="typeSelect == 'PathVariable'">
                   <q-markup-table dense id="KeyValueTable">
                     <thead>
@@ -204,10 +202,11 @@
                 />
               </div>
             </div>
-            <div style="height: 1%"></div>
-
+            <hr
+              style="border-bottom: 0px; margin-top: 0px; margin-bottom: 0px"
+            />
             <div id="ResponseBox">
-              <div id="ResponseBoxTop">
+              <div id="ResponseBoxTop" class="q-pa-xs">
                 <div style="flex: 1">Response</div>
                 <div style="flex: 10"></div>
                 <div style="flex: 2">Status : {{ statusCode }}</div>
@@ -255,26 +254,67 @@
       </drag-col>
 
       <details id="Right">
-        <summary style="width: 6vw; font-weight: bold; cursor: pointer">
-          호출 로그
-        </summary>
-
-        <div
-          style="width: 30vw"
-          v-for="(log, index) in logList"
-          v-bind:key="index"
+        <summary
+          style="width: 8vw; font-weight: bold; cursor: pointer"
+          @click="logOpenClose"
         >
-          <q-item clickable @click="logListDetail(index)" v-ripple>
-            <q-item-section avatar>
-              {{ log.statusCode }}
-            </q-item-section>
-            <q-item-section>
-              {{ dateTimeFilter(log.logTime) }}
-            </q-item-section>
-            <q-item-section>
-              {{ log.userName }}
-            </q-item-section>
-          </q-item>
+          <div v-if="logListOpened == false">
+            <hr style="border-bottom: 0px; border-left: 0; margin-top: 0px" />
+            <div class="q-pa-xs">
+              <q-icon
+                :name="biArrowLeftCircle"
+                style="text-align: left; margin-bottom: 0.5vh"
+              />
+              호출 로그
+            </div>
+            <hr style="margin-top: 11%; border-bottom: 0px; border-left: 0" />
+          </div>
+          <div v-if="logListOpened == true">
+            <hr
+              style="
+                border-bottom: 0px;
+                border-left: 0;
+                margin-top: 0px;
+                width: 30vw;
+              "
+            />
+            <div class="q-pa-xs">
+              <q-icon
+                :name="biArrowRightCircle"
+                style="text-align: left; margin-bottom: 0.5vh"
+              />
+              호출 로그
+            </div>
+            <hr
+              style="
+                margin-top: 11%;
+                border-bottom: 0px;
+                border-left: 0;
+                width: 30vw;
+              "
+            />
+          </div>
+        </summary>
+        <div style="width: 30vw">
+          <q-scroll-area
+            id="apiListAll"
+            :thumb-style="thumbstyle"
+            style="height: 80.5vh"
+          >
+            <div v-for="(log, index) in logList" v-bind:key="index">
+              <q-item clickable @click="logListDetail(index)" v-ripple>
+                <q-item-section avatar>
+                  {{ log.statusCode }}
+                </q-item-section>
+                <q-item-section>
+                  {{ dateTimeFilter(log.logTime) }}
+                </q-item-section>
+                <q-item-section>
+                  {{ log.userName }}
+                </q-item-section>
+              </q-item>
+            </div>
+          </q-scroll-area>
         </div>
       </details>
     </div>
@@ -325,7 +365,13 @@ import axios from "axios";
 import { DragCol } from "vue-resizer";
 import { getDocs } from "@/api/apidocs.js";
 import { getLogs, addLog } from "@/api/apitest.js";
-import { biDashCircle, biPlusCircle } from "@quasar/extras/bootstrap-icons";
+import {
+  biArrowRightCircle,
+  biArrowLeftCircle,
+  biDashCircle,
+  biPlusCircle,
+} from "@quasar/extras/bootstrap-icons";
+
 export default {
   components: { DragCol },
   methods: {
@@ -482,14 +528,6 @@ export default {
       //로그 클릭 시 보여줄 변수들 설정
       //여기서 모달 동작하게 해야 함. 아래 변수들을 사용하여 모달 표현
       //모달 완성 시 아래 코드 삭제
-      this.statusCode = this.logList[index].status;
-      this.Params = this.logList[index].Params;
-      this.RequestBody = this.logList[index].RequestBody;
-      this.Header = this.logList[index].Header;
-      this.responsedata = this.logList[index].responsedata;
-      this.PathVariables = this.logList[index].PathVariables;
-      this.responseHeader = this.logList[index].responseHeader;
-      this.responseCookie = this.logList[index].responseCookie;
 
       this.dialog = true;
       this.dialogContent = {
@@ -539,6 +577,9 @@ export default {
         this.QueryParams.push({ key: "", value: "" });
       }
     },
+    logOpenClose() {
+      this.logListOpened = !this.logListOpened;
+    },
   },
 
   data() {
@@ -575,6 +616,8 @@ export default {
       // icon
       biDashCircle,
       biPlusCircle,
+      biArrowRightCircle,
+      biArrowLeftCircle,
 
       // SEND 버튼 클릭 여부
       isBtnClicked: false,
@@ -590,6 +633,7 @@ export default {
         requestBody: "",
         responseBody: "",
       },
+      logListOpened: false,
 
       // scroll
       thumbstyle: {
@@ -608,19 +652,27 @@ export default {
       //responsedata가 변경됐을 경우 작동
       //성공했을 경우의 response 처리
       if (newdata && newdata.data) {
-        this.res = JSON.stringify(newdata.data);
+        this.res = JSON.stringify(newdata.data, null, 4);
         this.statusCode = newdata.status;
-        this.responseHeader = JSON.stringify(newdata.headers);
-        this.responseCookie = JSON.stringify(newdata.cookies);
+        this.responseHeader = JSON.stringify(newdata.headers, null, 4);
+        this.responseCookie = JSON.stringify(newdata.cookies, null, 4);
       } else {
         //실패했을 경우(ex : 404)의 response 처리
         this.res = newdata;
-        this.res = JSON.stringify(this.res);
+        this.res = JSON.stringify(this.res, null, 4);
 
         try {
           this.statusCode = newdata.response.status;
-          this.responseHeader = JSON.stringify(newdata.response.headers);
-          this.responseCookie = JSON.stringify(newdata.response.cookies);
+          this.responseHeader = JSON.stringify(
+            newdata.response.headers,
+            null,
+            4
+          );
+          this.responseCookie = JSON.stringify(
+            newdata.response.cookies,
+            null,
+            4
+          );
         } catch {
           if (this.isBtnClicked) this.statusCode = "NetworkError";
           this.res = newdata;
@@ -758,8 +810,8 @@ export default {
   mounted() {
     //DB 및 BE 구현되면 받아와야 함
     var ApiListTop = {
-      type: "Method",
-      name: "이름",
+      type: "",
+      name: "",
       Header: "",
       PathVariable: "",
       Params: "",
@@ -877,12 +929,12 @@ export default {
   resize: none;
 }
 #All {
-  width: 95vw;
-  height: 83vh;
+  width: 100vw;
+  height: 88vh;
 }
 #Maincontainer {
-  width: 95vw;
-  height: 83vh;
+  width: 100vw;
+  height: 88vh;
   display: flex;
 }
 #Top {
@@ -897,7 +949,7 @@ export default {
   font-size: 10px;
 }
 #MainTop {
-  height: 4%;
+  height: 4.7%;
   display: flex;
   width: 99%;
   margin: 0 auto;
@@ -922,20 +974,20 @@ export default {
 }
 #testbtn {
   flex: 8;
-  height: 80%;
+  height: 100%;
   background-color: #f3f3f3;
 }
 #RequestBox {
   height: 40%;
   width: 99%;
   margin: 0 auto;
-  background-color: #f3f3f3;
+  background-color: #ffffff;
 }
 #ResponseBox {
   height: 50%;
   width: 99%;
   margin: 0 auto;
-  background-color: #d9d9d9;
+  background-color: #ffffff;
 }
 #ResponseBoxTop {
   height: 8%;
@@ -956,7 +1008,7 @@ export default {
 }
 #RequestOptions {
   height: 15%;
-  background-color: #f3f3f3;
+  background-color: #ffffff;
 }
 #ReqeustOptionsDetail {
   margin-right: 3%;
@@ -985,22 +1037,21 @@ export default {
 } */
 #Left {
   width: 100%;
-  height: 83vh;
-  background-color: #e7e7e7;
+  height: 88vh;
+  background-color: var(--cultured);
   overflow: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 
 #Main {
   background-color: #ffffff;
   flex: 5;
   height: 100%;
+  border-right: solid 1px;
 }
 #Right {
-  height: 83vh;
-  background-color: #e7e7e7;
-  overflow: hidden;
-  overflow-y: auto;
+  height: 88vh;
+  background-color: var(--cultured);
 }
 #apiListAll {
   white-space: nowrap;
