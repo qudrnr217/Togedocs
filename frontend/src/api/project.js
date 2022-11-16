@@ -8,7 +8,6 @@ async function getProjects(success, fail) {
 
 //프로젝트 생성
 function postNewProject(payload, success, fail) {
-  console.log("payload: ", payload);
   return api.post("/project", payload).then(success).catch(fail);
 }
 

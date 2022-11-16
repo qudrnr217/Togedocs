@@ -36,9 +36,9 @@
               <div style="font-size: 20px">+</div></q-btn
             >
           </div>
-          <div class="cards">
+          <div class="cards q-gutter-sm">
             <div v-for="(project, idx) in projects" :key="idx" class="card">
-              <project-card :projectItem="project"></project-card>
+              <project-card :projectItem="project" />
             </div>
           </div>
         </div>
@@ -179,8 +179,6 @@ export default {
     let token = localStorage.getItem("accessToken");
     if (token) {
       let userInfo = jwt_decode(token);
-      console.log("token: ", token);
-      console.log("userinfo: ", userInfo);
       this.imgNo = userInfo.imgNo;
       this.userId = userInfo.userId;
       this.userName = userInfo.name;
@@ -208,7 +206,7 @@ export default {
         imgNo: this.newProject.imgNo,
       };
       postNewProject(params).then((data) => {
-        console.log(data);
+        data;
         this.callGetProject();
       });
     },
@@ -245,17 +243,50 @@ export default {
         imgNo: modifyUserInfo.imgNo,
       };
       modifyUserInfo(params).then((data) => {
-        console.log(data);
+        data;
       });
       // axios 호출
-
-      console.log("modify user info");
+      // TODO:
+      // 토큰을 재발급 받아야되나? 토큰에 userId(얘는 괜찮) userName imgNo이 있어서...
+      // 그리고 this.SET_USERNAME this.SET_IMGNO 해줘야됨.
     },
     callGetProject() {
-      getProjects().then((data) => {
-        console.log(data);
-        this.projects = data.data;
-      });
+      getProjects()
+        .then((data) => {
+          this.projects = data.data;
+        })
+        .catch(() => {
+          // TEST용 코드. 나중에 catch를 통째로 삭제할 것.
+          this.projects = [
+            {
+              myName: "정승욱",
+              names: ["정승욱", "김하연", "강병국"],
+              projectId: 1,
+              role: "ADMIN",
+              title: "asdf",
+              desc: "asdfasdf",
+              imgNo: 0,
+            },
+            {
+              myName: "정승욱",
+              names: ["정승욱", "김하연", "강병국"],
+              projectId: 1,
+              role: "ADMIN",
+              title: "asdf",
+              desc: "asdfasdf",
+              imgNo: 0,
+            },
+            {
+              myName: "정승욱",
+              names: ["정승욱", "김하연", "강병국"],
+              projectId: 1,
+              role: "ADMIN",
+              title: "asdf",
+              desc: "asdfasdf",
+              imgNo: 0,
+            },
+          ];
+        });
     },
   },
 };
