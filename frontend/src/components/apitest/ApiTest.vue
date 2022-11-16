@@ -29,7 +29,11 @@
                     v-ripple
                   >
                     <q-item-section
-                      :style="{ color: 'var(--' + item.type + ')' }"
+                      avatar
+                      :style="{
+                        color: 'var(--' + item.type + ')',
+                        width: '6vw ',
+                      }"
                     >
                       {{ item.type }}
                     </q-item-section>
