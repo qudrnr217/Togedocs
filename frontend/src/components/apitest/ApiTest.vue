@@ -28,7 +28,9 @@
                     :active="index === nowIndex"
                     v-ripple
                   >
-                    <q-item-section avatar>
+                    <q-item-section
+                      :style="{ color: 'var(--' + item.type + ')' }"
+                    >
                       {{ item.type }}
                     </q-item-section>
                     <q-item-section>
@@ -46,6 +48,13 @@
             <hr style="border-bottom: 0; border-left: 0; margin-top: 0" />
             <div id="MainTop">
               <div id="apiName">
+                <div
+                  style="text-align: left; font-size: 15px"
+                  class="q-pa-xs"
+                  v-if="apiName == ''"
+                >
+                  Api이름
+                </div>
                 <div style="text-align: left; font-size: 15px" class="q-pa-xs">
                   {{ apiName }}
                 </div>
