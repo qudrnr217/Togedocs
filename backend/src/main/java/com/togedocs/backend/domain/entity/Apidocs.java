@@ -23,6 +23,7 @@ public class Apidocs {
     private Long projectId;
     private String title;
     private String desc;
+    private String baseUrl;
     private List<String> rows;
     private List<ColDto> cols;
     private Map<String, Map<String, String>> data;

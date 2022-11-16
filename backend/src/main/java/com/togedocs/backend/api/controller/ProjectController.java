@@ -49,7 +49,6 @@ public class ProjectController {
     public ResponseEntity<?> joinProject(@RequestBody ProjectRequest.JoinProjectRequest request, Principal principal) {
         ProjectResponse.ProjectUser response;
         String providerId = principal.getName();
-        System.out.println("providerId: "+providerId);
 
         try {
             response = projectService.joinProject(request, providerId);
@@ -78,7 +77,7 @@ public class ProjectController {
     @Transactional
     @DeleteMapping("/{projectId}/member/{userId}")
     public ResponseEntity<?> removeMember(@PathVariable Long projectId, @PathVariable Long userId, Principal principal) {
-        ProjectResponse.Id response;
+        ProjectResponse.MemberManageInfo response;
         String providerId = principal.getName();
         try {
             response = projectService.removeMember(projectId, userId, providerId);
@@ -87,13 +86,13 @@ public class ProjectController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
-        return ResponseEntity.status(204).body(response);
+        return ResponseEntity.status(200).body(response);
     }
 
     @Transactional
     @PatchMapping("/{projectId}/member")
     public ResponseEntity<?> updateMemberRole(@PathVariable Long projectId, @RequestBody ProjectRequest.UpdateMemberRoleRequest request, Principal principal) {
-        ProjectResponse.Id response;
+        ProjectResponse.MemberManageInfo response;
         String providerId = principal.getName();
         try {
             response = projectService.updateMemberRole(projectId, request, providerId);

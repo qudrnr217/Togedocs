@@ -11,12 +11,14 @@ import lombok.RequiredArgsConstructor;
 public class UserDto {
     private Long id;
     private String name;
+    private int imgNo;
     private ProjectUserRole role;
 
     @QueryProjection
-    public UserDto(Long id, String name, ProjectUserRole role){
+    public UserDto(Long id, String name,int imgNo,  ProjectUserRole role){
         this.id = id;
         this.name = name;
+        this.imgNo = imgNo;
         this.role = role;
     }
 }
