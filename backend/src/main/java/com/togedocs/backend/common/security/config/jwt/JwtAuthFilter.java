@@ -1,9 +1,9 @@
 package com.togedocs.backend.common.security.config.jwt;
 
 
-import com.togedocs.backend.api.dto.User;
+import com.togedocs.backend.domain.entity.User;
 import com.togedocs.backend.common.security.config.auth.PrincipalDetails;
-import com.togedocs.backend.common.security.repository.UserRepository;
+import com.togedocs.backend.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -43,6 +43,7 @@ public class JwtAuthFilter extends GenericFilterBean {
         if (token != null && tokenService.verifyToken(token)) {
             String email = tokenService.getUid(token);
             User userEntity = userRepository.findByEmail(email);
+            System.out.println(email);
             System.out.println("userEntity: "+userEntity);
 
             PrincipalDetails principalDetails = new PrincipalDetails(userEntity);

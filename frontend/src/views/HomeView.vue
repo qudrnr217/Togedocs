@@ -13,8 +13,10 @@
 
 <script>
 import { shell } from "electron";
+import { BASEURL } from "@/api/index.js";
 // import { access } from "fs";
 // import router from "vue";
+// import { getProjects } from "@/api/project";
 export default {
   methods: {
     getDimensions() {
@@ -23,7 +25,10 @@ export default {
       image.style.transform = "rotate(" + this.width / 3 + "deg)";
     },
     login() {
-      shell.openExternal("http://localhost:8081/oauth2/authorization/google");
+      shell.openExternal(BASEURL + "/oauth2/authorization/google");
+      // shell.openExternal(
+      //   "http://k7a404.p.ssafy.io:8081/oauth2/authorization/google"
+      // );
     },
   },
   data: () => ({

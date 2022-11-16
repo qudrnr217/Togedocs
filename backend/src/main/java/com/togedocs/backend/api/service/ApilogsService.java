@@ -10,10 +10,10 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -40,8 +40,8 @@ public class ApilogsService {
 
         Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
         Update update = new Update();
-        String logTime = LocalDateTime.now().toString();
-        LogDto logDto = LogDto.build(logTime, request.getUserId(), request.getMethod(), request.getUrl(), request.getRequestBody(), request.getStatusCode(), request.getResponseBody());
+        String logTime = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toString();
+        LogDto logDto = LogDto.build(logTime, request.getUserName(), request.getMethod(), request.getUrl(), request.getRequestBody(), request.getStatusCode(), request.getResponseBody());
         update.push("log." + rowId, logDto);
         UpdateResult updateResult = mongoTemplate.updateFirst(query, update, APILOGS);
 

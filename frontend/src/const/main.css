@@ -15,3 +15,7 @@ body {
   --white: #ffffffff;
   --charcoal: #213e51ff;
 }
+/*
+  사용법
+  var(--cultured);
+*/

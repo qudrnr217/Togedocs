@@ -21,6 +21,10 @@
 </template>
 <script>
 export default {
+  data() {
+    return {};
+  },
+
   props: {
     projectItem: Object,
   },
@@ -36,6 +40,18 @@ export default {
 </script>
 
 <style scoped>
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+  border: 0;
+  float: left;
+}
 .container {
   background: var(--white);
   display: flex;
