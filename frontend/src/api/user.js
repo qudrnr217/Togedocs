@@ -11,4 +11,4 @@ function withdrawUser(success, fail) {
   return api.delete("/user/withdraw").then(success).catch(fail);
 }
 
-export { modifyUserInfo, withdrawUser, getMyName };
+export { modifyUserInfo, withdrawUser };
