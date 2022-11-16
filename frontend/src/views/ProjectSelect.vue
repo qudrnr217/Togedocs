@@ -246,6 +246,9 @@ export default {
         data;
       });
       // axios 호출
+      // TODO:
+      // 토큰을 재발급 받아야되나? 토큰에 userId(얘는 괜찮) userName imgNo이 있어서...
+      // 그리고 this.SET_USERNAME this.SET_IMGNO 해줘야됨.
     },
     callGetProject() {
       getProjects()
