@@ -400,7 +400,13 @@
                       <div
                         @mouseover="rowActive[index] = true"
                         @mouseleave="rowActive[index] = false"
-                        class="q-pa-sm q-ma-xs text-right cell-no handle-row drag-item"
+                        class="
+                          q-pa-sm q-ma-xs
+                          text-right
+                          cell-no
+                          handle-row
+                          drag-item
+                        "
                       >
                         <template v-if="!rowActive[index]">
                           {{ index + 1 }}
@@ -1549,9 +1555,6 @@ export default {
 .overlapping {
   border: white;
   position: absolute;
-}
-.drawer {
-  background: var(--cultured);
 }
 .blank-input {
   color: rgb(160, 160, 160);

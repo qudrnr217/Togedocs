@@ -49,7 +49,6 @@ public class ProjectController {
     public ResponseEntity<?> joinProject(@RequestBody ProjectRequest.JoinProjectRequest request, Principal principal) {
         ProjectResponse.ProjectUser response;
         String providerId = principal.getName();
-        System.out.println("providerId: "+providerId);
 
         try {
             response = projectService.joinProject(request, providerId);
@@ -62,9 +61,9 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}/members")
-    public ResponseEntity<?> getMemberManageInfo(@PathVariable Long projectId) {
+    public ResponseEntity<?> getMemberManageInfo(@PathVariable Long projectId, Principal principal) {
         ProjectResponse.MemberManageInfo response;
-        String providerId = "";
+        String providerId = principal.getName();
         try {
             response = projectService.getMemberManagerInfo(projectId, providerId);
         } catch (IdNotFoundException e) {
@@ -79,7 +78,7 @@ public class ProjectController {
     @DeleteMapping("/{projectId}/member/{userId}")
     public ResponseEntity<?> removeMember(@PathVariable Long projectId, @PathVariable Long userId, Principal principal) {
         ProjectResponse.MemberManageInfo response;
-        String providerId = "";
+        String providerId = principal.getName();
         try {
             response = projectService.removeMember(projectId, userId, providerId);
         } catch (IdNotFoundException e) {
@@ -92,9 +91,9 @@ public class ProjectController {
 
     @Transactional
     @PatchMapping("/{projectId}/member")
-    public ResponseEntity<?> updateMemberRole(@PathVariable Long projectId, @RequestBody ProjectRequest.UpdateMemberRoleRequest request) {
+    public ResponseEntity<?> updateMemberRole(@PathVariable Long projectId, @RequestBody ProjectRequest.UpdateMemberRoleRequest request, Principal principal) {
         ProjectResponse.MemberManageInfo response;
-        String providerId = "";
+        String providerId = principal.getName();
         try {
             response = projectService.updateMemberRole(projectId, request, providerId);
         } catch (IdNotFoundException e) {
