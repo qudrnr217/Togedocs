@@ -322,7 +322,7 @@
             style="height: 80.5vh"
           >
             <div v-for="(log, index) in logList" v-bind:key="index">
-              <q-item clickable @click="logListDetail(index)" v-ripple>
+              <q-item clickable @click="logListDetail(index)" v-ripple dense>
                 <q-item-section avatar>
                   {{ log.statusCode }}
                 </q-item-section>
