@@ -145,6 +145,7 @@
 <script>
 import { ref } from "vue";
 import ProjectCard from "@/components/ProjectCard.vue";
+import { mapState, mapActions, mapMutations } from "vuex";
 import { getProjects, postNewProject } from "@/api/project";
 import { mapState, mapActions, mapMutations } from "vuex";
 import jwt_decode from "jwt-decode";
@@ -205,8 +206,16 @@ export default {
   methods: {
     ...mapActions("projectStore", ["FETCH_PROJECTS"]),
     ...mapMutations("userStore", ["SET_TOKEN"]),
+    //프로젝트 생성 api
     createNewProject() {
-      postNewProject(this.newProject);
+      let params = {
+        title: this.projects.title,
+        desc: this.projects.desc,
+        imgNo: this.projects.imgNo,
+      };
+      postNewProject(params).then((data) => {
+        console.log(data);
+      });
     },
     makeImgNo(type) {
       let imgNo = Math.floor(Math.random() * 10); // 0 ~ 9 까지의 난수 생성
