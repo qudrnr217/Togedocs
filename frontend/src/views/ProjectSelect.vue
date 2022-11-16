@@ -15,7 +15,7 @@
             style="width: 100%; border-radius: 20px"
           />
         </div>
-        <div class="username">{사용자이름} 님 반갑습니다.</div>
+        <div class="username">{{ myname }} 님 반갑습니다.</div>
       </div>
 
       <div class="shadow"></div>
@@ -167,24 +167,25 @@
 <script>
 import ProjectCard from "@/components/ProjectCard.vue";
 import { postNewProject, getProjects } from "@/api/project";
+import { getMyName } from "@/api/user";
 import { mapState, mapActions, mapMutations } from "vuex";
 
 export default {
   data() {
     return {
       projects: [],
-      // newProject: {
-      //   title: null,
-      //   url: null,
-      //   desc: null,
-      //   date: { from: null, to: null },
-      // },
+      myname: "",
     };
   },
   components: {
     ProjectCard,
   },
   mounted() {
+    //사용자의 이름 가져오기
+    getMyName().then((data) => {
+      this.myname = data;
+    });
+
     //사용자의 참여하고있는 프로젝트 정보가져오는 api
     getProjects().then((data) => {
       console.log(data);
