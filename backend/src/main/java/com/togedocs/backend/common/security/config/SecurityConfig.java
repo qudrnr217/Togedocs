@@ -50,7 +50,7 @@ public class SecurityConfig {
 //        http.authorizeRequests()
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //세션을 사용하지 않겠다는 뜻임.
                 .and()
-                .addFilter(corsFilter)
+//                .addFilter(corsFilter)
                 .formLogin().disable()
                 .httpBasic().disable()
                 .authorizeRequests()
