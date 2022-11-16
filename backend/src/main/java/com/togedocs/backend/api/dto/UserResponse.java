@@ -20,14 +20,18 @@ public class UserResponse {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Info {
+        private String myname;
+        private String role;
         private long projectId;
         private String title;
         private String desc;
         private List<String> names ;
         private int imgNo;
 
-        public static UserResponse.Info build(Long projectId,String title, String desc,List<String> names, int imgNo) {
+        public static UserResponse.Info build(String myname, String role, Long projectId,String title, String desc,List<String> names, int imgNo) {
             return Info.builder()
+                    .myname(myname)
+                    .role(role)
                     .projectId(projectId)
                     .title(title)
                     .desc(desc)
