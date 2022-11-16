@@ -4,7 +4,7 @@ import axios from "axios";
 const BASEURL = "http://k7a404.p.ssafy.io:8081";
 
 const api = axios.create({
-  baseURL: BASEURL + "api",
+  baseURL: BASEURL + "/api",
   headers: {
     "Contents-type": "application/json",
   },
@@ -12,7 +12,7 @@ const api = axios.create({
 
 function apiInstanceWithAuthorization() {
   const instance = axios.create({
-    baseURL: BASEURL,
+    baseURL: BASEURL + "/api",
     headers: {
       Accept: "application/json",
       "Content-type": "application/json",

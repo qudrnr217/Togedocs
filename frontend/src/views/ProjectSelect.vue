@@ -150,13 +150,12 @@ import { getProjects, postNewProject } from "@/api/project";
 import jwt_decode from "jwt-decode";
 
 export default {
+  computed: {
+    ...mapState("commonStore", ["userId", "userName", "imgNo"]),
+    ...mapState("projectStore", ["projects"]),
+  },
   data() {
     return {
-      imgNo: ref(""),
-      userName: ref(""),
-
-      projects: ref([]),
-
       createPjtModal: ref(false),
       newProject: ref({
         imgNo: "",
@@ -183,16 +182,13 @@ export default {
       this.imgNo = userInfo.imgNo;
       this.userId = userInfo.userId;
       this.userName = userInfo.name;
-      this.$store.commit("SET_USERNAME", userInfo.name);
-      this.$store.commit("SET_USERID", userInfo.userId);
-      this.$store.commit("SET_IMGNO", userInfo.imgNo);
+      this.SET_USERNAME(userInfo.name);
+      this.SET_USERID(userInfo.userId);
+      this.SET_IMGNO(userInfo.imgNo);
     } else {
       // 테스트용. 로그인을 안하고 넘어오면 이 부분이 실행됨.
       // 최종 배포 후 else 아래는 모두 지울 것.
-      this.userId = this.$store.getters.userId;
-      this.userName = this.$store.getters.userName;
-      this.$store.commit("SET_IMGNO", Math.random() * 10);
-      this.imgNo = this.$store.getters.imgNo;
+      this.SET_IMGNO(Math.random() * 10);
       // 여기까지
     }
 
@@ -201,11 +197,9 @@ export default {
       this.projects = data.data;
     });
   },
-  computed: {
-    ...mapState("projectStore", ["projects"]),
-  },
   methods: {
     ...mapActions("projectStore", ["FETCH_PROJECTS"]),
+    ...mapMutations("commonStore", ["SET_USERNAME", "SET_USERID", "SET_IMGNO"]),
     ...mapMutations("userStore", ["SET_TOKEN"]),
     //프로젝트 생성 api
     createNewProject() {

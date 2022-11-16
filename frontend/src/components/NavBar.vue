@@ -5,10 +5,12 @@
         <router-link :to="{ name: 'select' }" style="color: var(--coral)">
           <div>프로젝트 선택</div></router-link
         >
-        <router-link :to="{ name: 'docs' }">
+        <router-link :to="{ name: 'docs', params: { projectId: projectId } }">
           <div>공유 api 문서</div></router-link
         >
-        <router-link :to="{ name: 'test' }"> <div>api test</div></router-link>
+        <router-link :to="{ name: 'test', params: { projectId: projectId } }">
+          <div>api test</div></router-link
+        >
       </div>
       <div class="navbar-users">
         <div
@@ -27,8 +29,12 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "NavBar",
+  computed: {
+    ...mapState("commonStore", ["projectId"]),
+  },
 };
 </script>
 
