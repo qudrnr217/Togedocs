@@ -1,8 +1,14 @@
 const userStore = {
   namespaced: true,
-  state: {},
+  state: {
+    accessToken: "",
+  },
   getters: {},
-  mutations: {},
+  mutations: {
+    SET_TOKEN: (state, accessToken) => {
+      state.token = accessToken;
+    },
+  },
   actions: {},
 };
 

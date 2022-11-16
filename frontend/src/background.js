@@ -6,7 +6,7 @@ import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 // import { access } from "original-fs";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
-let win
+let win;
 async function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
@@ -17,6 +17,7 @@ async function createWindow() {
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+      webSecurity: false,
     },
     autoHideMenuBar: true,
   });
@@ -65,6 +66,21 @@ app.on("activate", () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  // CORS 에러 해결
+  win.webContents.session.webRequest.onBeforeSendHeaders(
+    (details, callback) => {
+      callback({ requestHeaders: { Origin: "*", ...details.requestHeaders } });
+    }
+  );
+
+  win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        "Access-Control-Allow-Origin": ["*"],
+        ...details.responseHeaders,
+      },
+    });
+  });
 });
 
 // This method will be called when Electron has finished
@@ -97,80 +113,74 @@ if (isDevelopment) {
   }
 }
 
-
-if (!app.isDefaultProtocolClient('myapp')) {
+if (!app.isDefaultProtocolClient("myapp")) {
   // Define custom protocol handler. Deep linking works on packaged versions of the application!
-  app.setAsDefaultProtocolClient('myapp')
+  app.setAsDefaultProtocolClient("myapp");
 }
 
-app.on('will-finish-launching', function() {
+app.on("will-finish-launching", function () {
   // Protocol handler for osx
-  app.on('open-url', function(event, url) {
-    event.preventDefault()
-    deeplinkingUrl = url
-    
-    
+  app.on("open-url", function (event, url) {
+    event.preventDefault();
+    deeplinkingUrl = url;
+
     // logEverywhere('open-url# ' + deeplinkingUrl)
-    logEverywhere('open-url# ' + url);
-  })
-})
+    logEverywhere("open-url# " + url);
+  });
+});
 
 // Deep linked url
-let deeplinkingUrl
-let info
-let info2
-let accesstoken
-let accesstoken2
-let refreshtoken
-const gotTheLock = app.requestSingleInstanceLock()
+let deeplinkingUrl;
+let info;
+let info2;
+let accesstoken;
+let accesstoken2;
+let refreshtoken;
+const gotTheLock = app.requestSingleInstanceLock();
 if (gotTheLock) {
-  app.on('second-instance', (e, argv) => {
+  app.on("second-instance", (e, argv) => {
     // Someone tried to run a second instance, we should focus our window.
 
     // Protocol handler for win32
     // argv: An array of the second instance’s (command line / deep linked) arguments
-    if (process.platform == 'win32') {
+    if (process.platform == "win32") {
       // Keep only command line / deep linked arguments
-      deeplinkingUrl = argv.slice(1)
-      info = deeplinkingUrl[1].split(",")
-      info2 = info[0].split("token=")
-      accesstoken = info2[2]
-      accesstoken2 = info[1].split("%20refreshToken=")
-      refreshtoken = accesstoken2[1].substring(0,accesstoken2[1].length-1)
-      win.webContents.executeJavaScript(`console.log(window.location.href)`)
-     
+      deeplinkingUrl = argv.slice(1);
+      info = deeplinkingUrl[1].split(",");
+      info2 = info[0].split("token=");
+      accesstoken = info2[2];
+      accesstoken2 = info[1].split("%20refreshToken=");
+      refreshtoken = accesstoken2[1].substring(0, accesstoken2[1].length - 1);
+      win.webContents.executeJavaScript(`console.log(window.location.href)`);
     }
     // logEverywhere('app.makeSingleInstance# '+accesstoken[2])
-    logEverywhere('accesstoken: '+accesstoken)
-    logEverywhere('refreshtoken: '+refreshtoken)
-    win.webContents.executeJavaScript(`window.localStorage.setItem('accessToken','${accesstoken}')`)
-    win.webContents.executeJavaScript(`window.localStorage.setItem('refreshToken','${refreshtoken}')`)
-    win.webContents.executeJavaScript(`window.dispatchEvent(new CustomEvent('login-successful'))`)
-    
-  
-    
-    
+    logEverywhere("accesstoken: " + accesstoken);
+    logEverywhere("refreshtoken: " + refreshtoken);
+    win.webContents.executeJavaScript(
+      `window.localStorage.setItem('accessToken','Bearer ` + `${accesstoken}')`
+    );
+    win.webContents.executeJavaScript(
+      `window.localStorage.setItem('refreshToken','${refreshtoken}')`
+    );
+    win.webContents.executeJavaScript(
+      `window.dispatchEvent(new CustomEvent('login-successful'))`
+    );
 
     if (win) {
       // window.localStorage.setItem("accessToken",store.get("accessToken"))
-      if (win.isMinimized()) win.restore()
-      win.focus()
-      
+      if (win.isMinimized()) win.restore();
+      win.focus();
     }
-  })
+  });
 } else {
-  app.quit()
-
+  app.quit();
 }
 
-
-
-
-if (process.platform == 'win32') {
+if (process.platform == "win32") {
   // Keep only command line / deep linked arguments
-  deeplinkingUrl = process.argv.slice(1)
+  deeplinkingUrl = process.argv.slice(1);
 }
-logEverywhere('createWindow# ' + deeplinkingUrl)
+logEverywhere("createWindow# " + deeplinkingUrl);
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -179,9 +189,9 @@ protocol.registerSchemesAsPrivileged([
 
 // Log both at dev console and at running node console instance
 function logEverywhere(s) {
-  console.log('왜안나옴')
-  console.log(s)
+  console.log("왜안나옴");
+  console.log(s);
   if (win && win.webContents) {
-    win.webContents.executeJavaScript(`console.log("${s}")`)
+    win.webContents.executeJavaScript(`console.log("${s}")`);
   }
 }
