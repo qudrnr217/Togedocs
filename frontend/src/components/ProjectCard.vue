@@ -5,15 +5,29 @@
     </div>
 
     <div class="projectinfo">
-      <div class="title">{{ projectItem.desc }}</div>
+      <div class="title">{{ projectItem.title }}</div>
+
       <div class="title-detail">
-        {{ projectItem.members.join(", ") }}
+        {{ projectItem.desc }}
+      </div>
+      <div class="name-detail">
+        <ul
+          class="title-detail"
+          v-for="(name, index) in projectItem.names"
+          :key="index"
+        >
+          <li>{{ name }}</li>
+        </ul>
       </div>
     </div>
   </div>
 </template>
 <script>
 export default {
+  data() {
+    return {};
+  },
+
   props: {
     projectItem: Object,
   },
@@ -29,6 +43,18 @@ export default {
 </script>
 
 <style scoped>
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+  border: 0;
+  float: left;
+}
 .container {
   background: var(--white);
   display: flex;

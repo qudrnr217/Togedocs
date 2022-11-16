@@ -13,7 +13,7 @@ import java.time.ZonedDateTime;
 public class LogDto {
 
     private String logTime;
-    private int userId;
+    private String userName;
 
     private String method;
     private String url;
@@ -25,10 +25,10 @@ public class LogDto {
     // pathVariable 과 queryParams 는 url에 포함되어 보내기 때문에 생략
     // requestBody, responseBody 는 fe에서 JSON.parse 해서 사용.
 
-    public static LogDto build(String logTime, int userId, String method, String url, String requestBody, int statusCode, String responseBody) {
+    public static LogDto build(String logTime, String userName, String method, String url, String requestBody, int statusCode, String responseBody) {
         return LogDto.builder()
                 .logTime(logTime)
-                .userId(userId)
+                .userName(userName)
                 .method(method)
                 .url(url)
                 .requestBody(requestBody)

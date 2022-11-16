@@ -1,40 +1,45 @@
 <template>
   <div id="All">
-    <div style="height: 9%"></div>
+    <div style="height: 8%"></div>
     <div id="Top">
-      <div style="font-weight: bold">프로젝트 이름1</div>
+      <div class="q-px-md text-bold text-h6">{{ projectTitle }}</div>
     </div>
 
     <div id="Maincontainer">
-      <drag-col
-        @isDragging="isDragging"
-        @dragging="draggingCol"
-        width="100%"
-        height="100%"
-        leftPercent="20"
-        sliderWidth="15"
-      >
+      <drag-col width="100%" height="100%" :leftPercent="20" :sliderWidth="15">
         <template #left>
           <div id="Left">
-            <div id="apiListAll">
-              <div style="font-weight: bold; font-size: 15px">api 목록</div>
-
+            <q-scroll-area id="apiListAll" :thumb-style="thumbstyle">
               <div v-for="(item, index) in apiList" v-bind:key="index">
-                <q-item
-                  clickable
-                  @click="apiListDetail(index)"
-                  :active="index === nowIndex"
-                  v-ripple
-                >
-                  <q-item-section avatar>
-                    {{ item.type }}
-                  </q-item-section>
-                  <q-item-section>
-                    {{ item.name }}
-                  </q-item-section>
-                </q-item>
+                <div v-if="index == 0">
+                  <hr style="border-bottom: 0px" />
+                  <q-item style="font-weight: bold" dense>
+                    <q-item-section avatar>
+                      {{ item.type }}
+                    </q-item-section>
+                    <q-item-section>
+                      {{ item.name }}
+                    </q-item-section>
+                  </q-item>
+                  <hr style="border-bottom: 0px" />
+                </div>
+                <div v-else>
+                  <q-item
+                    clickable
+                    @click="apiListDetail(index)"
+                    :active="index === nowIndex"
+                    v-ripple
+                  >
+                    <q-item-section avatar>
+                      {{ item.type }}
+                    </q-item-section>
+                    <q-item-section>
+                      {{ item.name }}
+                    </q-item-section>
+                  </q-item>
+                </div>
               </div>
-            </div>
+            </q-scroll-area>
           </div>
         </template>
 
@@ -78,7 +83,7 @@
                   >PathVariable</q-tab
                 >
                 <q-tab id="ReqeustOptionsDetail" @click="OptionSelect('Params')"
-                  >Params</q-tab
+                  >QueryParams</q-tab
                 >
                 <q-tab
                   id="ReqeustOptionsDetail"
@@ -148,7 +153,7 @@
                     <thead>
                       <tr>
                         <th class="text-left">key</th>
-                        <th class="text-left">Params</th>
+                        <th class="text-left">QueryParams</th>
                         <th></th>
                       </tr>
                     </thead>
@@ -261,18 +266,57 @@
         >
           <q-item clickable @click="logListDetail(index)" v-ripple>
             <q-item-section avatar>
-              {{ log.status }}
+              {{ log.statusCode }}
             </q-item-section>
             <q-item-section>
-              {{ log.time }}
+              {{ dateTimeFilter(log.logTime) }}
             </q-item-section>
             <q-item-section>
-              {{ log.user }}
+              {{ log.userName }}
             </q-item-section>
           </q-item>
         </div>
       </details>
     </div>
+    <q-dialog v-model="dialog">
+      <q-card>
+        <q-card-section><div class="text-h6">Log Detail</div></q-card-section>
+        <q-card-section class="q-py-none">
+          <q-markup-table wrap-cells="false">
+            <tbody>
+              <tr>
+                <td>User</td>
+                <td>{{ dialogContent.userName }}</td>
+              </tr>
+              <tr>
+                <td>Time</td>
+                <td>{{ dialogContent.logTime }}</td>
+              </tr>
+              <tr>
+                <td>URL</td>
+                <td>{{ dialogContent.url }}</td>
+              </tr>
+              <tr></tr>
+              <tr>
+                <td>StatusCode</td>
+                <td>{{ dialogContent.statusCode }}</td>
+              </tr>
+              <tr>
+                <td>RequestBody</td>
+                <td>{{ dialogContent.requestBody }}</td>
+              </tr>
+              <tr>
+                <td>ResponseBody</td>
+                <td>{{ dialogContent.responseBody }}</td>
+              </tr>
+            </tbody>
+          </q-markup-table>
+        </q-card-section>
+        <q-card-section align="right"
+          ><q-btn flat label="돌아가기" color="primary" v-close-popup
+        /></q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -280,13 +324,25 @@
 import axios from "axios";
 import { DragCol } from "vue-resizer";
 import { getDocs } from "@/api/apidocs.js";
+import { getLogs, addLog } from "@/api/apitest.js";
 import { biDashCircle, biPlusCircle } from "@quasar/extras/bootstrap-icons";
 export default {
   components: { DragCol },
-  props: {
-    msg: String,
-  },
   methods: {
+    loadLogList() {
+      getLogs(
+        { pathVariable: { projectId: this.projectId, rowId: this.rowId } },
+        (response) => {
+          this.logList = response.data.logs;
+        },
+        (e) => {
+          console.warn(e);
+        }
+      );
+    },
+    dateTimeFilter(time) {
+      return time.substring(0, 16).replaceAll("T", " ").replaceAll("-", "/");
+    },
     Test() {
       this.isBtnClicked = true;
       // Request의 값에 따라 다른 함수 실행(axios)
@@ -327,14 +383,12 @@ export default {
       URL = newURL;
 
       //QueryParams
-      console.log(this.QueryParams);
 
       //Params JSON 에러 시 에러메시지 출력
       var paramJson = {};
 
       for (let QueryParam of this.QueryParams) {
         paramJson[QueryParam.key] = QueryParam.value;
-        console.log(paramJson);
       }
 
       try {
@@ -436,6 +490,16 @@ export default {
       this.PathVariables = this.logList[index].PathVariables;
       this.responseHeader = this.logList[index].responseHeader;
       this.responseCookie = this.logList[index].responseCookie;
+
+      this.dialog = true;
+      this.dialogContent = {
+        statusCode: this.logList[index].statusCode,
+        logTime: this.logList[index].logTime,
+        userName: this.logList[index].userName,
+        url: this.logList[index].url,
+        requestBody: this.logList[index].requestBody,
+        responseBody: this.logList[index].responseBody,
+      };
     },
     saveLocalStorage() {
       //프로젝트 번호와 api 번호에 맞춤
@@ -462,8 +526,6 @@ export default {
     },
 
     deleteRow(type, rowIndex) {
-      console.log(type);
-      console.log(rowIndex);
       if (type == "PathVariable") {
         this.PathVariables.splice(rowIndex, 1);
       } else {
@@ -471,7 +533,6 @@ export default {
       }
     },
     addRow(type) {
-      console.log(type);
       if (type == "PathVariable") {
         this.PathVariables.push({ key: "", value: "" });
       } else {
@@ -482,6 +543,8 @@ export default {
 
   data() {
     return {
+      projectTitle: "",
+
       typeSelect: "",
       methodType: "",
       index: "",
@@ -518,15 +581,34 @@ export default {
 
       //log
       logList: [],
+      dialog: false,
+      dialogContent: {
+        statusCode: "",
+        logTime: "",
+        userName: "",
+        url: "",
+        requestBody: "",
+        responseBody: "",
+      },
+
+      // scroll
+      thumbstyle: {
+        right: "3px",
+        bottom: "3px",
+        borderRadius: "5px",
+        background: "gray",
+        width: "6px",
+        height: "6px",
+        opacity: 0.5,
+      },
     };
   },
   watch: {
     responsedata(newdata) {
       //responsedata가 변경됐을 경우 작동
       //성공했을 경우의 response 처리
-      this.res = newdata.data;
-      if (newdata.data != null) {
-        this.res = JSON.stringify(this.res);
+      if (newdata && newdata.data) {
+        this.res = JSON.stringify(newdata.data);
         this.statusCode = newdata.status;
         this.responseHeader = JSON.stringify(newdata.headers);
         this.responseCookie = JSON.stringify(newdata.cookies);
@@ -546,14 +628,40 @@ export default {
       }
 
       if (this.isBtnClicked) {
-        console.log("버튼클릭한거");
         //로컬스토리지에 한거 저장함
         //Save 버튼으로 변경
 
         //이 부분에 DB에 로그 저장하는 로직이 들어가야 함.
-      } else {
-        console.log("로그누른거");
+        let userName = this.$store.getters.userName,
+          method = newdata.config.method,
+          url = newdata.request.responseURL,
+          requestBody = newdata.config.data,
+          statusCode = newdata.request.status,
+          responseBody = newdata.request.response;
+        let logRequestBody = {
+          userName: userName,
+          method: method,
+          url: url,
+          requestBody: requestBody ? requestBody : "",
+          statusCode: statusCode,
+          responseBody: responseBody,
+        };
+        addLog(
+          {
+            pathVariable: { projectId: this.projectId, rowId: this.rowId },
+            requestBody: logRequestBody,
+          },
+          (response) => {
+            // success !
+            response;
+            this.loadLogList();
+          },
+          (e) => {
+            console.warn(e);
+          }
+        );
       }
+      // else console.log("로그누른거");
     },
     index(newindex) {
       //다른 api 선택했을 경우 그거에 맞춰서 전부 초기화
@@ -618,7 +726,6 @@ export default {
         //PathVariable 로직
         let localStoragePathVariables = storageValueLoad.PathVariables;
         for (let URLpathVariable of this.PathVariables) {
-          console.log("PV로직");
           var isExist = false;
           for (let localStoragePathVariable of storageValueLoad.PathVariables) {
             if (localStoragePathVariable.key == URLpathVariable.key) {
@@ -639,8 +746,9 @@ export default {
 
       /**Log 불러와야 하는 부분 */
 
-      /**this.logList 라는 배열에 Log들이 담기면 됨 */
-      /** */
+      if (this.rowId) {
+        this.loadLogList();
+      }
 
       /******* 강제설정 데이터 있던 부분(삭제됨)*/
 
@@ -659,26 +767,32 @@ export default {
       RequestURL: "",
     };
 
-    var testprojectID = 1;
+    //vuex에 데이터 저장하는 방식 (이후 이 페이지에서는 사라져야 함)
+    this.$store.commit("SET_USERID", 0);
+    this.$store.commit("SET_USERNAME", "내이름");
+    this.$store.commit("SET_PROJECTID", 1);
+
+    //vuex에 저장된 데이터 불러오기
+    var testprojectID = this.$store.getters.projectId;
     this.projectId = testprojectID;
     //var apiListMount = [];
     getDocs({ pathVariable: { projectId: this.projectId } }, (data) => {
-      let rowIdList = data.data.rows;
-      for (let rowId of rowIdList) {
+      let document = data.data;
+      this.projectTitle = document.title;
+      for (let rowId of document.rows) {
         // one -> 이름
         // two -> method
         // three -> URL
         var obj = {
           rowId: rowId,
-          type: data.data.data[rowId].two,
-          name: data.data.data[rowId].one,
+          type: document.data[rowId].two,
+          name: document.data[rowId].one,
           Header: `{
-
 }`,
           PathVariable: "",
           Params: "",
           RequestBody: "",
-          RequestURL: data.data.data[rowId].three,
+          RequestURL: document.data[rowId].three,
         };
 
         this.apiList.push(obj);
@@ -734,7 +848,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #KeyValueInput {
   width: 98%;
@@ -891,6 +1004,7 @@ export default {
 }
 #apiListAll {
   white-space: nowrap;
+  height: 100%;
 }
 #apiListDetail {
   cursor: pointer;
