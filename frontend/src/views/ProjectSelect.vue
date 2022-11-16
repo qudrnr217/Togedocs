@@ -20,7 +20,7 @@
       <div class="shadow"></div>
     </div>
 
-    <q-layout view="hHh lpR fFf">
+    <q-layout view="hHh lpR fFf" color="warning">
       <q-page-container>
         <div class="project-list">
           <div class="column">
@@ -204,9 +204,9 @@ export default {
     //프로젝트 생성 api
     createNewProject() {
       let params = {
-        title: this.projects.title,
-        desc: this.projects.desc,
-        imgNo: this.projects.imgNo,
+        title: this.newProject.title,
+        desc: this.newProject.desc,
+        imgNo: this.newProject.imgNo,
       };
       postNewProject(params).then((data) => {
         console.log(data);

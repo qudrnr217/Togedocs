@@ -5,7 +5,7 @@ const projectStore = {
   state: {
     projects: [
       {
-        title: "1",
+        title: "바닷마을다이어리",
         members: [
           "황재완",
           "홍인호",
@@ -16,22 +16,22 @@ const projectStore = {
           "강병국",
         ],
         url: "https://github.com/JaewanHwang",
-        desc: "1번 프로젝트1번 프로젝트1번 프로젝트",
+        desc: "1번 프로젝트1번1번 프로젝트1번 프로젝트1번 프로젝트 프로젝트1번 프로젝트1번 프로젝트1번 프로젝트1번 프로젝트",
       },
       {
-        title: "2",
+        title: "트랜디it",
         members: ["황재완", "홍인호", "강병국"],
         url: "https://github.com/JaewanHwang",
         desc: "2번 프로젝트",
       },
       {
-        title: "2",
+        title: "투게독스",
         members: ["황재완", "홍인호", "강병국"],
         url: "https://github.com/JaewanHwang",
         desc: "2번 프로젝트",
       },
       {
-        title: "2",
+        title: "싸피독스",
         members: ["황재완", "홍인호", "강병국"],
         url: "https://github.com/JaewanHwang",
         desc: "2번 프로젝트",
