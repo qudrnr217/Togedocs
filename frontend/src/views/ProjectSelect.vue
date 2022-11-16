@@ -29,10 +29,11 @@
               stack
               color="secondary"
               class="create-project-btn"
-              @click="createNewProjectBtnClicked = true"
-              ><q-tooltip class="bg-positive"
-                >새로운 프로젝트를 생성합니다</q-tooltip
-              >
+              @click="showCreatePjtModal()"
+            >
+              <q-tooltip class="bg-positive">
+                새로운 프로젝트를 생성합니다
+              </q-tooltip>
               <div style="font-size: 20px">+</div></q-btn
             >
           </div>
@@ -43,100 +44,37 @@
           </div>
         </div>
       </q-page-container>
-      <q-dialog v-model="createNewProjectBtnClicked">
+      <q-dialog v-model="createNewProjectBtnClicked" persistent>
         <q-card class="createNewProjectDialog">
           <q-card-section>
             <div class="text-h6">새 프로젝트 생성</div>
           </q-card-section>
           <q-separator />
-          <q-card-section class="scroll">
-            <div class="q-gutter-y-md column">
-              <q-input
-                class="col"
-                clearable
-                filled
-                type="url"
-                v-model="newProject.title"
-                label="프로젝트 이름"
-              />
-              <q-input
-                class="col"
-                clearable
-                filled
-                v-model="newProject.url"
-                label="프로젝트 URL"
-              />
-              <q-input
-                class="col"
-                clearable
-                filled
-                autogrow
-                v-model="newProject.desc"
-                label="프로젝트 설명"
-              />
-              <div class="row justify-between">
-                <q-input
-                  class="col-5"
-                  clearable
-                  filled
-                  v-model="newProject.date.from"
-                  mask="date"
-                  :rules="['date']"
-                  label="프로젝트 시작일"
-                >
-                  <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy
-                        cover
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-date minimal v-model="newProject.date.from">
-                          <div class="row items-center justify-end">
-                            <q-btn
-                              v-close-popup
-                              label="Close"
-                              color="primary"
-                              flat
-                            />
-                          </div>
-                        </q-date>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
-                <q-icon name="arrow_right_alt" size="3.5rem" color="grey-6" />
-                <q-input
-                  class="col-5"
-                  clearable
-                  filled
-                  v-model="newProject.date.to"
-                  mask="date"
-                  :rules="['date']"
-                  label="프로젝트 종료일"
-                >
-                  <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy
-                        cover
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-date minimal v-model="newProject.date.to">
-                          <div class="row items-center justify-end">
-                            <q-btn
-                              v-close-popup
-                              label="Close"
-                              color="primary"
-                              flat
-                            />
-                          </div>
-                        </q-date>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
+          <q-card-section>
+            <div class="q-gutter-md">
+              <div class="text-center q-gutter-xs">
+                <q-img
+                  :src="imgUrl(newProject.imgNo)"
+                  spinner-color="white"
+                  style="height: 100px; width: 100px; border-radius: 5px"
+                />
+                <div>
+                  <q-btn dense @click="makeImgNo()">RESET</q-btn>
+                </div>
               </div>
+              <q-input
+                label="프로젝트 이름"
+                filled
+                type="text"
+                v-model="newProject.title"
+              />
+              <q-input
+                label="프로젝트 설명"
+                filled
+                type="textarea"
+                v-model="newProject.desc"
+                autogrow
+              />
             </div>
           </q-card-section>
 
@@ -148,7 +86,7 @@
               label="취소"
               color="primary"
               v-close-popup
-              @click="resetCreateNewProjectDialog"
+              @click="resetCreatePjtModal"
             />
             <q-btn
               flat
@@ -166,20 +104,20 @@
 
 <script>
 import ProjectCard from "@/components/ProjectCard.vue";
-import { postNewProject } from "@/api/project";
+import { getProjects, postNewProject } from "@/api/project";
 import { mapState, mapActions, mapMutations } from "vuex";
-import { getProjects } from "@/api/project";
-// import axios from "axios";
 
 export default {
   data() {
     return {
       projects: [],
-      // name: "",
-      // title: "",
-      // desc: "",
-      // names: [],
-      // imgNo: 0,
+
+      createNewProjectBtnClicked: false,
+      newProject: {
+        imgNo: "",
+        title: "",
+        desc: "",
+      },
     };
   },
   components: {
@@ -200,27 +138,25 @@ export default {
     createNewProject() {
       postNewProject(this.newProject);
     },
-    resetCreateNewProjectDialog() {
+    resetCreatePjtModal() {
       this.newProject = {
+        imgNo: null,
         title: null,
-        url: null,
         desc: null,
-        date: { from: null, to: null },
       };
     },
+    makeImgNo() {
+      let imgNo = Math.floor(Math.random() * 10); // 0 ~ 9 까지의 난수 생성
+      this.newProject.imgNo = imgNo;
+    },
+    imgUrl(imgNo) {
+      return "https://placeimg.com/100/100/nature?t=" + imgNo / 10;
+    },
+    showCreatePjtModal() {
+      this.createNewProjectBtnClicked = true;
+      this.makeImgNo();
+    },
   },
-
-  // data() {
-  //   return {
-  //     createNewProjectBtnClicked: false,
-  //     newProject: {
-  //       title: null,
-  //       url: null,
-  //       desc: null,
-  //       date: { from: null, to: null },
-  //     },
-  //   };
-  // },
 };
 </script>
 
@@ -252,6 +188,7 @@ export default {
 }
 .createNewProjectDialog {
   min-width: 40vw;
+  overflow: hidden;
 }
 .profileimg {
   display: flex;
