@@ -8,6 +8,7 @@ async function getProjects(success, fail) {
 
 //프로젝트 생성
 function postNewProject(payload, success, fail) {
+  console.log("payload: ", payload);
   return api.post("/project", payload).then(success).catch(fail);
 }
 
@@ -36,7 +37,7 @@ function exportMember(projectId, userId, success, fail) {
 
 //팀원 권한 수정
 function changeRole(payload, success, fail) {
-  return api.patch(`/project/${payload}/member`).then(success).catch(fail);
+  return api.patch(`api/project/${payload}/member`).then(success).catch(fail);
 }
 
 export {
