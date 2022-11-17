@@ -1,6 +1,5 @@
-import { apiInstanceWithAuthorization } from "./index.js";
+import { api, apiInstanceWithAuthorization } from "./index.js";
 
-// const api = apiInstanceWithAuthorization(accessToken);
 //자신의 프로젝트 리스트 가져오기
 function getProjects(success, fail) {
   let accessToken = localStorage.getItem("accessToken")
@@ -11,10 +10,10 @@ function getProjects(success, fail) {
 }
 
 //프로젝트 생성
-function postNewProject(payload, success, fail) {
+function createProject(payload, success, fail) {
   let accessToken = localStorage.getItem("accessToken")
   return apiInstanceWithAuthorization(accessToken)
-    .post("/project", payload)
+    .post("/project", payload.requestBody)
     .then(success)
     .catch(fail);
 }
@@ -22,8 +21,18 @@ function postNewProject(payload, success, fail) {
 //프로젝트 삭제
 function deleteProject(payload, success, fail) {
   let accessToken = localStorage.getItem("accessToken")
+  let projectId = payload.pathVariable.projectId;
   return apiInstanceWithAuthorization(accessToken)
-    .delete(`/project/${payload}`)
+    .delete(`/project/${projectId}`)
+    .then(success)
+    .catch(fail);
+}
+
+// 초대 코드로 프로젝트 조회
+function getProjectByCode(payload, success, fail) {
+  let code = payload.pathVariable.code;
+  return apiInstanceWithAuthorization(accessToken)
+    .get(`/project/code/${code}`)
     .then(success)
     .catch(fail);
 }
@@ -31,14 +40,15 @@ function deleteProject(payload, success, fail) {
 //프로젝트 초대 코드 들어가기
 function joinProject(payload, success, fail) {
   let accessToken = localStorage.getItem("accessToken")
+  let code = payload.requestBody.code;
   return apiInstanceWithAuthorization(accessToken)
-    .post("/project/join", payload)
+    .post("/project/join", { code: code })
     .then(success)
     .catch(fail);
 }
 
 //팀원 관리 및 조회(팀원목록 & 초대 코드)
-function manageMember(payload, success, fail) {
+function getMemberManageInfo(payload, success, fail) {
   let accessToken = localStorage.getItem("accessToken");
   let projectId = payload.pathVariable.projectId;
   return apiInstanceWithAuthorization(accessToken)
@@ -48,8 +58,10 @@ function manageMember(payload, success, fail) {
 }
 
 //팀원 추방
-function exportMember(projectId, userId, success, fail) {
+function removeMember(payload, success, fail) {
   let accessToken = localStorage.getItem("accessToken")
+  let projectId = payload.pathVariable.projectId;
+  let userId = payload.pathVariable.userId;
   return apiInstanceWithAuthorization(accessToken)
     .delete(`/project/${projectId}/member/${userId}`)
     .then(success)
@@ -57,20 +69,22 @@ function exportMember(projectId, userId, success, fail) {
 }
 
 //팀원 권한 수정
-function changeRole(payload, success, fail) {
+function updateMemberRole(payload, success, fail) {
   let accessToken = localStorage.getItem("accessToken")
+  let projectId = payload.pathVariable.projectId;
   return apiInstanceWithAuthorization(accessToken)
-    .patch(`api/project/${payload}/member`)
+    .patch(`api/project/${projectId}/member`)
     .then(success)
     .catch(fail);
 }
 
 export {
   getProjects,
-  postNewProject,
+  createProject,
   deleteProject,
   joinProject,
-  manageMember,
-  exportMember,
-  changeRole,
+  getMemberManageInfo,
+  removeMember,
+  updateMemberRole,
+  getProjectByCode
 };

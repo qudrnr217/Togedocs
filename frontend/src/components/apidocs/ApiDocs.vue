@@ -406,7 +406,13 @@
                       <div
                         @mouseover="rowActive[index] = true"
                         @mouseleave="rowActive[index] = false"
-                        class="q-pa-sm q-ma-xs text-right cell-no handle-row drag-item"
+                        class="
+                          q-pa-sm q-ma-xs
+                          text-right
+                          cell-no
+                          handle-row
+                          drag-item
+                        "
                       >
                         <template v-if="!rowActive[index]">
                           {{ index + 1 }}
@@ -649,12 +655,11 @@ import {
   updateCol,
   updateCell,
   updateProjectInfo,
-  // getMemberManageInfo,
   removeMember,
   updateMemberRole,
 } from "@/api/apidocs.js";
 
-import { manageMember } from "@/api/project.js";
+import { getMemberManageInfo } from "@/api/project.js";
 
 import {
   biLayoutSidebarInsetReverse,
@@ -1426,7 +1431,7 @@ export default {
       }
     },
     callGetMemberManageInfo() {
-      manageMember(
+      getMemberManageInfo(
         {
           pathVariable: {
             projectId: this.projectId,
