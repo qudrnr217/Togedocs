@@ -22,12 +22,16 @@ function joinProject(payload, success, fail) {
 }
 
 //팀원 관리 및 조회(팀원목록 & 초대 코드)
-function manageMember(payload, success, fail) {
-  return api.get(`/project/${payload}/members`).then(success).catch(fail);
+function getMemberManageInfo(payload, success, fail) {
+  let projectid = payload.pathVariable.projectId;
+
+  return api.get(`/project/${projectid}/members`).then(success).catch(fail);
 }
 
 //팀원 추방
-function exportMember(projectId, userId, success, fail) {
+function removeMember(payload, success, fail) {
+  let projectId = payload.pathVariable.projectId;
+  let userId = payload.pathVariable.userId;
   return api
     .delete(`/project/${projectId}/member/${userId}`)
     .then(success)
@@ -35,8 +39,12 @@ function exportMember(projectId, userId, success, fail) {
 }
 
 //팀원 권한 수정
-function changeRole(payload, success, fail) {
-  return api.patch(`api/project/${payload}/member`).then(success).catch(fail);
+function updateMemberRole(payload, success, fail) {
+  let projectId = payload.pathVariable.projectId;
+  let data = payload.requestBody;
+  return api.patch(`api/project/${projectId}/member`, data)
+    .then(success)
+    .catch(fail);
 }
 
 export {
@@ -44,7 +52,7 @@ export {
   postNewProject,
   deleteProject,
   joinProject,
-  manageMember,
-  exportMember,
-  changeRole,
+  getMemberManageInfo,
+  removeMember,
+  updateMemberRole,
 };
