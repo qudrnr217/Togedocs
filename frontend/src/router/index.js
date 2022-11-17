@@ -27,12 +27,12 @@ const routes = [
     children: [
 
       {
-        path: "docs/:projectId",
+        path: "docs",
         name: "docs",
         component: ApiDocs,
       },
       {
-        path: "test/:projectId",
+        path: "test",
         name: "test",
         component: ApiTest,
       },
