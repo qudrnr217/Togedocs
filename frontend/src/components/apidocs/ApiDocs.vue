@@ -399,7 +399,13 @@
                       <div
                         @mouseover="rowActive[index] = true"
                         @mouseleave="rowActive[index] = false"
-                        class="q-pa-sm q-ma-xs text-right cell-no handle-row drag-item"
+                        class="
+                          q-pa-sm q-ma-xs
+                          text-right
+                          cell-no
+                          handle-row
+                          drag-item
+                        "
                       >
                         <template v-if="!rowActive[index]">
                           {{ index + 1 }}
@@ -629,6 +635,7 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import draggable from "vuedraggable";
 import WarningDialog from "./WarningDialog.vue";
+import { mapState } from "vuex";
 
 import {
   getDocs,
@@ -683,6 +690,9 @@ export default {
     draggable,
     WarningDialog,
   },
+  computed: {
+    ...mapState("commonStore", ["projectId"]),
+  },
   setup() {
     const addColPopup = ref(false);
     let initialDrawerWidth;
@@ -698,7 +708,6 @@ export default {
     return {
       options: ["Admin", "Member", "Remove"],
       // TODO: 나중에 자동으로 받아와서 채우는 걸로 변경
-      projectId: ref(null),
       document: ref({
         projectId: null,
         title: "",
@@ -795,8 +804,6 @@ export default {
     };
   },
   mounted() {
-    this.projectId = this.$route.params.projectId;
-
     this.callGetDocs();
     this.callGetMemberManageInfo();
 
