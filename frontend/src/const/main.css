@@ -19,6 +19,10 @@ body {
   --PUT: #fdc848ff;
   --PATCH: #b464d3ff;
   --DELETE: #ef665eff;
+  --Log2: #53cd84ff;
+  --Log4: #ef665eff;
+  --Log5: #ef665eff;
+  --Log3: #fdc848ff;
 }
 /*
   사용법
