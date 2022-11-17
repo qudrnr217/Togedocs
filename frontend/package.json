@@ -25,6 +25,7 @@
     "stompjs": "^2.3.3",
     "store-js": "^2.0.4",
     "vue": "^3.2.13",
+    "vue-resizable": "^2.1.7",
     "vue-resizer": "^1.1.9",
     "vue-router": "^4.1.6",
     "vuedraggable": "^4.1.0",

@@ -654,7 +654,7 @@ import {
   updateMemberRole,
 } from "@/api/apidocs.js";
 
-import { getMemberManageInfo } from "@/api/project.js";
+import { manageMember } from "@/api/project.js";
 
 import {
   biLayoutSidebarInsetReverse,
@@ -1427,7 +1427,7 @@ export default {
       }
     },
     callGetMemberManageInfo() {
-      getMemberManageInfo(
+      manageMember(
         {
           pathVariable: {
             projectId: this.projectId,
