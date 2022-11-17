@@ -302,13 +302,13 @@ export default {
     ...mapMutations("userStore", ["SET_TOKEN"]),
     //프로젝트 생성 api
     createNewProject() {
-      let params = {
+      let requestBody = {
         title: this.newProject.title,
         desc: this.newProject.desc,
         imgNo: this.newProject.imgNo,
       };
       createProject(
-        params,
+        { requestBody: requestBody },
         (response) => {
           response;
           this.callGetProject();
