@@ -62,7 +62,7 @@ export {
   postNewProject,
   deleteProject,
   joinProject,
-  manageMember,
-  exportMember,
-  changeRole,
+  getMemberManageInfo,
+  removeMember,
+  updateMemberRole,
 };

@@ -28,16 +28,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        System.out.println("로그인 성공 후 토큰 저장하는 곳!");
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String email = (String) oAuth2User.getAttributes().get("email");
         String name = (String) oAuth2User.getAttributes().get("name");
-        System.out.println("oauth2User : "+ oAuth2User.getAttributes());
-        System.out.println(email);
 
         User user_id=userRepository.findByEmail(email);
-//        System.out.println("user: "+":"+user_id.getId());
 
         log.info("Principal에서 꺼낸 OAuth2User = {}", oAuth2User);
         // 최초 로그인이라면 회원가입 처리를 한다.
@@ -45,8 +41,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("토큰 발행 시작");
 
         Token token = tokenService.generateToken(user_id.getId(),user_id.getName(),user_id.getImgNo(), email);
-        System.out.println(token);
-//        System.out.println(token.getRefreshToken());
         log.info("{}", token);
 //        targetUrl = UriComponentsBuilder.fromUriString("/api/user/getToken")
         targetUrl = UriComponentsBuilder.fromUriString("myapp://")
@@ -54,7 +48,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .build().toUriString();
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
 
-        System.out.println("response: "+response);
         response.addHeader("Authorization","Bearer "+token.getToken());
         //왜 redirect를 controller로 해야하는지 모르겠음.
         //queryParam으로 하면 보안적으로 문제점이 있지않나요 ??

@@ -4,8 +4,6 @@ import com.togedocs.backend.api.dto.ProjectRequest;
 import com.togedocs.backend.api.dto.ProjectResponse;
 import com.togedocs.backend.api.exception.IdNotFoundException;
 import com.togedocs.backend.api.service.ProjectService;
-import com.togedocs.backend.domain.entity.ProjectUser;
-import com.togedocs.backend.domain.repository.ProjectRepository;
 import com.togedocs.backend.domain.repository.ProjectUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +38,8 @@ public class ProjectController {
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
         }
         return ResponseEntity.status(204).body(response);
     }
@@ -55,7 +54,8 @@ public class ProjectController {
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
         }
         return ResponseEntity.status(200).body(response);
     }
@@ -69,7 +69,8 @@ public class ProjectController {
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
         }
         return ResponseEntity.status(200).body(response);
     }
@@ -84,7 +85,8 @@ public class ProjectController {
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
         }
         return ResponseEntity.status(200).body(response);
     }
@@ -99,7 +101,8 @@ public class ProjectController {
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
         }
         return ResponseEntity.status(200).body(response);
     }

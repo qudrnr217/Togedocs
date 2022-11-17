@@ -1,11 +1,10 @@
 <template>
   <div>
     <router-link
-      :to="{ name: 'docs', params: { projectId: projectItem.projectId } }"
-    >
+      :to="{ name: 'docs', params: { projectId: projectItem.projectId } }">
       <div class="container">
         <div class="imgcontainer">
-          <img :src="imgUrl(projectItem.imgNo)" alt="" />
+          <img :src="getProjectImg(projectItem.imgNo)" alt="" />
         </div>
 
         <div class="projectinfo">
@@ -41,8 +40,8 @@ export default {
     goToApiDocs() {
       this.$router.push({ name: "docs" });
     },
-    imgUrl(imgNo) {
-      return "https://placeimg.com/300/200/nature?t=" + imgNo / 10;
+    getProjectImg(imgNo) {
+      return require(`@/assets/project/${imgNo}.png`);
     },
   },
 };
