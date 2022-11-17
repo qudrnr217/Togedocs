@@ -1,4 +1,4 @@
-import { api, apiInstanceWithAuthorization } from "./index.js";
+import { apiInstanceWithAuthorization } from "./index.js";
 
 //자신의 프로젝트 리스트 가져오기
 function getProjects(success, fail) {
@@ -30,6 +30,7 @@ function deleteProject(payload, success, fail) {
 
 // 초대 코드로 프로젝트 조회
 function getProjectByCode(payload, success, fail) {
+  let accessToken = localStorage.getItem("accessToken")
   let code = payload.pathVariable.code;
   return apiInstanceWithAuthorization(accessToken)
     .get(`/project/code/${code}`)
