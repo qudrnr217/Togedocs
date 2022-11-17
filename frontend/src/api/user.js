@@ -23,4 +23,10 @@ function withdrawUser(payload, success, fail) {
   return apiInstanceWithAuthorization(accessToken).delete("/user/withdraw").then(success).catch(fail);
 }
 
-export { modifyUserInfo, getUserNameAndImgNo, withdrawUser };
+//로그아웃
+function logoutUser(success,fail){
+  let accessToken = localStorage.getItem("accessToken");
+  return apiInstanceWithAuthorization(accessToken).post("/logout").then(success).catch(fail);
+}
+
+export { modifyUserInfo, getUserNameAndImgNo, withdrawUser,logoutUser };
