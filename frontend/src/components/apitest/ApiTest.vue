@@ -8,279 +8,291 @@
     </div>
 
     <div id="Maincontainer">
-      <drag-col width="100%" height="100%" :leftPercent="20" :sliderWidth="10">
-        <template #left>
-          <div id="Left">
-            <hr style="border-bottom: 0px; margin-top: 0px" />
-            <q-item style="font-weight: bold" dense>
-              <q-item-section avatar> Api목록 </q-item-section>
-            </q-item>
-            <hr style="border-bottom: 0px" />
-            <q-scroll-area
-              id="apiListAll"
-              :thumb-style="thumbstyle"
-              style="height: 80.5vh"
-            >
-              <div v-for="(item, index) in apiList" v-bind:key="index">
-                <div v-if="index == 0"></div>
-                <div v-else>
-                  <q-item
-                    clickable
-                    @click="apiListDetail(index)"
-                    :active="index == nowIndex"
-                    v-ripple
-                    active-class="bg-grey-4"
+      <vue-resizable
+        width="20%"
+        maxWidth="400"
+        active="['r', 0, 0, 0, 0, 0, 0, 0]"
+      >
+        <div id="Left">
+          <hr style="border-bottom: 0px; margin-top: 0px" />
+          <q-item style="font-weight: bold" dense>
+            <q-item-section avatar> Api목록 </q-item-section>
+          </q-item>
+          <hr style="border-bottom: 0px" />
+          <q-scroll-area
+            id="apiListAll"
+            :thumb-style="thumbstyle"
+            style="height: 80.5vh"
+          >
+            <div v-for="(item, index) in apiList" v-bind:key="index">
+              <div v-if="index == 0"></div>
+              <div v-else>
+                <q-item
+                  clickable
+                  @click="apiListDetail(index)"
+                  :active="index == nowIndex"
+                  v-ripple
+                  active-class="bg-grey-4"
+                >
+                  <q-item-section
+                    avatar
+                    :style="{
+                      color: 'var(--' + item.type + ')',
+                      width: '6vw ',
+                    }"
                   >
-                    <q-item-section
-                      avatar
-                      :style="{
-                        color: 'var(--' + item.type + ')',
-                        width: '6vw ',
-                      }"
-                    >
-                      {{ item.type }}
-                    </q-item-section>
-                    <q-item-section>
-                      {{ item.name }}
-                    </q-item-section>
-                  </q-item>
-                </div>
+                    {{ item.type }}
+                  </q-item-section>
+                  <q-item-section>
+                    {{ item.name }}
+                  </q-item-section>
+                </q-item>
               </div>
-            </q-scroll-area>
+            </div>
+          </q-scroll-area>
+        </div>
+      </vue-resizable>
+      <div id="Main">
+        <hr style="border-bottom: 0; border-left: 0; margin-top: 0" />
+        <div id="MainTop">
+          <div id="apiName">
+            <div
+              style="text-align: left; font-size: 15px"
+              class="q-pa-xs"
+              v-if="apiName == ''"
+            >
+              Api이름
+            </div>
+            <div style="text-align: left; font-size: 15px" class="q-pa-xs">
+              {{ apiName }}
+            </div>
           </div>
-        </template>
+          <q-btn color="primary" id="savebtn" @click="saveLocalStorage"
+            >Save</q-btn
+          >
+        </div>
+        <hr style="border-bottom: 0; border-left: 0" />
+        <div id="TypeURL">
+          <select id="RequestType" v-model="methodType">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="PATCH">PATCH</option>
+            <option value="DELETE">DELETE</option>
+          </select>
+          <div id="empty"></div>
+          <input id="apiURL" v-model="apiURL" readonly />
+          <div id="empty"></div>
+          <q-btn color="primary" id="testbtn" @click="Test">Send</q-btn>
+        </div>
 
-        <template #right>
-          <div id="Main">
-            <hr style="border-bottom: 0; border-left: 0; margin-top: 0" />
-            <div id="MainTop">
-              <div id="apiName">
-                <div
-                  style="text-align: left; font-size: 15px"
-                  class="q-pa-xs"
-                  v-if="apiName == ''"
-                >
-                  Api이름
-                </div>
-                <div style="text-align: left; font-size: 15px" class="q-pa-xs">
-                  {{ apiName }}
-                </div>
-              </div>
-              <q-btn color="primary" id="savebtn" @click="saveLocalStorage"
-                >Save</q-btn
-              >
-            </div>
-            <hr style="border-bottom: 0; border-left: 0" />
-            <div id="TypeURL">
-              <select id="RequestType" v-model="methodType">
-                <option value="GET">GET</option>
-                <option value="POST">POST</option>
-                <option value="PUT">PUT</option>
-                <option value="PATCH">PATCH</option>
-                <option value="DELETE">DELETE</option>
-              </select>
-              <div id="empty"></div>
-              <input id="apiURL" v-model="apiURL" readonly />
-              <div id="empty"></div>
-              <q-btn color="primary" id="testbtn" @click="Test">Send</q-btn>
-            </div>
+        <div id="RequestBox">
+          <q-tabs
+            id="RequestOptions"
+            :breakpoint="0"
+            dense
+            no-caps
+            right-icon=" "
+            left-icon=" "
+            align="left"
+          >
+            <q-tab
+              id="ReqeustOptionsDetail"
+              @click="OptionSelect('RequestHeader')"
+              >Header</q-tab
+            >
+            <q-tab
+              id="ReqeustOptionsDetail"
+              @click="OptionSelect('PathVariable')"
+              >PathVariable</q-tab
+            >
+            <q-tab id="ReqeustOptionsDetail" @click="OptionSelect('Params')"
+              >QueryParams</q-tab
+            >
+            <q-tab
+              id="ReqeustOptionsDetail"
+              @click="OptionSelect('RequestBody')"
+              >RequestBody</q-tab
+            >
+          </q-tabs>
 
-            <div id="RequestBox">
-              <q-tabs id="RequestOptions" dense no-caps align="left">
-                <q-tab
-                  id="ReqeustOptionsDetail"
-                  @click="OptionSelect('RequestHeader')"
-                  >Header</q-tab
-                >
-                <q-tab
-                  id="ReqeustOptionsDetail"
-                  @click="OptionSelect('PathVariable')"
-                  >PathVariable</q-tab
-                >
-                <q-tab id="ReqeustOptionsDetail" @click="OptionSelect('Params')"
-                  >QueryParams</q-tab
-                >
-                <q-tab
-                  id="ReqeustOptionsDetail"
-                  @click="OptionSelect('RequestBody')"
-                  >RequestBody</q-tab
-                >
-              </q-tabs>
-
-              <div id="RequestParent">
-                <textarea
-                  id="HeaderArea"
-                  v-show="typeSelect == 'RequestHeader'"
-                  v-model="Header"
-                />
-                <div id="KeyValueInput" v-show="typeSelect == 'PathVariable'">
-                  <q-markup-table dense id="KeyValueTable">
-                    <thead>
-                      <tr>
-                        <th class="text-left">key</th>
-                        <th class="text-left">PathVariable</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody
-                      v-for="(item, index) in PathVariables"
-                      v-bind:key="index"
-                    >
-                      <td>
-                        <q-input
-                          dense
-                          outlined
-                          id="PathVariableTableInput"
-                          v-model="item.key"
-                        ></q-input>
-                      </td>
-                      <td>
-                        <q-input
-                          dense
-                          outlined
-                          id="PathVariableTableInput"
-                          v-model="item.value"
-                        ></q-input>
-                      </td>
-                      <td>
-                        <q-icon
-                          class="q-pa-sm q-ma-xs cursor-pointer"
-                          @click="deleteRow('PathVariable', index)"
-                          :name="biDashCircle"
-                        />
-                      </td>
-                    </tbody>
-                    <tfoot>
-                      <td>
-                        <q-icon
-                          class="q-pa-sm q-ma-xs cursor-pointer"
-                          @click="addRow('PathVariable')"
-                          :name="biPlusCircle"
-                        />
-                      </td>
-                    </tfoot>
-                  </q-markup-table>
-                </div>
-
-                <div id="KeyValueInput" v-show="typeSelect == 'Params'">
-                  <q-markup-table dense id="KeyValueTable">
-                    <thead>
-                      <tr>
-                        <th class="text-left">key</th>
-                        <th class="text-left">QueryParams</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody
-                      v-for="(item, index) in QueryParams"
-                      v-bind:key="index"
-                    >
-                      <td>
-                        <q-input
-                          dense
-                          outlined
-                          id="QueryParamsTableInput"
-                          v-model="item.key"
-                        ></q-input>
-                      </td>
-                      <td>
-                        <q-input
-                          dense
-                          outlined
-                          id="QueryParamsTableInput"
-                          v-model="item.value"
-                        ></q-input>
-                      </td>
-                      <td>
-                        <q-icon
-                          class="q-pa-sm q-ma-xs cursor-pointer"
-                          @click="deleteRow('QueryParams', index)"
-                          :name="biDashCircle"
-                        />
-                      </td>
-                    </tbody>
-                    <tfoot>
-                      <td>
-                        <q-icon
-                          class="q-pa-sm q-ma-xs cursor-pointer"
-                          @click="addRow('QueryParams')"
-                          :name="biPlusCircle"
-                        />
-                      </td>
-                    </tfoot>
-                  </q-markup-table>
-                </div>
-
-                <textarea
-                  id="RequestBodyInput"
-                  v-show="typeSelect == 'RequestBody'"
-                  v-model="RequestBody"
-                />
-              </div>
-            </div>
-            <hr
-              style="
-                border-left: 0;
-                border-bottom: 0px;
-                margin-top: 0px;
-                margin-bottom: 0px;
-              "
+          <div id="RequestParent">
+            <textarea
+              id="HeaderArea"
+              v-show="typeSelect == 'RequestHeader'"
+              v-model="Header"
             />
-            <div id="ResponseBox">
-              <div id="ResponseBoxTop" class="q-pa-xs">
-                <div style="flex: 1">Response</div>
-                <div style="flex: 10"></div>
-                <div style="flex: 1">Status :</div>
-                <div
-                  :style="{
-                    color: 'var(--Log' + parseInt(statusCode / 100) + ')',
-                  }"
-                  style="flex: 1"
+            <div id="KeyValueInput" v-show="typeSelect == 'PathVariable'">
+              <q-markup-table dense id="KeyValueTable">
+                <thead>
+                  <tr>
+                    <th class="text-left">key</th>
+                    <th class="text-left">PathVariable</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody
+                  v-for="(item, index) in PathVariables"
+                  v-bind:key="index"
                 >
-                  {{ statusCode }}
-                </div>
-              </div>
-              <q-tabs id="ResponseOptions" dense no-caps align="left">
-                <q-tab
-                  id="ResponseOptionsDetail"
-                  @click="ResponseOptionSelect('ResponseBody')"
-                  >ResponseBody</q-tab
-                >
-                <q-tab
-                  id="ResponseOptionsDetail"
-                  @click="ResponseOptionSelect('Cookie')"
-                  >Cookie</q-tab
-                >
-                <q-tab
-                  id="ResponseOptionsDetail"
-                  @click="ResponseOptionSelect('Header')"
-                  >Header</q-tab
-                >
-              </q-tabs>
-              <div id="ResponseParent">
-                <textarea
-                  readonly
-                  v-show="ResponseTypeSelect == 'ResponseBody'"
-                  id="ResponseContent"
-                  v-model="res"
-                ></textarea>
-                <textarea
-                  readonly
-                  v-show="ResponseTypeSelect == 'Cookie'"
-                  id="ResponseContent"
-                  v-model="responseCookie"
-                ></textarea>
-                <textarea
-                  readonly
-                  v-show="ResponseTypeSelect == 'Header'"
-                  id="ResponseContent"
-                  v-model="responseHeader"
-                ></textarea>
-              </div>
+                  <td>
+                    <q-input
+                      dense
+                      outlined
+                      id="PathVariableTableInput"
+                      v-model="item.key"
+                    ></q-input>
+                  </td>
+                  <td>
+                    <q-input
+                      dense
+                      outlined
+                      id="PathVariableTableInput"
+                      v-model="item.value"
+                    ></q-input>
+                  </td>
+                  <td>
+                    <q-icon
+                      class="q-pa-sm q-ma-xs cursor-pointer"
+                      @click="deleteRow('PathVariable', index)"
+                      :name="biDashCircle"
+                    />
+                  </td>
+                </tbody>
+                <tfoot>
+                  <td>
+                    <q-icon
+                      class="q-pa-sm q-ma-xs cursor-pointer"
+                      @click="addRow('PathVariable')"
+                      :name="biPlusCircle"
+                    />
+                  </td>
+                </tfoot>
+              </q-markup-table>
+            </div>
+
+            <div id="KeyValueInput" v-show="typeSelect == 'Params'">
+              <q-markup-table dense id="KeyValueTable">
+                <thead>
+                  <tr>
+                    <th class="text-left">key</th>
+                    <th class="text-left">QueryParams</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody v-for="(item, index) in QueryParams" v-bind:key="index">
+                  <td>
+                    <q-input
+                      dense
+                      outlined
+                      id="QueryParamsTableInput"
+                      v-model="item.key"
+                    ></q-input>
+                  </td>
+                  <td>
+                    <q-input
+                      dense
+                      outlined
+                      id="QueryParamsTableInput"
+                      v-model="item.value"
+                    ></q-input>
+                  </td>
+                  <td>
+                    <q-icon
+                      class="q-pa-sm q-ma-xs cursor-pointer"
+                      @click="deleteRow('QueryParams', index)"
+                      :name="biDashCircle"
+                    />
+                  </td>
+                </tbody>
+                <tfoot>
+                  <td>
+                    <q-icon
+                      class="q-pa-sm q-ma-xs cursor-pointer"
+                      @click="addRow('QueryParams')"
+                      :name="biPlusCircle"
+                    />
+                  </td>
+                </tfoot>
+              </q-markup-table>
+            </div>
+
+            <textarea
+              id="RequestBodyInput"
+              v-show="typeSelect == 'RequestBody'"
+              v-model="RequestBody"
+            />
+          </div>
+        </div>
+        <hr
+          style="
+            border-left: 0;
+            border-bottom: 0px;
+            margin-top: 0px;
+            margin-bottom: 0px;
+          "
+        />
+        <div id="ResponseBox">
+          <div id="ResponseBoxTop" class="q-pa-xs">
+            <div style="flex: 1">Response</div>
+            <div style="flex: 10"></div>
+            <div style="flex: 1">Status:</div>
+            <div
+              :style="{
+                color: 'var(--Log' + parseInt(statusCode / 100) + ')',
+              }"
+              style="flex: 1"
+            >
+              {{ statusCode }}
             </div>
           </div>
-        </template>
-      </drag-col>
+          <q-tabs
+            id="ResponseOptions"
+            :breakpoint="0"
+            dense
+            no-caps
+            right-icon=" "
+            left-icon=" "
+            align="left"
+          >
+            <q-tab
+              id="ResponseOptionsDetail"
+              @click="ResponseOptionSelect('ResponseBody')"
+              >ResponseBody</q-tab
+            >
+            <q-tab
+              id="ResponseOptionsDetail"
+              @click="ResponseOptionSelect('Cookie')"
+              >Cookie</q-tab
+            >
+            <q-tab
+              id="ResponseOptionsDetail"
+              @click="ResponseOptionSelect('Header')"
+              >Header</q-tab
+            >
+          </q-tabs>
+          <div id="ResponseParent">
+            <textarea
+              readonly
+              v-show="ResponseTypeSelect == 'ResponseBody'"
+              id="ResponseContent"
+              v-model="res"
+            ></textarea>
+            <textarea
+              readonly
+              v-show="ResponseTypeSelect == 'Cookie'"
+              id="ResponseContent"
+              v-model="responseCookie"
+            ></textarea>
+            <textarea
+              readonly
+              v-show="ResponseTypeSelect == 'Header'"
+              id="ResponseContent"
+              v-model="responseHeader"
+            ></textarea>
+          </div>
+        </div>
+      </div>
 
       <details id="Right">
         <summary
@@ -400,7 +412,7 @@
 
 <script>
 import axios from "axios";
-import { DragCol } from "vue-resizer";
+import VueResizable from "vue-resizable";
 import { getDocs } from "@/api/apidocs.js";
 import { getLogs, addLog } from "@/api/apitest.js";
 import {
@@ -412,7 +424,7 @@ import {
 
 import { mapMutations, mapState } from "vuex";
 export default {
-  components: { DragCol },
+  components: { VueResizable },
   computed: {
     ...mapState("commonStore", ["projectId", "userName"]),
   },
@@ -576,6 +588,7 @@ export default {
       //로그 클릭 시 보여줄 변수들 설정
       //여기서 모달 동작하게 해야 함. 아래 변수들을 사용하여 모달 표현
       //모달 완성 시 아래 코드 삭제
+      index = this.logList.length - index - 1;
 
       this.dialog = true;
       this.dialogContent = {
@@ -983,7 +996,7 @@ export default {
   height: 88vh;
 }
 #Maincontainer {
-  width: 100vw;
+  width: 99vw;
   height: 88vh;
   display: flex;
 }
@@ -1034,25 +1047,25 @@ export default {
   background-color: #ffffff;
 }
 #ResponseBox {
-  height: 50%;
+  height: 40%;
   width: 99%;
   margin: 0 auto;
   background-color: #ffffff;
 }
 #ResponseBoxTop {
-  height: 8%;
+  height: 11%;
   width: 100%;
   display: flex;
 }
 #ResponseParent {
   width: 100%;
-  height: 70%;
+  height: 88%;
   display: flex;
   justify-content: center;
 }
 #ResponseContent {
   width: 98%;
-  height: 100%;
+  height: 95%;
   background-color: #ffffff;
   resize: none;
 }
@@ -1067,7 +1080,7 @@ export default {
   line-height: 240%;
 }
 #ResponseOptions {
-  height: 12%;
+  height: 15%;
   display: flex;
 }
 #ResponseOptionsDetail {
@@ -1091,6 +1104,7 @@ export default {
   background-color: var(--cultured);
   overflow: hidden;
   overflow-y: hidden;
+  border-right: #000000 solid 3px;
 }
 
 #Main {
