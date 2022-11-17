@@ -6,7 +6,6 @@ import com.togedocs.backend.api.exception.IdNotFoundException;
 import com.togedocs.backend.api.service.ApilogsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,7 +20,8 @@ public class ApilogsController {
         try {
             response = apilogsService.getLogs(projectId, rowId);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
         }
         return ResponseEntity.status(200).body(response);
     }
@@ -34,7 +34,8 @@ public class ApilogsController {
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
         }
         return ResponseEntity.status(200).body(response);
     }

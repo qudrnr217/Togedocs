@@ -28,9 +28,7 @@ public class JwtAuthFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        System.out.println("인증이나 권한이 필요한 주소 요청이 됨.");
         String token = ((HttpServletRequest)request).getHeader("Authorization");
-        System.out.println(token);
 
 
         //JWT 토큰을 검증을해서 정상적인 사용자인지 확인
@@ -43,8 +41,6 @@ public class JwtAuthFilter extends GenericFilterBean {
         if (token != null && tokenService.verifyToken(token)) {
             String email = tokenService.getUid(token);
             User userEntity = userRepository.findByEmail(email);
-            System.out.println(email);
-            System.out.println("userEntity: "+userEntity);
 
             PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
 
