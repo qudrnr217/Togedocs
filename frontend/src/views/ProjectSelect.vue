@@ -1,144 +1,146 @@
 <template>
   <div>
-    <div class="projectheader">
-      <div class="buttons q-gutter-sm">
-        <q-btn @click="showModifyUserInfoModal()">회원정보수정</q-btn>
-        <!-- logout 함수는 미구현. this.$router.push로 home으로 돌아가게 해야할듯 -->
-        <q-btn @click="logout()">로그아웃</q-btn>
-      </div>
-      <div class="header">
-        <div class="profileimg">
-          <!-- @/assets/togedog.jpg -->
-          <q-img
-            :src="imgUrl(imgNo)"
-            style="width: 100%; border-radius: 20px"
-          />
+    <q-page-container>
+      <div class="projectheader">
+        <div class="buttons q-gutter-sm">
+          <q-btn @click="showModifyUserInfoModal()">회원정보수정</q-btn>
+          <!-- logout 함수는 미구현. this.$router.push로 home으로 돌아가게 해야할듯 -->
+          <q-btn @click="logout()">로그아웃</q-btn>
         </div>
-        <div class="username">{{ userName }} 님 반갑습니다.</div>
+        <div class="header">
+          <div class="profileimg">
+            <!-- @/assets/togedog.jpg -->
+            <q-img
+              :src="getUserImg(imgNo)"
+              style="width: 100%; border-radius: 20px"
+            />
+          </div>
+          <div class="username">{{ userName }} 님 반갑습니다.</div>
+        </div>
+
+        <div class="shadow"></div>
       </div>
 
-      <div class="shadow"></div>
-    </div>
-
-    <q-layout view="hHh lpR fFf" color="warning">
-      <q-page-container>
-        <div class="project-list">
-          <div class="column">
-            <q-btn
-              stack
-              color="secondary"
-              class="create-project-btn"
-              @click="showCreatePjtModal()"
-            >
-              <q-tooltip class="bg-positive">
-                새로운 프로젝트를 생성합니다
-              </q-tooltip>
-              <div style="font-size: 20px">+</div></q-btn
-            >
-          </div>
-          <div class="cards q-gutter-sm">
-            <div v-for="(project, idx) in projects" :key="idx" class="card">
-              <project-card :projectItem="project" />
+      <q-layout view="hHh lpR fFf" color="warning">
+        <q-page-container>
+          <div class="project-list">
+            <div class="column">
+              <q-btn
+                stack
+                color="secondary"
+                class="create-project-btn"
+                @click="showCreatePjtModal()"
+              >
+                <q-tooltip class="bg-positive">
+                  새로운 프로젝트를 생성합니다
+                </q-tooltip>
+                <div style="font-size: 20px">+</div></q-btn
+              >
+            </div>
+            <div class="cards q-gutter-sm">
+              <div v-for="(project, idx) in projects" :key="idx" class="card">
+                <project-card :projectItem="project" />
+              </div>
             </div>
           </div>
-        </div>
-      </q-page-container>
-      <q-dialog v-model="createPjtModal" persistent>
-        <q-card class="modal">
-          <q-card-section>
-            <div class="text-h6">새 프로젝트 생성</div>
-          </q-card-section>
-          <q-separator />
-          <q-card-section>
-            <div class="q-gutter-md">
-              <div class="text-center q-gutter-xs">
-                <q-img
-                  :src="imgUrl(newProject.imgNo)"
-                  spinner-color="white"
-                  style="height: 100px; width: 100px; border-radius: 5px"
-                />
-                <div>
-                  <q-btn dense @click="makeImgNo(1)">RESET</q-btn>
+        </q-page-container>
+        <q-dialog v-model="createPjtModal" persistent>
+          <q-card class="modal">
+            <q-card-section>
+              <div class="text-h6">새 프로젝트 생성</div>
+            </q-card-section>
+            <q-separator />
+            <q-card-section>
+              <div class="q-gutter-md">
+                <div class="text-center q-gutter-xs">
+                  <q-img
+                    :src="getProjectImg(newProject.imgNo)"
+                    spinner-color="white"
+                    style="height: 100px; width: 100px; border-radius: 5px"
+                  />
+                  <div>
+                    <q-btn dense @click="makeImgNo(1)">RESET</q-btn>
+                  </div>
                 </div>
-              </div>
-              <q-input
-                label="프로젝트 이름"
-                filled
-                type="text"
-                v-model="newProject.title"
-              />
-              <q-input
-                label="프로젝트 설명"
-                filled
-                type="textarea"
-                v-model="newProject.desc"
-                autogrow
-              />
-            </div>
-          </q-card-section>
-
-          <q-separator />
-
-          <q-card-actions align="right">
-            <q-btn
-              flat
-              label="취소"
-              color="primary"
-              v-close-popup
-              @click="resetCreatePjtModal"
-            />
-            <q-btn
-              flat
-              label="생성"
-              color="primary"
-              v-close-popup
-              @click="createNewProject"
-            />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-      <q-dialog v-model="modifyUserInfoModal" persistent>
-        <q-card class="modal">
-          <q-card-section>
-            <div class="text-h6">회원정보 수정</div>
-          </q-card-section>
-          <q-separator />
-          <q-card-section>
-            <div class="q-gutter-md">
-              <div class="text-center q-gutter-xs">
-                <q-img
-                  :src="imgUrl(modifyUserInfo.imgNo)"
-                  spinner-color="white"
-                  style="height: 100px; width: 100px; border-radius: 5px"
+                <q-input
+                  label="프로젝트 이름"
+                  filled
+                  type="text"
+                  v-model="newProject.title"
                 />
-                <div>
-                  <q-btn dense @click="makeImgNo(2)">RESET</q-btn>
-                </div>
+                <q-input
+                  label="프로젝트 설명"
+                  filled
+                  type="textarea"
+                  v-model="newProject.desc"
+                  autogrow
+                />
               </div>
-              <q-input
-                label="이름"
-                filled
-                type="text"
-                v-model="modifyUserInfo.name"
+            </q-card-section>
+
+            <q-separator />
+
+            <q-card-actions align="right">
+              <q-btn
+                flat
+                label="취소"
+                color="primary"
+                v-close-popup
+                @click="resetCreatePjtModal"
               />
-            </div>
-          </q-card-section>
+              <q-btn
+                flat
+                label="생성"
+                color="primary"
+                v-close-popup
+                @click="createNewProject"
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+        <q-dialog v-model="modifyUserInfoModal" persistent>
+          <q-card class="modal">
+            <q-card-section>
+              <div class="text-h6">회원정보 수정</div>
+            </q-card-section>
+            <q-separator />
+            <q-card-section>
+              <div class="q-gutter-md">
+                <div class="text-center q-gutter-xs">
+                  <q-img
+                    :src="imgUrl(modifyUserInfo.imgNo)"
+                    spinner-color="white"
+                    style="height: 100px; width: 100px; border-radius: 5px"
+                  />
+                  <div>
+                    <q-btn dense @click="makeImgNo(2)">RESET</q-btn>
+                  </div>
+                </div>
+                <q-input
+                  label="이름"
+                  filled
+                  type="text"
+                  v-model="modifyUserInfo.name"
+                />
+              </div>
+            </q-card-section>
 
-          <q-separator />
+            <q-separator />
 
-          <q-card-actions align="right">
-            <q-btn flat label="취소" color="primary" v-close-popup />
-            <q-btn
-              flat
-              label="생성"
-              color="primary"
-              v-close-popup
-              @click="doModifyUserInfo()"
-            />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-    </q-layout>
+            <q-card-actions align="right">
+              <q-btn flat label="취소" color="primary" v-close-popup />
+              <q-btn
+                flat
+                label="생성"
+                color="primary"
+                v-close-popup
+                @click="doModifyUserInfo()"
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+      </q-layout>
+    </q-page-container>
   </div>
 </template>
 
@@ -220,6 +222,12 @@ export default {
     },
     imgUrl(imgNo) {
       return "https://placeimg.com/100/100/nature?t=" + imgNo / 10;
+    },
+    getUserImg(imgNo) {
+      return require(`@/assets/user/${imgNo}.png`);
+    },
+    getProjectImg(imgNo) {
+      return require(`@/assets/project/${imgNo}.png`);
     },
     showCreatePjtModal() {
       this.createPjtModal = true;

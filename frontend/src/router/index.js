@@ -15,17 +15,17 @@ const routes = [
     path: "/home",
     name: "home",
     component: HomeView,
+  }, {
+    path: "/select",
+    name: "select",
+    component: ProjectSelect,
   },
   {
     path: "/project",
     name: "projectview",
     component: ProjectView,
     children: [
-      {
-        path: "select",
-        name: "select",
-        component: ProjectSelect,
-      },
+
       {
         path: "docs/:projectId",
         name: "docs",
