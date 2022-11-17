@@ -25,7 +25,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/info/{id}")
+    @GetMapping("/info/{userId}")
     public ResponseEntity<?> getUserInfo(@PathVariable Long userId) {
         UserResponse.userNameAndImgNo response;
         try {
