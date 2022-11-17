@@ -27,8 +27,9 @@
                   <q-item
                     clickable
                     @click="apiListDetail(index)"
-                    :active="index === nowIndex"
+                    :active="index == nowIndex"
                     v-ripple
+                    active-class="bg-grey-4"
                   >
                     <q-item-section
                       avatar
@@ -229,7 +230,15 @@
               <div id="ResponseBoxTop" class="q-pa-xs">
                 <div style="flex: 1">Response</div>
                 <div style="flex: 10"></div>
-                <div style="flex: 2">Status : {{ statusCode }}</div>
+                <div style="flex: 1">Status :</div>
+                <div
+                  :style="{
+                    color: 'var(--Log' + parseInt(statusCode / 100) + ')',
+                  }"
+                  style="flex: 1"
+                >
+                  {{ statusCode }}
+                </div>
               </div>
               <q-tabs id="ResponseOptions" dense no-caps align="left">
                 <q-tab
@@ -275,11 +284,12 @@
 
       <details id="Right">
         <summary
-          style="width: 8vw; font-weight: bold; cursor: pointer"
+          style="font-weight: bold; cursor: pointer"
           @click="logOpenClose"
         >
-          <div v-if="logListOpened == false">
-            <hr style="border-bottom: 0px; border-left: 0; margin-top: 0px" />
+          <div v-if="logListOpened == false" style="width: 2.3vw">
+            <hr style="border-bottom: 0px; border-left: 0; margin-top: 0" />
+            <hr style="border-bottom: 0px; border-left: 0; margin-top: 40vh" />
             <div class="q-pa-xs">
               <q-icon
                 :name="biArrowLeftCircle"
@@ -287,9 +297,9 @@
               />
               호출 로그
             </div>
-            <hr style="margin-top: 11%; border-bottom: 0px; border-left: 0" />
+            <hr style="margin-top: 15%; border-bottom: 0px; border-left: 0" />
           </div>
-          <div v-if="logListOpened == true">
+          <div v-if="logListOpened == true" style="width: 8vw">
             <hr
               style="
                 border-bottom: 0px;
@@ -321,9 +331,17 @@
             :thumb-style="thumbstyle"
             style="height: 80.5vh"
           >
-            <div v-for="(log, index) in logList" v-bind:key="index">
+            <div
+              v-for="(log, index) in logList.slice().reverse()"
+              v-bind:key="index"
+            >
               <q-item clickable @click="logListDetail(index)" v-ripple dense>
-                <q-item-section avatar>
+                <q-item-section
+                  :style="{
+                    color: 'var(--Log' + parseInt(log.statusCode / 100) + ')',
+                  }"
+                  avatar
+                >
                   {{ log.statusCode }}
                 </q-item-section>
                 <q-item-section>
@@ -626,6 +644,7 @@ export default {
       rowId: "",
 
       //Request
+      BaseURL: "",
       apiURL: "",
       PathVariable: "",
       Params: "",
@@ -749,7 +768,7 @@ export default {
       this.Header = this.apiList[newindex].Header;
       this.methodType = this.apiList[newindex].type;
       this.PathVariable = this.apiList[newindex].PathVariable;
-      this.apiURL = this.apiList[newindex].RequestURL;
+      this.apiURL = this.BaseURL + this.apiList[newindex].RequestURL;
       this.apiName = this.apiList[newindex].name;
       this.statusCode = "";
       this.rowId = this.apiList[newindex].rowId;
@@ -857,6 +876,7 @@ export default {
     getDocs({ pathVariable: { projectId: this.projectId } }, (data) => {
       let document = data.data;
       this.projectTitle = document.title;
+      this.BaseURL = document.baseUrl;
       for (let rowId of document.rows) {
         // one -> 이름
         // two -> method
@@ -872,6 +892,10 @@ export default {
           RequestBody: "",
           RequestURL: document.data[rowId].three,
         };
+        if (obj.type == null) {
+          obj.type = "";
+        }
+        obj.type = obj.type.toUpperCase();
 
         this.apiList.push(obj);
       }
@@ -887,7 +911,7 @@ export default {
     this.methodType = this.apiList[this.index].type;
     this.PathVariable = this.apiList[this.index].PathVariable;
     this.typeSelect = "PathVariable";
-    this.apiURL = this.apiList[this.index].RequestURL;
+    this.apiURL = this.BaseURL + this.apiList[this.index].RequestURL;
     this.apiName = this.apiList[this.index].name;
     this.beforetype = "PathVariable";
     this.rowId = this.apiList[this.index].rowId;
