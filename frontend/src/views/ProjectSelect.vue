@@ -131,7 +131,7 @@
               <q-btn flat label="취소" color="primary" v-close-popup />
               <q-btn
                 flat
-                label="생성"
+                label="적용"
                 color="primary"
                 v-close-popup
                 @click="doModifyUserInfo()"
@@ -150,7 +150,7 @@ import ProjectCard from "@/components/ProjectCard.vue";
 import { mapState, mapActions, mapMutations } from "vuex";
 import { getProjects, postNewProject } from "@/api/project";
 import jwt_decode from "jwt-decode";
-import { modifyUserInfo } from "@/api/user";
+import { getUserNameAndImgNo, modifyUserInfo } from "@/api/user";
 
 export default {
   computed: {
@@ -181,17 +181,10 @@ export default {
     let token = localStorage.getItem("accessToken");
     if (token) {
       let userInfo = jwt_decode(token);
-      this.imgNo = userInfo.imgNo;
-      this.userId = userInfo.userId;
-      this.userName = userInfo.name;
-      this.SET_USERNAME(userInfo.name);
+
+      console.log(userInfo);
       this.SET_USERID(userInfo.userId);
-      this.SET_IMGNO(userInfo.imgNo);
-    } else {
-      // 테스트용. 로그인을 안하고 넘어오면 이 부분이 실행됨.
-      // 최종 배포 후 else 아래는 모두 지울 것.
-      this.SET_IMGNO(Math.random() * 10);
-      // 여기까지
+      this.callGetUserNameAndImgNo(this.userId);
     }
 
     this.callGetProject();
@@ -220,6 +213,19 @@ export default {
         this.modifyUserInfo.imgNo = imgNo;
       }
     },
+    callGetUserNameAndImgNo(userId) {
+      getUserNameAndImgNo(
+        { pathVariable: { userId: userId } },
+        (response) => {
+          console.log("HELLO", response);
+          this.SET_USERNAME(response.data.userName);
+          this.SET_IMGNO(response.data.imgNo);
+        },
+        (e) => {
+          console.warn(e);
+        }
+      );
+    },
     getUserImg(imgNo) {
       return require(`@/assets/user/${imgNo}.png`);
     },
@@ -244,54 +250,19 @@ export default {
     },
     doModifyUserInfo() {
       let params = {
-        name: modifyUserInfo.name,
-        imgNo: modifyUserInfo.imgNo,
+        name: this.modifyUserInfo.name,
+        imgNo: this.modifyUserInfo.imgNo,
       };
-      modifyUserInfo(params).then((data) => {
+      modifyUserInfo({ requestBody: params }).then((data) => {
         data;
+        this.callGetUserNameAndImgNo(this.userId);
+        this.callGetProject();
       });
-      // axios 호출
-      // TODO:
-      // 토큰을 재발급 받아야되나? 토큰에 userId(얘는 괜찮) userName imgNo이 있어서...
-      // 그리고 this.SET_USERNAME this.SET_IMGNO 해줘야됨.
     },
     callGetProject() {
-      getProjects()
-        .then((data) => {
-          this.projects = data.data;
-        })
-        .catch(() => {
-          // TEST용 코드. 나중에 catch를 통째로 삭제할 것.
-          this.projects = [
-            {
-              myName: "정승욱",
-              names: ["정승욱", "김하연", "강병국"],
-              projectId: 1,
-              role: "ADMIN",
-              title: "asdf",
-              desc: "asdfasdf",
-              imgNo: 0,
-            },
-            {
-              myName: "정승욱",
-              names: ["정승욱", "김하연", "강병국"],
-              projectId: 1,
-              role: "ADMIN",
-              title: "asdf",
-              desc: "asdfasdf",
-              imgNo: 0,
-            },
-            {
-              myName: "정승욱",
-              names: ["정승욱", "김하연", "강병국"],
-              projectId: 1,
-              role: "ADMIN",
-              title: "asdf",
-              desc: "asdfasdf",
-              imgNo: 0,
-            },
-          ];
-        });
+      getProjects().then((data) => {
+        this.projects = data.data;
+      });
     },
   },
 };
