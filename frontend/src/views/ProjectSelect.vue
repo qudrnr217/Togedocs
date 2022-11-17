@@ -9,7 +9,6 @@
         </div>
         <div class="header">
           <div class="profileimg">
-            <!-- @/assets/togedog.jpg -->
             <q-img
               :src="getUserImg(imgNo)"
               style="width: 100%; border-radius: 20px"
@@ -24,18 +23,33 @@
       <q-layout view="hHh lpR fFf" color="warning">
         <q-page-container>
           <div class="project-list">
-            <div class="column">
-              <q-btn
-                stack
-                color="secondary"
-                class="create-project-btn"
-                @click="showCreatePjtModal()"
-              >
-                <q-tooltip class="bg-positive">
-                  새로운 프로젝트를 생성합니다
-                </q-tooltip>
-                <div style="font-size: 20px">+</div></q-btn
-              >
+            <div class="row justify-center" style="width: 100%">
+              <div class="col-1 text-center">
+                <q-btn
+                  round
+                  color="secondary"
+                  class="project-btn"
+                  @click="showCreateProjectModal()"
+                >
+                  <q-tooltip class="tooltip">
+                    새로운 프로젝트 생성하기
+                  </q-tooltip>
+                  <q-icon :name="fasPlus" size="xs"
+                /></q-btn>
+              </div>
+              <div class="col-1 text-center">
+                <q-btn
+                  round
+                  color="secondary"
+                  class="project-btn"
+                  @click="showJoinProjectModal()"
+                >
+                  <q-tooltip class="tooltip">
+                    초대코드로 프로젝트 입장하기
+                  </q-tooltip>
+                  <q-icon :name="fasRightToBracket" size="xs"
+                /></q-btn>
+              </div>
             </div>
             <div class="cards q-gutter-sm">
               <div v-for="(project, idx) in projects" :key="idx" class="card">
@@ -44,7 +58,7 @@
             </div>
           </div>
         </q-page-container>
-        <q-dialog v-model="createPjtModal" persistent>
+        <q-dialog v-model="createProjectModal" persistent>
           <q-card class="modal">
             <q-card-section>
               <div class="text-h6">새 프로젝트 생성</div>
@@ -86,7 +100,7 @@
                 label="취소"
                 color="primary"
                 v-close-popup
-                @click="resetCreatePjtModal"
+                @click="resetCreateProjectModal"
               />
               <q-btn
                 flat
@@ -139,6 +153,77 @@
             </q-card-actions>
           </q-card>
         </q-dialog>
+        <q-dialog v-model="joinProjectModal" persistent
+          ><q-card class="modal">
+            <q-card-section>
+              <div class="text-h6">프로젝트 입장</div>
+            </q-card-section>
+            <q-separator />
+            <q-card-section>
+              <div class="q-gutter-md">
+                <q-input
+                  label="초대코드"
+                  filled
+                  type="text"
+                  v-model="joinProjectCode"
+                />
+              </div>
+            </q-card-section>
+
+            <q-separator />
+
+            <q-card-actions align="right">
+              <q-btn
+                flat
+                label="취소"
+                color="primary"
+                v-close-popup
+                @click="resetJoinProjectModal"
+              />
+              <q-btn
+                flat
+                label="확인"
+                color="primary"
+                @click="showJoinProjectConfirmModal"
+              />
+            </q-card-actions> </q-card
+        ></q-dialog>
+        <q-dialog v-model="joinProjectConfirmModal" persistent
+          ><q-card class="modal">
+            <q-card-section>
+              <div class="container">
+                <div class="imgcontainer">
+                  <img :src="getProjectImg(joinProjectItem.imgNo)" />
+                </div>
+
+                <div class="project-info">
+                  <div class="title">{{ joinProjectItem.title }}</div>
+                  <div class="title-detail">
+                    {{ joinProjectItem.desc }}
+                  </div>
+                  <div class="title-name">
+                    <span>멤버 : </span>
+                    <template v-for="name in joinProjectItem.names" :key="name">
+                      <span class="q-ma-xs">
+                        {{ name }}
+                      </span>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </q-card-section>
+            <q-separator />
+            <q-card-actions align="right">
+              <q-btn flat label="뒤로 가기" color="primary" v-close-popup />
+              <q-btn
+                flat
+                label="입장하기"
+                color="primary"
+                v-close-popup
+                @click="callJoinProject"
+              />
+            </q-card-actions> </q-card
+        ></q-dialog>
       </q-layout>
     </q-page-container>
   </div>
@@ -152,13 +237,15 @@ import { getProjects, postNewProject } from "@/api/project";
 import jwt_decode from "jwt-decode";
 import { getUserNameAndImgNo, modifyUserInfo } from "@/api/user";
 
+import { fasPlus, fasRightToBracket } from "@quasar/extras/fontawesome-v6";
+
 export default {
   computed: {
     ...mapState("commonStore", ["userId", "userName", "imgNo"]),
   },
   data() {
     return {
-      createPjtModal: ref(false),
+      createProjectModal: ref(false),
       newProject: ref({
         imgNo: "",
         title: "",
@@ -171,7 +258,14 @@ export default {
         name: "",
       }),
 
+      joinProjectModal: ref(false),
+      joinProjectConfirmModal: ref(false),
+      joinProjectCode: ref(""),
+      joinProjectItem: ref({}),
+
       projects: ref([]),
+      fasPlus,
+      fasRightToBracket,
     };
   },
   components: {
@@ -232,8 +326,8 @@ export default {
     getProjectImg(imgNo) {
       return require(`@/assets/project/${imgNo}.png`);
     },
-    showCreatePjtModal() {
-      this.createPjtModal = true;
+    showCreateProjectModal() {
+      this.createProjectModal = true;
       this.makeImgNo(1);
     },
     showModifyUserInfoModal() {
@@ -241,7 +335,7 @@ export default {
       this.modifyUserInfo.imgNo = this.imgNo;
       this.modifyUserInfo.name = this.userName;
     },
-    resetCreatePjtModal() {
+    resetCreateProjectModal() {
       this.newProject = {
         imgNo: null,
         title: null,
@@ -264,11 +358,80 @@ export default {
         this.projects = data.data;
       });
     },
+    resetJoinProjectModal() {
+      this.joinProjectCode = "";
+    },
+    showJoinProjectModal() {
+      this.joinProjectModal = true;
+    },
+    showJoinProjectConfirmModal() {
+      this.joinProjectConfirmModal = true;
+    },
+    callJoinProject() {
+      this.joinProjectModal = false;
+      this.joinProjectConfirmModal = false;
+    },
   },
 };
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+}
+img {
+  height: 20vh;
+  width: 30vw;
+  object-fit: cover;
+  border-radius: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.title {
+  font-size: 2.5vh;
+  width: 28vw;
+  font-weight: bolder;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.title-detail {
+  height: 4.5vh;
+  width: 28vw;
+  font-size: 1.5vh;
+  text-overflow: hidden;
+
+  word-break: break-word;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  color: black;
+}
+.title-name {
+  width: 28vw;
+  font-size: 1.5vh;
+  font-size: 500;
+  font-weight: 300px;
+  color: rgb(120, 120, 120);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.project-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--white);
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+}
 .project-item {
   min-width: 80vw;
   max-height: 1vh;
@@ -283,7 +446,7 @@ export default {
   width: 100vw;
   padding-top: 30px;
 }
-.create-project-btn {
+.project-btn {
   margin-right: 1rem;
   margin-bottom: 1rem;
 }
@@ -351,5 +514,8 @@ button {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
+}
+.tooltip {
+  background-color: var(--charcoal);
 }
 </style>

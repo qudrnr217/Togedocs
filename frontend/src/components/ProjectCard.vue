@@ -1,44 +1,78 @@
 <template>
   <div>
-    <router-link
-      :to="{ name: 'docs', params: { projectId: projectItem.projectId } }">
-      <div class="container">
-        <div class="imgcontainer">
-          <img :src="getProjectImg(projectItem.imgNo)" alt="" />
-        </div>
+    <!-- <router-link
+      :to="{ name: 'docs', params: { projectId: projectItem.projectId } }"
+    > -->
+    <div class="container">
+      <div class="imgcontainer">
+        <img :src="getProjectImg(projectItem.imgNo)" />
 
-        <div class="projectinfo">
-          <div class="title">{{ projectItem.title }}</div>
-          <div class="title-detail">
-            {{ projectItem.desc }}
-          </div>
-          <div class="title-name q-pb-md text-right">
-            <template v-for="name in projectItem.names" :key="name">
-              <span class="q-ma-xs">
-                {{ name }}
-              </span>
-            </template>
-          </div>
+        <q-btn
+          class="router-btn"
+          style="bottom: 12vh"
+          size="1.5vh"
+          @click="goToDocs(projectItem.projectId)"
+        >
+          <q-icon left :name="biPencilFill" size="xs" />
+          <div>API 명세서</div>
+        </q-btn>
+
+        <q-btn
+          class="router-btn"
+          style="bottom: 6vh"
+          size="1.5vh"
+          @click="goToTest(projectItem.projectId)"
+        >
+          <q-icon left :name="biSendFill" size="xs" />
+          <div>API 테스트</div>
+        </q-btn>
+      </div>
+
+      <div class="projectinfo">
+        <div class="title">{{ projectItem.title }}</div>
+        <div class="title-detail">
+          {{ projectItem.desc }}
+        </div>
+        <div class="title-name q-pb-md text-right">
+          <template v-for="name in projectItem.names" :key="name">
+            <span class="q-ma-xs">
+              {{ name }}
+            </span>
+          </template>
         </div>
       </div>
-    </router-link>
+    </div>
+    <!-- </router-link> -->
   </div>
 </template>
 <script>
+import { biPencilFill, biSendFill } from "@quasar/extras/bootstrap-icons";
+import { mapMutations } from "vuex";
 export default {
   data() {
     return {};
+  },
+  setup() {
+    return {
+      // icon
+      biPencilFill,
+      biSendFill,
+    };
   },
 
   props: {
     projectItem: Object,
   },
   methods: {
-    goToProjectUrl() {
-      window.location.href = this.projectItem.url;
-    },
-    goToApiDocs() {
+    ...mapMutations("commonStore", ["SET_PROJECTID"]),
+    goToDocs(id) {
+      console.log(id);
+      this.SET_PROJECTID(id);
       this.$router.push({ name: "docs" });
+    },
+    goToTest(id) {
+      this.SET_PROJECTID(id);
+      this.$router.push({ name: "test" });
     },
     getProjectImg(imgNo) {
       return require(`@/assets/project/${imgNo}.png`);
@@ -85,7 +119,7 @@ img {
   background-repeat: no-repeat;
 }
 .title {
-  font-size: 2vh;
+  font-size: 2.5vh;
   width: 28vw;
   font-weight: bolder;
   white-space: nowrap;
@@ -117,7 +151,24 @@ img {
 }
 
 .imgcontainer {
+  position: relative;
 }
+.router-btn {
+  position: absolute;
+  left: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: var(--cultured);
+  font-weight: bold;
+  transform: translate(-50%, 0%);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s linear, visibility 1s linear;
+}
+.imgcontainer:hover .router-btn {
+  opacity: 1;
+  visibility: visible;
+}
+
 .projectinfo {
   display: flex;
   flex-direction: column;
@@ -127,5 +178,10 @@ img {
   width: 100%;
   height: 100%;
   border-radius: 20px;
+}
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
 }
 </style>
