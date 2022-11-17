@@ -229,7 +229,15 @@
               <div id="ResponseBoxTop" class="q-pa-xs">
                 <div style="flex: 1">Response</div>
                 <div style="flex: 10"></div>
-                <div style="flex: 2">Status : {{ statusCode }}</div>
+                <div style="flex: 1">Status :</div>
+                <div
+                  :style="{
+                    color: 'var(--Log' + parseInt(statusCode / 100) + ')',
+                  }"
+                  style="flex: 1"
+                >
+                  {{ statusCode }}
+                </div>
               </div>
               <q-tabs id="ResponseOptions" dense no-caps align="left">
                 <q-tab
@@ -327,7 +335,12 @@
               v-bind:key="index"
             >
               <q-item clickable @click="logListDetail(index)" v-ripple dense>
-                <q-item-section avatar>
+                <q-item-section
+                  :style="{
+                    color: 'var(--Log' + parseInt(log.statusCode / 100) + ')',
+                  }"
+                  avatar
+                >
                   {{ log.statusCode }}
                 </q-item-section>
                 <q-item-section>
