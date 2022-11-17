@@ -427,8 +427,9 @@ export default {
           requestBody: { code: this.joinProjectCode },
         },
         (response) => {
-          console.log(response);
+          response;
           this.joinProjectCode = "";
+          this.callGetProject();
         },
         (error) => {
           console.warn(error);
