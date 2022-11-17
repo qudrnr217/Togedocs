@@ -108,7 +108,7 @@
               <div class="q-gutter-md">
                 <div class="text-center q-gutter-xs">
                   <q-img
-                    :src="imgUrl(modifyUserInfo.imgNo)"
+                    :src="getUserImg(modifyUserInfo.imgNo)"
                     spinner-color="white"
                     style="height: 100px; width: 100px; border-radius: 5px"
                   />
@@ -219,9 +219,6 @@ export default {
       } else {
         this.modifyUserInfo.imgNo = imgNo;
       }
-    },
-    imgUrl(imgNo) {
-      return "https://placeimg.com/100/100/nature?t=" + imgNo / 10;
     },
     getUserImg(imgNo) {
       return require(`@/assets/user/${imgNo}.png`);

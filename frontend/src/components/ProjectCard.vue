@@ -1,24 +1,28 @@
 <template>
   <div>
-    <div class="container">
-      <div class="imgcontainer">
-        <img :src="getProjectImg(projectItem.imgNo)" alt="" />
-      </div>
+    <router-link
+      :to="{ name: 'docs', params: { projectId: projectItem.projectId } }"
+    >
+      <div class="container">
+        <div class="imgcontainer">
+          <img :src="getProjectImg(projectItem.imgNo)" alt="" />
+        </div>
 
-      <div class="projectinfo">
-        <div class="title">{{ projectItem.title }}</div>
-        <div class="title-detail">
-          {{ projectItem.desc }}
-        </div>
-        <div class="title-name q-pb-md text-right">
-          <template v-for="name in projectItem.names" :key="name">
-            <span class="q-ma-xs">
-              {{ name }}
-            </span>
-          </template>
+        <div class="projectinfo">
+          <div class="title">{{ projectItem.title }}</div>
+          <div class="title-detail">
+            {{ projectItem.desc }}
+          </div>
+          <div class="title-name q-pb-md text-right">
+            <template v-for="name in projectItem.names" :key="name">
+              <span class="q-ma-xs">
+                {{ name }}
+              </span>
+            </template>
+          </div>
         </div>
       </div>
-    </div>
+    </router-link>
   </div>
 </template>
 <script>
@@ -36,9 +40,6 @@ export default {
     },
     goToApiDocs() {
       this.$router.push({ name: "docs" });
-    },
-    imgUrl(imgNo) {
-      return "https://placeimg.com/300/200/nature?t=" + imgNo / 10;
     },
     getProjectImg(imgNo) {
       return require(`@/assets/project/${imgNo}.png`);
