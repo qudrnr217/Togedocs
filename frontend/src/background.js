@@ -140,20 +140,53 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (gotTheLock) {
   app.on("second-instance", (e, argv) => {
     // Someone tried to run a second instance, we should focus our window.
+    asyncTest(argv);
 
     // Protocol handler for win32
     // argv: An array of the second instance’s (command line / deep linked) arguments
-    if (process.platform == "win32") {
-      // Keep only command line / deep linked arguments
-      deeplinkingUrl = argv.slice(1);
-      info = deeplinkingUrl[1].split(",");
-      info2 = info[0].split("token=");
-      accesstoken = info2[2];
-      accesstoken2 = info[1].split("%20refreshToken=");
-      refreshtoken = accesstoken2[1].substring(0, accesstoken2[1].length - 1);
-      win.webContents.executeJavaScript(`console.log(window.location.href)`);
-    }
-    // logEverywhere('app.makeSingleInstance# '+accesstoken[2])
+    // if (process.platform == "win32") {
+    //   // Keep only command line / deep linked arguments
+    //   deeplinkingUrl = argv.slice(1);
+    //   info = deeplinkingUrl[1].split(",");
+    //   info2 = info[0].split("token=");
+    //   accesstoken = info2[2];
+    //   accesstoken2 = info[1].split("%20refreshToken=");
+    //   refreshtoken = accesstoken2[1].substring(0, accesstoken2[1].length - 1);
+    //   win.webContents.executeJavaScript(`console.log(window.location.href)`);
+    //   logEverywhere("accesstoken: " + accesstoken);
+    //   logEverywhere("refreshtoken: " + refreshtoken);
+    //   win.webContents.executeJavaScript(
+    //     `window.localStorage.setItem('accessToken','${accesstoken}')`
+    //   );
+    //   win.webContents.executeJavaScript(
+    //     `window.localStorage.setItem('refreshToken','${refreshtoken}')`
+    //   );
+    //   win.webContents.executeJavaScript(
+    //   `window.dispatchEvent(new CustomEvent('login-successful'))`
+    // );
+    // }
+    // // logEverywhere('app.makeSingleInstance# '+accesstoken[2])
+
+    // if (win) {
+    //   // window.localStorage.setItem("accessToken",store.get("accessToken"))
+    //   if (win.isMinimized()) win.restore();
+    //   win.focus();
+    // }
+  });
+} else {
+  app.quit();
+}
+
+function asyncTest(argv) {
+  if (process.platform == "win32") {
+    // Keep only command line / deep linked arguments
+    deeplinkingUrl = argv.slice(1);
+    info = deeplinkingUrl[1].split(",");
+    info2 = info[0].split("token=");
+    accesstoken = info2[2];
+    accesstoken2 = info[1].split("%20refreshToken=");
+    refreshtoken = accesstoken2[1].substring(0, accesstoken2[1].length - 1);
+    win.webContents.executeJavaScript(`console.log(window.location.href)`);
     logEverywhere("accesstoken: " + accesstoken);
     logEverywhere("refreshtoken: " + refreshtoken);
     win.webContents.executeJavaScript(
@@ -165,15 +198,14 @@ if (gotTheLock) {
     win.webContents.executeJavaScript(
       `window.dispatchEvent(new CustomEvent('login-successful'))`
     );
+  }
+  // logEverywhere('app.makeSingleInstance# '+accesstoken[2])
 
-    if (win) {
-      // window.localStorage.setItem("accessToken",store.get("accessToken"))
-      if (win.isMinimized()) win.restore();
-      win.focus();
-    }
-  });
-} else {
-  app.quit();
+  if (win) {
+    // window.localStorage.setItem("accessToken",store.get("accessToken"))
+    if (win.isMinimized()) win.restore();
+    win.focus();
+  }
 }
 
 if (process.platform == "win32") {
