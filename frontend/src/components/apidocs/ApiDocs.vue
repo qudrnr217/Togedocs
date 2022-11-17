@@ -83,7 +83,7 @@
                       class="overlapping"
                       :style="`right: ${(i + 1) * 30}px`"
                     >
-                      <img :src="`https://picsum.photos/200`" />
+                      <img :src="getUserImg(users[v].imgNo)" />
                       <q-tooltip>{{ users[v].name }}</q-tooltip>
                     </q-avatar>
                   </div>
@@ -116,9 +116,7 @@
                                     style="min-width: 40px"
                                   >
                                     <q-avatar size="30px">
-                                      <img
-                                        src="https://cdn.quasar.dev/img/avatar6.jpg"
-                                      />
+                                      <img :src="getUserImg(v.imgNo)" />
                                     </q-avatar>
                                   </q-item-section>
                                   <q-item-section>{{ v.name }}</q-item-section
@@ -400,7 +398,13 @@
                       <div
                         @mouseover="rowActive[index] = true"
                         @mouseleave="rowActive[index] = false"
-                        class="q-pa-sm q-ma-xs text-right cell-no handle-row drag-item"
+                        class="
+                          q-pa-sm q-ma-xs
+                          text-right
+                          cell-no
+                          handle-row
+                          drag-item
+                        "
                       >
                         <template v-if="!rowActive[index]">
                           {{ index + 1 }}
@@ -642,10 +646,12 @@ import {
   updateCol,
   updateCell,
   updateProjectInfo,
-  getMemberManageInfo,
+  // getMemberManageInfo,
   removeMember,
   updateMemberRole,
 } from "@/api/apidocs.js";
+
+import { getMemberManageInfo } from "@/api/project.js";
 
 import {
   biLayoutSidebarInsetReverse,
@@ -740,6 +746,7 @@ export default {
 
       myId: ref(0),
       myName: ref("user_" + 0),
+      myImgNo: ref(0),
       users: ref({}),
       avatarLimit: 3,
       focus: ref({
@@ -800,6 +807,7 @@ export default {
 
     this.myId = Math.round(Math.random() * 100).toString(); // 나중에 유저를 token에서 가져오자.
     this.myName = "user_" + this.myId;
+    this.myImgNo = Math.floor(Math.random() * 10);
 
     // WEBSOCKET CONNECTION
     this.socket = new SockJS(BASEURL + "/api/ws");
@@ -1097,7 +1105,7 @@ export default {
         // 1. 내 focus를 전송함.
         req.content = JSON.stringify({
           name: this.myName,
-          imgNo: this.imgNo,
+          imgNo: this.myImgNo,
           focus: JSON.stringify({
             isFocusing: this.focus.isFocusing,
             rowId: this.focus.rowId,
@@ -1464,6 +1472,9 @@ export default {
           console.warn(error);
         }
       );
+    },
+    getUserImg(imgNo) {
+      return require(`@/assets/user/${imgNo}.png`);
     },
   },
 };
