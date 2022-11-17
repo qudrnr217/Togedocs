@@ -72,7 +72,8 @@ public class ApidocsController {
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
         }
         return ResponseEntity.status(200).body(response);
     }
@@ -85,7 +86,8 @@ public class ApidocsController {
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
         }
         return ResponseEntity.status(204).body(response);
     }
@@ -98,7 +100,8 @@ public class ApidocsController {
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
         }
         return ResponseEntity.status(204).body(response);
     }
@@ -113,7 +116,8 @@ public class ApidocsController {
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
         }
         return ResponseEntity.status(200).body(response);
     }
@@ -126,7 +130,8 @@ public class ApidocsController {
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
         }
         return ResponseEntity.status(200).body(response);
     }
@@ -141,7 +146,8 @@ public class ApidocsController {
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
         }
         return ResponseEntity.status(200).body(response);
     }
@@ -156,7 +162,8 @@ public class ApidocsController {
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
         }
         return ResponseEntity.status(200).body(response);
     }

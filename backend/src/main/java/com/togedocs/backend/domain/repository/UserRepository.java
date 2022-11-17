@@ -13,8 +13,6 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
     public User findByProviderId(String providerId); //Jpa Query methods라고 검색해보면 알 수 있다.
     public User findByEmail(String email);
 
-
-
     //select * from user where email=?
 //    public User findByEmail();
 }
