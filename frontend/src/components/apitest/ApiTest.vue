@@ -27,8 +27,9 @@
                   <q-item
                     clickable
                     @click="apiListDetail(index)"
-                    :active="index === nowIndex"
+                    :active="index == nowIndex"
                     v-ripple
+                    active-class="bg-grey-4"
                   >
                     <q-item-section
                       avatar
