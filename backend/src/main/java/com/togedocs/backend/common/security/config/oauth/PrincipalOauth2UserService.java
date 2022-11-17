@@ -24,15 +24,10 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     @Override//여기서 후처리가 되어야함.
     //코드는 안받고 바로 accessToken과 사용자의 정보가 userRequest에 바로 리턴이 된다.
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        System.out.println("getClientRegistration: "+userRequest.getClientRegistration()); //registrationId로 어떤 Oauth로 로그인 했는지 확인 가능
-        System.out.println("getAccessToken: "+userRequest.getAccessToken().getTokenValue());
-
-
         OAuth2User oauth2User = super.loadUser(userRequest);
 
         //우리가 구글로그인버튼을 클릭-> 구글로그인창->로그인을 완료->code를 리턴(Oauth-Client라이브러리가 받음)->Access토큰 요청
         //여기까지가 userRequest정보->loadUser함수 호출->구글로부터 회원프로필 받아준다.
-        System.out.println("getAttributes: "+oauth2User.getAttributes());
 
 
         //회원가입을 강제로 진행해볼 예정.
@@ -47,7 +42,6 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         User userEntity = userRepository.findByProviderId(providerId);
         if(userEntity == null){
-            System.out.println("구글로그인이 최초입니다.");
             userEntity = User.builder()
                     .imgNo(imgNo)
                     .providerId(providerId)
@@ -57,8 +51,6 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .build();
             userRepository.save(userEntity);
 
-        }else{
-            System.out.println("구글 로그인을 이미 한적이 있습니다. 당신은 회원가입이 되어있습니다.");
         }
 
         //PrincipalOauth2UserService를 만든이유는
