@@ -375,6 +375,14 @@
                 </div>
                 <!-- -->
                 <!-- Rows -->
+                <template v-if="rowData.length == 0">
+                  <div class="q-pa-xs row no-wrap">
+                    <div style="width: 76px"></div>
+                    <div class="cell q-pa-sm q-ma-xs" style="width: auto">
+                      작성된 API가 없습니다.
+                    </div>
+                  </div>
+                </template>
                 <draggable
                   v-model="rowData"
                   v-bind="dragOptions"
@@ -384,7 +392,6 @@
                   @change="onRowChange"
                   handle=".handle-row"
                 >
-                  hello
                   <template #item="{ element, index }">
                     <div class="q-pa-xs row no-wrap">
                       <div
@@ -677,11 +684,15 @@ import {
   mdiAccountBoxMultiple,
   mdiAccountGroup,
 } from "@quasar/extras/mdi-v6";
+import { mapState } from "vuex";
 
 export default {
   components: {
     draggable,
     WarningDialog,
+  },
+  computed: {
+    ...mapState("commonStore", ["userId", "userName", "imgNo", "projectId"]),
   },
   setup() {
     const addColPopup = ref(false);
@@ -698,7 +709,6 @@ export default {
     return {
       options: ["Admin", "Member", "Remove"],
       // TODO: 나중에 자동으로 받아와서 채우는 걸로 변경
-      projectId: ref(null),
       document: ref({
         projectId: null,
         title: "",
@@ -739,9 +749,7 @@ export default {
       addColPopup,
       updateColName: ref(""),
 
-      myId: ref(0),
-      myName: ref("user_" + 0),
-      myImgNo: ref(0),
+      imgNo: ref(0),
       users: ref({}),
       avatarLimit: 3,
       focus: ref({
@@ -795,14 +803,8 @@ export default {
     };
   },
   mounted() {
-    this.projectId = this.$route.params.projectId;
-
     this.callGetDocs();
     this.callGetMemberManageInfo();
-
-    this.myId = Math.round(Math.random() * 100).toString(); // 나중에 유저를 token에서 가져오자.
-    this.myName = "user_" + this.myId;
-    this.myImgNo = Math.floor(Math.random() * 10);
 
     // WEBSOCKET CONNECTION
     this.socket = new SockJS(BASEURL + "/api/ws");
@@ -899,7 +901,7 @@ export default {
 
           // 1-0. 내가 보냈다면 변경하지 않아도 됨.
           // TODO: 내 ID 관련 수정할 사항이 많이 생길 듯
-          if (res.id == this.myId) return;
+          if (res.id == this.userId) return;
 
           // 1-1. 요청한 사람이...
           // 신규가 아닌, 있던 유저이면서, isFocusing = true 라면 : focus를 지워주고,
@@ -950,9 +952,16 @@ export default {
     });
   },
   beforeUnmount() {
+    // 화면 전환이 일어나거나 창을 종료했을 때 이 함수가 불림
+    console.log("Unmount...");
+    this.unLoadEvent();
     window.removeEventListener("beforeunload", this.unLoadEvent);
   },
   methods: {
+    unLoadEvent() {
+      this.focusReq(2);
+      this.stompClient.disconnect();
+    },
     getAvatarList() {
       return this.avatarLimit
         ? Object.keys(this.users).slice(0, this.avatarLimit)
@@ -975,10 +984,6 @@ export default {
     },
     getRowIdxFromRowId(rowId) {
       return this.document.rows.indexOf(rowId);
-    },
-    unLoadEvent() {
-      this.focusReq(2);
-      this.stompClient.disconnect();
     },
     onChoose() {
       const html = document.getElementsByTagName("html").item(0);
@@ -1053,7 +1058,7 @@ export default {
       }
     },
     refreshReq() {
-      const req = { id: this.myId, content: null };
+      const req = { id: this.userId, content: null };
       this.stompClient.send(
         "/pub/" + this.projectId + "/refresh",
         {},
@@ -1084,7 +1089,7 @@ export default {
     },
     focusReq(type) {
       let req = {
-        id: this.myId,
+        id: this.userId,
         content: null,
       };
 
@@ -1099,8 +1104,8 @@ export default {
       } else if (type == 1) {
         // 1. 내 focus를 전송함.
         req.content = JSON.stringify({
-          name: this.myName,
-          imgNo: this.myImgNo,
+          name: this.userName,
+          imgNo: this.imgNo,
           focus: JSON.stringify({
             isFocusing: this.focus.isFocusing,
             rowId: this.focus.rowId,
