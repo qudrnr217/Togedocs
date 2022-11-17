@@ -189,8 +189,6 @@ protocol.registerSchemesAsPrivileged([
 
 // Log both at dev console and at running node console instance
 function logEverywhere(s) {
-  console.log("왜안나옴");
-  console.log(s);
   if (win && win.webContents) {
     win.webContents.executeJavaScript(`console.log("${s}")`);
   }

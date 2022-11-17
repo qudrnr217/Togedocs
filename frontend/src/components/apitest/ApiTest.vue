@@ -741,7 +741,6 @@ export default {
           }
         );
       }
-      // else console.log("로그누른거");
     },
     index(newindex) {
       //다른 api 선택했을 경우 그거에 맞춰서 전부 초기화

@@ -400,13 +400,7 @@
                       <div
                         @mouseover="rowActive[index] = true"
                         @mouseleave="rowActive[index] = false"
-                        class="
-                          q-pa-sm q-ma-xs
-                          text-right
-                          cell-no
-                          handle-row
-                          drag-item
-                        "
+                        class="q-pa-sm q-ma-xs text-right cell-no handle-row drag-item"
                       >
                         <template v-if="!rowActive[index]">
                           {{ index + 1 }}
@@ -703,7 +697,7 @@ export default {
     return {
       options: ["Admin", "Member", "Remove"],
       // TODO: 나중에 자동으로 받아와서 채우는 걸로 변경
-      projectId: ref(1),
+      projectId: ref(null),
       document: ref({
         projectId: null,
         title: "",
@@ -799,6 +793,8 @@ export default {
     };
   },
   mounted() {
+    this.projectId = this.$route.params.projectId;
+
     this.callGetDocs();
     this.callGetMemberManageInfo();
 
@@ -1377,7 +1373,6 @@ export default {
     },
     callUpdateBaseurl(afterBaseUrl, beforeBaseUrl) {
       beforeBaseUrl;
-      console.log(afterBaseUrl);
       this.callUpdateProjectInfo(
         this.document.title,
         this.document.desc,
