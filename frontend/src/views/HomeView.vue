@@ -1,11 +1,11 @@
 <template>
   <div class="center">
-    <div class="main">
-      <div style="width: 100% height: 100%" class="rotate2">
-        <img id="rotate" src="@/assets/togedog.jpg" alt="" class="poster" />
-        <img @click="login()" src="@/assets/login.png" alt="" class="login" />
-      </div>
+    <div class="clip">
+      <img src="@/assets/placeholder.png" alt="" class="rotate2" />
+      <img src="@/assets/축제해달.png" alt="" id="rotate" class="rotate3" />
+      <img src="@/assets/login.png" alt="" class="login" @click="login()" />
     </div>
+
     <router-link :to="{ name: 'select' }">To test jh</router-link>
   </div>
 </template>
@@ -35,73 +35,68 @@ export default {
     this.getDimensions();
     let _this = this;
     window.addEventListener("resize", this.getDimensions);
-    window.addEventListener("login-successful", (event) => {
+    window.addEventListener("login-successful", event => {
       event;
       _this.$router.push({ name: "select" });
     });
+  },
+  unmounted() {
+    window.removeEventListener("resize", this.getDimensions);
   },
 };
 </script>
 
 <style scoped>
-.spacing {
-  display: flex;
-  flex-direction: column;
-  gap: 60px;
-  width: 75vw;
+.clip {
+  width: 90%;
+  height: 90%;
   overflow: hidden;
-}
-.main {
   display: flex;
-  justify-content: space-between;
-  flex-direction: column;
   align-items: center;
-  box-sizing: border-box;
+  justify-content: center;
 
-  width: 80vw;
-  height: 80vh;
-  margin: auto;
-
-  border-radius: 5px;
-
-  background-size: cover;
+  background-color: var(--charcoal);
 }
 
-.login {
-  position: absolute;
-  left: 10vw;
-  bottom: 20vh;
-  max-height: 20vh;
-  max-width: 80vw;
-}
-.button {
-  background: var(--cultured);
-  color: var(--charcoal);
-  height: 15%;
-  width: 60%;
-  margin-bottom: 20px;
-
-  border-radius: 10px;
-  border-color: var(--cultured);
-}
 .center {
+  max-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  max-width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
   flex-direction: column;
 }
-.poster {
-  max-height: 80vh;
-  max-width: 80vw;
-  background-size: cover;
+.background {
 }
-.rotate2 {
-  animation: rotate_image 30s linear infinite;
-  transform-origin: 70% 50%;
+.rotate3 {
+  position: fixed;
+  width: 40vw;
+  animation: rotate_image3 180s linear infinite;
+  transform-origin: 20% 50%;
 }
 
-@keyframes rotate_image {
+.rotate2 {
+  animation: rotate_image2 30s linear infinite;
+  transform-origin: 50% 50%;
+}
+.login {
+  position: fixed;
+  width: 60vw;
+  bottom: 15%;
+}
+@keyframes rotate_image4 {
+  100% {
+    transform: rotate(3200deg);
+  }
+}
+@keyframes rotate_image3 {
+  100% {
+    transform: rotate(3200deg);
+  }
+}
+@keyframes rotate_image2 {
   100% {
     transform: rotate(360deg);
   }

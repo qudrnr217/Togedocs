@@ -1,8 +1,7 @@
 <template>
   <div>
     <router-link
-      :to="{ name: 'docs', params: { projectId: projectItem.projectId } }"
-    >
+      :to="{ name: 'docs', params: { projectId: projectItem.projectId } }">
       <div class="container">
         <div class="imgcontainer">
           <img :src="getProjectImg(projectItem.imgNo)" alt="" />
