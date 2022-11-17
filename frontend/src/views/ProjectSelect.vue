@@ -250,7 +250,7 @@ import {
   joinProject,
 } from "@/api/project";
 import jwt_decode from "jwt-decode";
-import { getUserNameAndImgNo, modifyUserInfo } from "@/api/user";
+import { getUserNameAndImgNo, modifyUserInfo, logoutUser } from "@/api/user";
 
 import { fasPlus, fasRightToBracket } from "@quasar/extras/fontawesome-v6";
 
@@ -305,6 +305,16 @@ export default {
     ...mapActions("projectStore", ["FETCH_PROJECTS"]),
     ...mapMutations("commonStore", ["SET_USERNAME", "SET_USERID", "SET_IMGNO"]),
     ...mapMutations("userStore", ["SET_TOKEN"]),
+
+    //logout api
+    logout() {
+      logoutUser().then((data) => {
+        console.log("로그아웃!");
+        console.log(data);
+        this.$router.push({ name: "home" });
+      });
+    },
+
     //프로젝트 생성 api
     createNewProject() {
       let accessToken = localStorage.getItem("accessToken");
