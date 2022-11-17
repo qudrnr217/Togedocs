@@ -27,9 +27,6 @@ export default {
       shell.openExternal(
         "http://k7a404.p.ssafy.io:8081/oauth2/authorization/google"
       );
-      // shell.openExternal(
-      //   "http://k7a404.p.ssafy.io:8081/oauth2/authorization/google"
-      // );
     },
   },
   data: () => ({
@@ -39,16 +36,11 @@ export default {
     this.getDimensions();
     let _this = this;
     window.addEventListener("resize", this.getDimensions);
-    window.addEventListener("login-successful", event => {
+    window.addEventListener("login-successful", (event) => {
       event;
       _this.$router.push({ name: "select" });
     });
   },
-  // unmounted() {
-  //   this.SET_TOKEN(localStorage.getItem("accessToken"));
-  // },
-
-  // ...mapMutations("commonStore", ["SET_USERNAME", "SET_USERID", "SET_IMGNO"]),
 };
 </script>
 

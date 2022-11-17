@@ -68,13 +68,16 @@
                       v-if="Object.keys(users).length > avatarLimit"
                       size="40px"
                       class="overlapping"
-                      :style="`right: 0px`"
-                      ><q-tooltip>
+                      style="right: 0px; border-radius: 20px"
+                    >
+                      <q-tooltip>
                         <div v-for="(v, i) in getOtherAvatarList()" :key="i">
                           {{ users[v].name }}
                         </div>
                       </q-tooltip>
-                      <img :src="`https://dummyimage.com/200`" />
+                      <img
+                        :src="`https://dummyimage.com/600x400/e8e8e8/ffffff&text=...`"
+                      />
                     </q-avatar>
                     <q-avatar
                       v-for="(v, i) in getAvatarList()"
@@ -749,7 +752,6 @@ export default {
       addColPopup,
       updateColName: ref(""),
 
-      imgNo: ref(0),
       users: ref({}),
       avatarLimit: 3,
       focus: ref({
@@ -970,8 +972,6 @@ export default {
     getOtherAvatarList() {
       return Object.keys(this.users).slice(this.avatarLimit);
     },
-    // getColIdxFromColId와 getRowIdxFromRowId는 없을 시 -1을 반환함.
-    // 호출할 때마다 -1에 대한 예외처리를 해줘야 함.
     getColIdxFromColId(colId) {
       let colIdIdx = -1;
       let doc_cols = this.document.cols;
