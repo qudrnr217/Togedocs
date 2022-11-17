@@ -139,14 +139,6 @@
         </q-card>
       </q-dialog>
     </q-layout>
-
-    <q-btn
-      flat
-      label="프로젝트 불러오기"
-      color="primary"
-      v-close-popup
-      @click="callGetProject()"
-    />
   </div>
 </template>
 
@@ -157,7 +149,6 @@ import { mapState, mapActions, mapMutations } from "vuex";
 import { getProjects, postNewProject } from "@/api/project";
 import jwt_decode from "jwt-decode";
 import { modifyUserInfo } from "@/api/user";
-// import userStore from "@/store/modules/userStore";
 
 export default {
   computed: {
@@ -201,10 +192,7 @@ export default {
       // 여기까지
     }
 
-    console.log("callGetMountedProject" + localStorage.getItem("accessToken"));
-    // setTimeout(() => {
-    //   this.callGetProject();
-    // }, 5000);
+    // console.log("callGetMountedProject" + localStorage.getItem("accessToken"));
     let accessToken = localStorage.getItem("accessToken");
     this.callGetProject(accessToken);
   },
@@ -266,59 +254,42 @@ export default {
       // 그리고 this.SET_USERNAME this.SET_IMGNO 해줘야됨.
     },
     callGetProject(accessToken) {
-      // let beforeToken = localStorage.getItem("accessToken");
-      // let tr = true;
-      // while (tr) {
-      //   setTimeout(() => {}, 1000);
-      //   console.log("beforeToken :" + beforeToken);
-      //   let nowToken = localStorage.getItem("accessToken");
-      //   console.log("nowToken :" + nowToken);
-      //   if (nowToken != null) {
-      //     if (beforeToken != null && beforeToken != nowToken) {
-      //       break;
-      //     }
-      //   }
-      // }
-      console.log("callGetProject" + localStorage.getItem("accessToken"));
-      //let accessToken = localStorage.getItem("accessToken");
-      setTimeout(() => {
-        getProjects(accessToken)
-          .then((data) => {
-            this.projects = data.data;
-          })
-          .catch(() => {
-            // TEST용 코드. 나중에 catch를 통째로 삭제할 것.
-            this.projects = [
-              {
-                myName: "정승욱",
-                names: ["정승욱", "김하연", "강병국"],
-                projectId: 1,
-                role: "ADMIN",
-                title: "asdf",
-                desc: "asdfasdf",
-                imgNo: 0,
-              },
-              {
-                myName: "정승욱",
-                names: ["정승욱", "김하연", "강병국"],
-                projectId: 1,
-                role: "ADMIN",
-                title: "asdf",
-                desc: "asdfasdf",
-                imgNo: 0,
-              },
-              {
-                myName: "정승욱",
-                names: ["정승욱", "김하연", "강병국"],
-                projectId: 1,
-                role: "ADMIN",
-                title: "asdf",
-                desc: "asdfasdf",
-                imgNo: 0,
-              },
-            ];
-          });
-      }, 100);
+      getProjects(accessToken)
+        .then((data) => {
+          this.projects = data.data;
+        })
+        .catch(() => {
+          // TEST용 코드. 나중에 catch를 통째로 삭제할 것.
+          this.projects = [
+            {
+              myName: "정승욱",
+              names: ["정승욱", "김하연", "강병국"],
+              projectId: 1,
+              role: "ADMIN",
+              title: "asdf",
+              desc: "asdfasdf",
+              imgNo: 0,
+            },
+            {
+              myName: "정승욱",
+              names: ["정승욱", "김하연", "강병국"],
+              projectId: 1,
+              role: "ADMIN",
+              title: "asdf",
+              desc: "asdfasdf",
+              imgNo: 0,
+            },
+            {
+              myName: "정승욱",
+              names: ["정승욱", "김하연", "강병국"],
+              projectId: 1,
+              role: "ADMIN",
+              title: "asdf",
+              desc: "asdfasdf",
+              imgNo: 0,
+            },
+          ];
+        });
     },
   },
 };
