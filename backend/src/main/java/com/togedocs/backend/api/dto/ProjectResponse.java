@@ -52,4 +52,25 @@ public class ProjectResponse {
                     .build();
         }
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Project {
+        private Long projectId;
+        private String title;
+        private String desc;
+        private int imgNo;
+        private List<String> names;
+        public static ProjectResponse.Project build(Long projectId, String title, String desc, int imgNo, List<String> names) {
+            return Project.builder()
+                    .projectId(projectId)
+                    .title(title)
+                    .desc(desc)
+                    .imgNo(imgNo)
+                    .names(names)
+                    .build();
+        }
+    }
 }
