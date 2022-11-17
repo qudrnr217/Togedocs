@@ -187,7 +187,9 @@ export default {
       this.callGetUserNameAndImgNo(this.userId);
     }
 
-    this.callGetProject();
+    // console.log("callGetMountedProject" + localStorage.getItem("accessToken"));
+    let accessToken = localStorage.getItem("accessToken");
+    this.callGetProject(accessToken);
   },
   methods: {
     ...mapActions("projectStore", ["FETCH_PROJECTS"]),
@@ -195,12 +197,13 @@ export default {
     ...mapMutations("userStore", ["SET_TOKEN"]),
     //프로젝트 생성 api
     createNewProject() {
+      let accessToken = localStorage.getItem("accessToken");
       let params = {
         title: this.newProject.title,
         desc: this.newProject.desc,
         imgNo: this.newProject.imgNo,
       };
-      postNewProject(params).then((data) => {
+      postNewProject(accessToken, params).then((data) => {
         data;
         this.callGetProject();
       });
@@ -259,10 +262,43 @@ export default {
         this.callGetProject();
       });
     },
-    callGetProject() {
-      getProjects().then((data) => {
-        this.projects = data.data;
-      });
+    callGetProject(accessToken) {
+      getProjects(accessToken)
+        .then((data) => {
+          this.projects = data.data;
+        })
+        .catch(() => {
+          // TEST용 코드. 나중에 catch를 통째로 삭제할 것.
+          this.projects = [
+            {
+              myName: "정승욱",
+              names: ["정승욱", "김하연", "강병국"],
+              projectId: 1,
+              role: "ADMIN",
+              title: "asdf",
+              desc: "asdfasdf",
+              imgNo: 0,
+            },
+            {
+              myName: "정승욱",
+              names: ["정승욱", "김하연", "강병국"],
+              projectId: 1,
+              role: "ADMIN",
+              title: "asdf",
+              desc: "asdfasdf",
+              imgNo: 0,
+            },
+            {
+              myName: "정승욱",
+              names: ["정승욱", "김하연", "강병국"],
+              projectId: 1,
+              role: "ADMIN",
+              title: "asdf",
+              desc: "asdfasdf",
+              imgNo: 0,
+            },
+          ];
+        });
     },
   },
 };
