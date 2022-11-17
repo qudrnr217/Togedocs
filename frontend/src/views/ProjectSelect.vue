@@ -307,7 +307,7 @@ export default {
         desc: this.newProject.desc,
         imgNo: this.newProject.imgNo,
       };
-      createProject
+      createProject(
         params,
         (response) => {
           response;
