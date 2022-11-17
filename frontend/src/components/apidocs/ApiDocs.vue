@@ -636,6 +636,7 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import draggable from "vuedraggable";
 import WarningDialog from "./WarningDialog.vue";
+import { mapState } from "vuex";
 
 import {
   getDocs,

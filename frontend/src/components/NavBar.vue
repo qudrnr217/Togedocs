@@ -2,13 +2,13 @@
   <q-header>
     <div class="navbar">
       <div class="navbar-pages">
-        <router-link :to="{ name: 'select' }"> <div>Home</div></router-link>
-        <router-link :to="{ name: 'docs', params: { projectId: projectId } }">
+        <router-link :to="{ name: 'select' }" @click="resetProjectId()">
+          <div>Home</div></router-link
+        >
+        <router-link :to="{ name: 'docs' }">
           <div>공유 api 문서</div></router-link
         >
-        <router-link :to="{ name: 'test', params: { projectId: projectId } }">
-          <div>api test</div></router-link
-        >
+        <router-link :to="{ name: 'test' }"> <div>api test</div></router-link>
       </div>
       <div class="navbar-users">
         <div
@@ -18,20 +18,26 @@
             border-radius: 50%;
 
             background: var(--cultured);
-          "></div>
-        <div>{사용자닉네임}</div>
-        <div>...</div>
+          "
+        ></div>
+        <div>{{ userName }}</div>
       </div>
     </div>
   </q-header>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapMutations, mapState } from "vuex";
 export default {
   name: "NavBar",
   computed: {
-    ...mapState("commonStore", ["projectId"]),
+    ...mapState("commonStore", ["userId", "userName", "imgNo"]),
+  },
+  methods: {
+    ...mapMutations("commonStore", ["SET_PROJECTID"]),
+    resetProjectId() {
+      this.SET_PROJECTID(null);
+    },
   },
 };
 </script>
