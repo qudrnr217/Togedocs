@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class ProjectUserRepositoryImpl implements ProjectUserRepositoryCustom {
+ public class ProjectUserRepositoryImpl implements ProjectUserRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -56,5 +56,16 @@ public class ProjectUserRepositoryImpl implements ProjectUserRepositoryCustom {
         return myname;
     }
 
-
+    @Override
+    public List<String> getMemberNames(Long projectId) {
+        QUser user = QUser.user;
+        QProjectUser projectUser = QProjectUser.projectUser;
+        List<String> memberNames = jpaQueryFactory.select(user.name)
+                .from(user)
+                .join(projectUser)
+                .on(user.id.eq(projectUser.user.id))
+                .where(projectUser.project.id.eq(projectId))
+                .fetch();
+        return memberNames;
+    }
 }

@@ -153,8 +153,8 @@
             </q-card-actions>
           </q-card>
         </q-dialog>
-        <q-dialog v-model="joinProjectModal" persistent
-          ><q-card class="modal">
+        <q-dialog v-model="joinProjectModal" persistent>
+          <q-card class="modal">
             <q-card-section>
               <div class="text-h6">프로젝트 입장</div>
             </q-card-section>
@@ -184,10 +184,11 @@
                 flat
                 label="확인"
                 color="secondary"
-                @click="showJoinProjectConfirmModal"
+                @click="callGetProjectByCode"
               />
-            </q-card-actions> </q-card
-        ></q-dialog>
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
         <q-dialog v-model="joinProjectConfirmModal" persistent
           ><q-card class="modal">
             <q-card-section>
@@ -222,8 +223,17 @@
                 v-close-popup
                 @click="callJoinProject"
               />
-            </q-card-actions> </q-card
-        ></q-dialog>
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+        <q-dialog v-model="warningDialog" position="top">
+          <q-card style="width: 350px">
+            <q-card-section class="row items-center no-wrap">
+              <div>유효한 초대 코드가 아닙니다!</div>
+              <q-space />
+            </q-card-section>
+          </q-card>
+        </q-dialog>
       </q-layout>
     </q-page-container>
   </div>
@@ -233,7 +243,12 @@
 import { ref } from "vue";
 import ProjectCard from "@/components/ProjectCard.vue";
 import { mapState, mapActions, mapMutations } from "vuex";
-import { getProjects, postNewProject } from "@/api/project";
+import {
+  getProjects,
+  createProject,
+  getProjectByCode,
+  joinProject,
+} from "@/api/project";
 import jwt_decode from "jwt-decode";
 import { getUserNameAndImgNo, modifyUserInfo } from "@/api/user";
 
@@ -262,6 +277,7 @@ export default {
       joinProjectConfirmModal: ref(false),
       joinProjectCode: ref(""),
       joinProjectItem: ref({}),
+      warningDialog: ref(false),
 
       projects: ref([]),
       fasPlus,
@@ -291,7 +307,7 @@ export default {
         desc: this.newProject.desc,
         imgNo: this.newProject.imgNo,
       };
-      postNewProject(
+      createProject
         params,
         (response) => {
           response;
@@ -406,6 +422,33 @@ export default {
     callJoinProject() {
       this.joinProjectModal = false;
       this.joinProjectConfirmModal = false;
+      joinProject(
+        {
+          requestBody: { code: this.joinProjectCode },
+        },
+        (response) => {
+          response;
+          this.joinProjectCode = "";
+          this.callGetProject();
+        },
+        (error) => {
+          console.warn(error);
+        }
+      );
+    },
+    callGetProjectByCode() {
+      getProjectByCode(
+        { pathVariable: { code: this.joinProjectCode } },
+        (response) => {
+          this.joinProjectItem = response.data;
+          this.joinProjectConfirmModal = true;
+        },
+        (error) => {
+          error;
+          this.warningDialog = true;
+          // console.warn(error);
+        }
+      );
     },
   },
 };
