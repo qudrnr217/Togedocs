@@ -12,13 +12,17 @@
 
 <script>
 import { shell } from "electron";
+import { mapMutations } from "vuex";
+
 export default {
   methods: {
+    ...mapMutations("userStore", ["SET_TOKEN"]),
     getDimensions() {
       this.width = document.documentElement.clientWidth;
       let image = document.getElementById("rotate");
       image.style.transform = "rotate(" + this.width / 3 + "deg)";
     },
+
     login() {
       shell.openExternal(
         "http://k7a404.p.ssafy.io:8081/oauth2/authorization/google"
@@ -35,11 +39,17 @@ export default {
     this.getDimensions();
     let _this = this;
     window.addEventListener("resize", this.getDimensions);
+
     window.addEventListener("login-successful", (event) => {
       event;
       _this.$router.push({ name: "select" });
     });
   },
+  // unmounted() {
+  //   this.SET_TOKEN(localStorage.getItem("accessToken"));
+  // },
+
+  // ...mapMutations("commonStore", ["SET_USERNAME", "SET_USERID", "SET_IMGNO"]),
 };
 </script>
 
