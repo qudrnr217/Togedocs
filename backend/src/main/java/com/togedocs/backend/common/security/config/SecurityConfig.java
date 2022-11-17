@@ -66,7 +66,11 @@ public class SecurityConfig {
                 .defaultSuccessUrl("myapp://")
                 .userInfoEndpoint().userService(principalOauth2UserService)
                 .and()
-                .successHandler(oAuth2SuccessHandler);
+                .successHandler(oAuth2SuccessHandler)
+                .and()
+                .logout()
+                .logoutUrl("/api/logout");
+
 
 //        http.addFilterBefore(new JwtAuthFilter(tokenService,userRepository), UsernamePasswordAuthenticationFilter.class);
 
