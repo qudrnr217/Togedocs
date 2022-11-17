@@ -105,7 +105,7 @@
               <q-btn
                 flat
                 label="생성"
-                color="primary"
+                color="secondary"
                 v-close-popup
                 @click="createNewProject"
               />
@@ -146,7 +146,7 @@
               <q-btn
                 flat
                 label="적용"
-                color="primary"
+                color="secondary"
                 v-close-popup
                 @click="doModifyUserInfo()"
               />
@@ -183,7 +183,7 @@
               <q-btn
                 flat
                 label="확인"
-                color="primary"
+                color="secondary"
                 @click="callGetProjectByCode"
               />
             </q-card-actions>
@@ -291,15 +291,10 @@ export default {
     let token = localStorage.getItem("accessToken");
     if (token) {
       let userInfo = jwt_decode(token);
-
-      console.log(userInfo);
       this.SET_USERID(userInfo.userId);
       this.callGetUserNameAndImgNo(this.userId);
     }
-
-    // console.log("callGetMountedProject" + localStorage.getItem("accessToken"));
-    let accessToken = localStorage.getItem("accessToken");
-    this.callGetProject(accessToken);
+    this.callGetProject();
   },
   methods: {
     ...mapActions("projectStore", ["FETCH_PROJECTS"]),
@@ -317,16 +312,21 @@ export default {
 
     //프로젝트 생성 api
     createNewProject() {
-      let accessToken = localStorage.getItem("accessToken");
-      let params = {
+      let requestBody = {
         title: this.newProject.title,
         desc: this.newProject.desc,
         imgNo: this.newProject.imgNo,
       };
-      createProject(accessToken, params).then((data) => {
-        data;
-        this.callGetProject();
-      });
+      createProject(
+        { requestBody: requestBody },
+        (response) => {
+          response;
+          this.callGetProject();
+        },
+        (e) => {
+          console.warn(e);
+        }
+      );
     },
     makeImgNo(type) {
       let imgNo = Math.floor(Math.random() * 10); // 0 ~ 9 까지의 난수 생성
@@ -382,8 +382,8 @@ export default {
         this.callGetProject();
       });
     },
-    callGetProject(accessToken) {
-      getProjects(accessToken)
+    callGetProject() {
+      getProjects()
         .then((data) => {
           this.projects = data.data;
         })
