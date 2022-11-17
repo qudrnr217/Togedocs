@@ -25,20 +25,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/info/{userId}")
-    public ResponseEntity<?> getUserInfo(@PathVariable Long userId) {
-        UserResponse.userNameAndImgNo response;
-        try {
-            response = userService.getUserNameAndImgNo(userId);
-        } catch (IdNotFoundException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Unexpected exception");
-        }
-        return ResponseEntity.status(200).body(response);
-    }
-
     @Transactional
     @PatchMapping("/info")
     public ResponseEntity<?> modifyUser(@RequestBody UserRequest.ModifyUserRequest userRequest, Principal principal) {
@@ -53,6 +39,19 @@ public class UserController {
         return ResponseEntity.status(200).body(response);
     }
 
+    @GetMapping("/info/{userId}")
+    public ResponseEntity<?> getUserNameAndImgNo(@PathVariable Long userId) {
+        UserResponse.userNameAndImgNo response;
+        try {
+            response = userService.getUserNameAndImgNo(userId);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
+        }
+        return ResponseEntity.status(200).body(response);
+    }
 
     @GetMapping("/project")
     public ResponseEntity<?> getProjectInfo(Principal principal) {
