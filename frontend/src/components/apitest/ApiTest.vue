@@ -71,7 +71,7 @@
             >Save</q-btn
           >
         </div>
-        <hr style="margin-top: 0; border-bottom: 0; border-left: 0" />
+        <hr style="border-bottom: 0; border-left: 0" />
         <div id="TypeURL">
           <select id="RequestType" v-model="methodType">
             <option value="GET">GET</option>
