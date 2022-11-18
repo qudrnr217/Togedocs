@@ -46,8 +46,8 @@
           </q-btn>
           <q-btn v-if="projectItem.role == 'ADMIN'" flat>
             <q-icon left :name="fasTrash" size="xs" />
-            <div>프로젝트 삭제</div></q-btn
-          >
+            <div>프로젝트 삭제</div>
+          </q-btn>
         </q-card-actions>
       </q-card>
     </q-popup-proxy>
@@ -85,7 +85,6 @@ export default {
   methods: {
     ...mapMutations("commonStore", ["SET_PROJECTID"]),
     goToDocs(id) {
-      console.log(id);
       this.SET_PROJECTID(id);
       this.$router.push({ name: "docs" });
     },
