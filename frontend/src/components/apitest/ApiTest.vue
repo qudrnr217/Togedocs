@@ -57,13 +57,13 @@
         <div id="MainTop">
           <div id="apiName">
             <div
-              style="text-align: left; font-size: 15px"
+              style="text-align: left; font-size: 1.2rem"
               class="q-pa-xs"
               v-if="apiName == ''"
             >
               Api이름
             </div>
-            <div style="text-align: left; font-size: 15px" class="q-pa-xs">
+            <div style="text-align: left; font-size: 1.2rem" class="q-pa-xs">
               {{ apiName }}
             </div>
           </div>
@@ -881,9 +881,6 @@ export default {
     };
 
     //vuex에 데이터 저장하는 방식 (이후 이 페이지에서는 사라져야 함)
-    this.SET_USERID(0);
-    this.SET_USERNAME("내이름");
-    this.SET_PROJECTID(1);
 
     //var apiListMount = [];
     getDocs({ pathVariable: { projectId: this.projectId } }, (data) => {

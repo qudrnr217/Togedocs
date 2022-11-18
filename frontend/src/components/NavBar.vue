@@ -3,22 +3,24 @@
     <div class="navbar">
       <div class="navbar-pages">
         <router-link :to="{ name: 'select' }" @click="resetProjectId()">
-          <div>Home</div></router-link
+          <div>
+            <q-icon :name="biHouseFill" size="xs" />
+            <span> Home</span>
+          </div></router-link
         >
         <router-link :to="{ name: 'docs' }">
-          <div>공유 api 문서</div></router-link
+          <q-icon :name="biPencilFill" size="xs" />
+          <span> API 명세서</span></router-link
         >
-        <router-link :to="{ name: 'test' }"> <div>api test</div></router-link>
+        <router-link :to="{ name: 'test' }">
+          <q-icon :name="biSendFill" size="xs" />
+          <span> API 테스트</span></router-link
+        >
       </div>
       <div class="navbar-users">
-        <div
-          style="
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: var(--cultured);
-          "
-        ></div>
+        <q-avatar size="30px" class="q-mr-sm">
+          <img :src="getUserImg(imgNo)" />
+        </q-avatar>
         <div>{{ userName }}</div>
       </div>
     </div>
@@ -27,8 +29,21 @@
 
 <script>
 import { mapMutations, mapState } from "vuex";
+import {
+  biHouseFill,
+  biPencilFill,
+  biSendFill,
+} from "@quasar/extras/bootstrap-icons";
 export default {
   name: "NavBar",
+  setup() {
+    return {
+      // icon
+      biHouseFill,
+      biPencilFill,
+      biSendFill,
+    };
+  },
   computed: {
     ...mapState("commonStore", ["userId", "userName", "imgNo"]),
   },
@@ -36,6 +51,9 @@ export default {
     ...mapMutations("commonStore", ["SET_PROJECTID"]),
     resetProjectId() {
       this.SET_PROJECTID(null);
+    },
+    getUserImg(imgNo) {
+      return require(`@/assets/user/${imgNo}.png`);
     },
   },
 };
@@ -56,7 +74,7 @@ export default {
 }
 .navbar-pages {
   display: flex;
-  width: 65%;
+  width: 50%;
 
   justify-content: space-evenly;
   flex-direction: row;
@@ -65,8 +83,7 @@ export default {
 
 .navbar-users {
   display: flex;
-  width: 35%;
-  margin-right: 20px;
+  margin-right: 40px;
   align-items: center;
 
   justify-content: space-evenly;

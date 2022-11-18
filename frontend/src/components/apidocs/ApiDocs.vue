@@ -357,6 +357,7 @@
                             dense
                             v-model="addColName"
                             :rules="[(val) => !!val]"
+                            no-error-icon
                             @keyup.enter="callAddCol(addColName, 'text')"
                             class="col-10"
                             ref="addColCursor"
