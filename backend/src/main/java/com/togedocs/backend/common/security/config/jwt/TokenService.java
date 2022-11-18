@@ -2,6 +2,7 @@ package com.togedocs.backend.common.security.config.jwt;
 
 import com.togedocs.backend.api.dto.Token;
 
+import com.togedocs.backend.api.dto.UserResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -29,7 +30,8 @@ public class TokenService{
 
 //    @Override
     public Token generateToken(Long userId, String name, int imgNo, String email) {
-        long tokenPeriod = 1000L * 60L * 10L;
+        long tokenPeriod = 1000L * 60L;
+//        long tokenPeriod = 1000L * 60L * 10L;
         long refreshPeriod = 1000L * 60L * 60L * 24L * 30L * 3L;
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("name",name);
@@ -52,6 +54,10 @@ public class TokenService{
                         .compact());
         return token;
     }
+
+//
+
+
 
     public boolean verifyToken(String token) {
         try {
