@@ -119,6 +119,15 @@ public class ProjectService {
         return ProjectResponse.Id.build(projectId);
     }
 
+    @Transactional
+    public ProjectResponse.Id leaveProject(Long projectId, String loginUserProviderId) throws IdNotFoundException {
+        // 1. project_user에서 제거
+        User user = userRepository.findByProviderId(loginUserProviderId);
+        ProjectUser loginProjectUser = findProjectUser(projectId, user.getId());
+        projectUserRepository.deleteById(loginProjectUser.getId());
+
+        return ProjectResponse.Id.build(projectId);
+    }
 
     public ProjectResponse.ProjectUser joinProject(ProjectRequest.JoinProjectRequest request, String loginUserProviderId) throws IdNotFoundException {
         // 1. project에서 code가 동일한 레코드 찾기
