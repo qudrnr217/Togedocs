@@ -56,13 +56,10 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/api/user/**").authenticated()
                 .antMatchers("/api/project/**").authenticated()
-//                .antMatchers("/manager/**").access("hasRole('DVELOPER')")
-//                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
                 .anyRequest().permitAll()
                 .and()
                 .addFilterBefore(new JwtAuthFilter(tokenService, userRepository),UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login()
-//                .loginPage("http://localhost:8080/")
                 .defaultSuccessUrl("myapp://")
                 .userInfoEndpoint().userService(principalOauth2UserService)
                 .and()
@@ -72,7 +69,6 @@ public class SecurityConfig {
                 .logoutUrl("/api/logout");
 
 
-//        http.addFilterBefore(new JwtAuthFilter(tokenService,userRepository), UsernamePasswordAuthenticationFilter.class);
 
 
 
