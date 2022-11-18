@@ -881,9 +881,6 @@ export default {
     };
 
     //vuex에 데이터 저장하는 방식 (이후 이 페이지에서는 사라져야 함)
-    this.SET_USERID(0);
-    this.SET_USERNAME("내이름");
-    this.SET_PROJECTID(1);
 
     //var apiListMount = [];
     getDocs({ pathVariable: { projectId: this.projectId } }, (data) => {
