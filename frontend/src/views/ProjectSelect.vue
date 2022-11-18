@@ -9,15 +9,16 @@
             :icon="fasUser"
             label="프로필 수정"
             @click="showModifyUserInfoModal()"
-          ></q-btn>
-          <!-- logout 함수는 미구현. this.$router.push로 home으로 돌아가게 해야할듯 -->
+          >
+          </q-btn>
           <q-btn
             outline
             rounded
             :icon="fasArrowRightFromBracket"
             label="로그아웃"
             @click="logout()"
-          ></q-btn>
+          >
+          </q-btn>
         </div>
         <div class="header">
           <div class="profileimg">
@@ -46,8 +47,8 @@
                   <q-tooltip class="tooltip">
                     새로운 프로젝트 생성하기
                   </q-tooltip>
-                  <q-icon :name="fasPlus" size="xs"
-                /></q-btn>
+                  <q-icon :name="fasPlus" size="xs" />
+                </q-btn>
               </div>
               <div class="col-1 text-center">
                 <q-btn
@@ -59,8 +60,8 @@
                   <q-tooltip class="tooltip">
                     초대코드로 프로젝트 입장하기
                   </q-tooltip>
-                  <q-icon :name="fasRightToBracket" size="xs"
-                /></q-btn>
+                  <q-icon :name="fasRightToBracket" size="xs" />
+                </q-btn>
               </div>
             </div>
             <div class="cards q-gutter-sm">
@@ -120,9 +121,8 @@
                 @click="resetCreateProjectModal"
               />
               <q-btn
-                flat
                 label="생성"
-                color="secondary"
+                color="primary"
                 v-close-popup
                 @click="createNewProject"
               />
@@ -166,9 +166,8 @@
             <q-card-actions align="right">
               <q-btn flat label="취소" color="primary" v-close-popup />
               <q-btn
-                flat
                 label="적용"
-                color="secondary"
+                color="primary"
                 v-close-popup
                 @click="doModifyUserInfo()"
               />
@@ -203,9 +202,8 @@
                 @click="resetJoinProjectModal"
               />
               <q-btn
-                flat
                 label="확인"
-                color="secondary"
+                color="primary"
                 @click="callGetProjectByCode"
               />
             </q-card-actions>
@@ -239,7 +237,6 @@
             <q-card-actions align="right">
               <q-btn flat label="뒤로 가기" color="primary" v-close-popup />
               <q-btn
-                flat
                 label="입장하기"
                 color="primary"
                 v-close-popup
@@ -336,11 +333,14 @@ export default {
 
     //logout api
     logout() {
-      logoutUser().then((data) => {
-        console.log("로그아웃!");
-        console.log(data);
-        this.$router.push({ name: "home" });
-      });
+      logoutUser(
+        () => {
+          this.$router.push({ name: "home" });
+        },
+        (e) => {
+          console.warn(e);
+        }
+      );
     },
 
     //프로젝트 생성 api
@@ -373,7 +373,6 @@ export default {
       getUserNameAndImgNo(
         { pathVariable: { userId: userId } },
         (response) => {
-          console.log("HELLO", response);
           this.SET_USERNAME(response.data.userName);
           this.SET_IMGNO(response.data.imgNo);
         },
@@ -399,7 +398,7 @@ export default {
     },
     resetCreateProjectModal() {
       this.newProject = {
-        imgNo: null,
+        imgNo: 0,
         title: null,
         desc: null,
       };
@@ -420,37 +419,8 @@ export default {
         .then((data) => {
           this.projects = data.data;
         })
-        .catch(() => {
-          // TEST용 코드. 나중에 catch를 통째로 삭제할 것.
-          this.projects = [
-            {
-              myName: "정승욱",
-              names: ["정승욱", "김하연", "강병국"],
-              projectId: 1,
-              role: "ADMIN",
-              title: "asdf",
-              desc: "asdfasdf",
-              imgNo: 0,
-            },
-            {
-              myName: "정승욱",
-              names: ["정승욱", "김하연", "강병국"],
-              projectId: 1,
-              role: "ADMIN",
-              title: "asdf",
-              desc: "asdfasdf",
-              imgNo: 0,
-            },
-            {
-              myName: "정승욱",
-              names: ["정승욱", "김하연", "강병국"],
-              projectId: 1,
-              role: "ADMIN",
-              title: "asdf",
-              desc: "asdfasdf",
-              imgNo: 0,
-            },
-          ];
+        .catch((e) => {
+          console.warn(e);
         });
     },
     resetJoinProjectModal() {
@@ -594,7 +564,7 @@ img {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  margin-bottom: 0px;
+  margin: 5px 5px 0px 0px;
 }
 .shadow {
   width: 100vw;

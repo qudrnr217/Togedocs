@@ -410,13 +410,7 @@
                       <div
                         @mouseover="rowActive[index] = true"
                         @mouseleave="rowActive[index] = false"
-                        class="
-                          q-pa-sm q-ma-xs
-                          text-right
-                          cell-no
-                          handle-row
-                          drag-item
-                        "
+                        class="q-pa-sm q-ma-xs text-right cell-no handle-row drag-item"
                       >
                         <template v-if="!rowActive[index]">
                           {{ index + 1 }}
@@ -818,8 +812,8 @@ export default {
     this.socket = new SockJS(BASEURL + "/api/ws");
     this.stompClient = Stomp.over(this.socket);
 
-    // // TODO: 주석을 해제하면 websocket 관련 console log가 제거됩니다.
-    // this.stompClient.debug = null;
+    // websocket 관련 console log 제거하는 코드
+    this.stompClient.debug = null;
 
     this.stompClient.connect({}, () => {
       this.stompClient.subscribe(
@@ -961,7 +955,6 @@ export default {
   },
   beforeUnmount() {
     // 화면 전환이 일어나거나 창을 종료했을 때 이 함수가 불림
-    console.log("Unmount...");
     this.unLoadEvent();
     window.removeEventListener("beforeunload", this.unLoadEvent);
   },
