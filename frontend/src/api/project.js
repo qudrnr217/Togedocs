@@ -1,8 +1,10 @@
-import { apiInstanceWithAuthorization } from "./index.js";
-
+import { apiInstanceWithAuthorization,api } from "./index.js";
+import jwt_decode from "jwt-decode";
 //자신의 프로젝트 리스트 가져오기
-function getProjects(success, fail) {
+async function getProjects(success, fail) {
   let accessToken = localStorage.getItem("accessToken")
+  await checkExp(accessToken)
+  accessToken = localStorage.getItem("accessToken")
   return apiInstanceWithAuthorization(accessToken)
     .get("/user/project")
     .then(success)
@@ -10,8 +12,11 @@ function getProjects(success, fail) {
 }
 
 //프로젝트 생성
-function createProject(payload, success, fail) {
+async function createProject(payload, success, fail) {
+  
   let accessToken = localStorage.getItem("accessToken")
+  await checkExp(accessToken)
+  accessToken = localStorage.getItem("accessToken")
   return apiInstanceWithAuthorization(accessToken)
     .post("/project", payload.requestBody)
     .then(success)
@@ -19,8 +24,10 @@ function createProject(payload, success, fail) {
 }
 
 //프로젝트 삭제
-function deleteProject(payload, success, fail) {
+async function deleteProject(payload, success, fail) {
   let accessToken = localStorage.getItem("accessToken")
+  await checkExp(accessToken)
+  accessToken = localStorage.getItem("accessToken")
   let projectId = payload.pathVariable.projectId;
   return apiInstanceWithAuthorization(accessToken)
     .delete(`/project/${projectId}`)
@@ -38,8 +45,10 @@ function leaveProject(payload, success, fail) {
 }
 
 // 초대 코드로 프로젝트 조회
-function getProjectByCode(payload, success, fail) {
+async function getProjectByCode(payload, success, fail) {
   let accessToken = localStorage.getItem("accessToken")
+  await checkExp(accessToken)
+  accessToken = localStorage.getItem("accessToken")
   let code = payload.pathVariable.code;
   return apiInstanceWithAuthorization(accessToken)
     .get(`/project/code/${code}`)
@@ -48,8 +57,10 @@ function getProjectByCode(payload, success, fail) {
 }
 
 //프로젝트 초대 코드 들어가기
-function joinProject(payload, success, fail) {
+async function joinProject(payload, success, fail) {
   let accessToken = localStorage.getItem("accessToken")
+  await checkExp(accessToken)
+  accessToken = localStorage.getItem("accessToken")
   let code = payload.requestBody.code;
   return apiInstanceWithAuthorization(accessToken)
     .post("/project/join", { code: code })
@@ -58,8 +69,10 @@ function joinProject(payload, success, fail) {
 }
 
 //팀원 관리 및 조회(팀원목록 & 초대 코드)
-function getMemberManageInfo(payload, success, fail) {
-  let accessToken = localStorage.getItem("accessToken");
+async function getMemberManageInfo(payload, success, fail) {
+  let accessToken = localStorage.getItem("accessToken")
+  await checkExp(accessToken)
+  accessToken = localStorage.getItem("accessToken")
   let projectId = payload.pathVariable.projectId;
   return apiInstanceWithAuthorization(accessToken)
     .get(`/project/${projectId}/members`)
@@ -68,8 +81,10 @@ function getMemberManageInfo(payload, success, fail) {
 }
 
 //팀원 추방
-function removeMember(payload, success, fail) {
+async function removeMember(payload, success, fail) {
   let accessToken = localStorage.getItem("accessToken")
+  await checkExp(accessToken)
+  accessToken = localStorage.getItem("accessToken")
   let projectId = payload.pathVariable.projectId;
   let userId = payload.pathVariable.userId;
   return apiInstanceWithAuthorization(accessToken)
@@ -79,8 +94,10 @@ function removeMember(payload, success, fail) {
 }
 
 //팀원 권한 수정
-function updateMemberRole(payload, success, fail) {
+async function updateMemberRole(payload, success, fail) {
   let accessToken = localStorage.getItem("accessToken")
+  await checkExp(accessToken)
+  accessToken = localStorage.getItem("accessToken")
   let projectId = payload.pathVariable.projectId;
   return apiInstanceWithAuthorization(accessToken)
     .patch(`/project/${projectId}/member`, payload.requestBody)
@@ -88,7 +105,34 @@ function updateMemberRole(payload, success, fail) {
     .catch(fail);
 }
 
-export {
+async function checkExp(token){
+  let exp = localStorage.getItem("exp");
+  let now = new Date().getTime().toString();
+  now=now.substring(0,10);
+  console.log(now);
+
+  let time = exp - now;
+  let userInfo = jwt_decode(token);
+  if(time<=60){//1분 미만으로 남았다면
+    console.log("accessToken 다시 줘!");
+    var params = {
+      imgNo: userInfo.imgNo,
+      name:userInfo.name,
+      email:userInfo.sub,
+      userId:userInfo.userId,
+    }
+    await api.post("/refresh",params).then((data)=>{
+      console.log(data);
+      localStorage.setItem("accessToken",data.data);
+      userInfo = jwt_decode(data.data);
+      localStorage.setItem("exp",userInfo.exp);
+      
+    })
+    
+  }
+}
+
+export { 
   getProjects,
   createProject,
   deleteProject,
