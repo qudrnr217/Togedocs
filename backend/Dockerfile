@@ -1,12 +1,7 @@
 
-FROM gradle:7.4-jdk-alpine
 
-WORKDIR /backend
-
-COPY . .
-
-RUN gradle clean build --no-daemon
-
+FROM openjdk:11
+COPY /build/libs/backend-0.0.1-SNAPSHOT.jar app.jar
+COPY /src/main/resources/application.yml application.yml
 EXPOSE 8081
-
-CMD ["java", "-jar", "build/libs/backend-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Seoul", "-Dspring.profiles.active=prod", "-Dspring.config.location=/application.yml,/home/ubuntu/properties/application-secret.yml,/home/ubuntu/properties/application-db.yml", "app.jar"]
