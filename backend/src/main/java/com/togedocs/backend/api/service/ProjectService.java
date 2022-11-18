@@ -23,6 +23,7 @@ import java.util.*;
 @AllArgsConstructor
 public class ProjectService {
     private final String APIDOCS = "apidocs";
+    private final String APILOGS = "apilogs";
     private final int DEFAULT_WIDTH = 100;
     private UserRepository userRepository;
     private ProjectRepository projectRepository;
@@ -50,7 +51,7 @@ public class ProjectService {
                 .build();
         projectRepository.save(project);
 
-        // 3. mongodb에 collection insert
+        // 3-1. mongodb에 apidocs insert
         // projectId, title, desc, row : [], cols : [REQUIRED, PAYLOAD인 cols], data : {}
         List<ColDto> cols = new ArrayList<>();
         cols.add(new ColDto("one", "Name", "text", DEFAULT_WIDTH, ColCategory.REQUIRED));
@@ -70,6 +71,15 @@ public class ProjectService {
                 .build();
 
         mongoTemplate.insert(apidocs, APIDOCS);
+
+        // 3-2. mongodb에 apilogs insert
+
+        Apilogs apilogs = Apilogs.builder()
+                .projectId(project.getId())
+                .log(new HashMap<String, List<LogDto>>())
+                .build();
+
+        mongoTemplate.insert(apilogs,APILOGS);
 
         // 4. project_user insert
         // 생성한 사람한테 admin 권한 부여
@@ -109,6 +119,15 @@ public class ProjectService {
         return ProjectResponse.Id.build(projectId);
     }
 
+    @Transactional
+    public ProjectResponse.Id leaveProject(Long projectId, String loginUserProviderId) throws IdNotFoundException {
+        // 1. project_user에서 제거
+        User user = userRepository.findByProviderId(loginUserProviderId);
+        ProjectUser loginProjectUser = findProjectUser(projectId, user.getId());
+        projectUserRepository.deleteById(loginProjectUser.getId());
+
+        return ProjectResponse.Id.build(projectId);
+    }
 
     public ProjectResponse.ProjectUser joinProject(ProjectRequest.JoinProjectRequest request, String loginUserProviderId) throws IdNotFoundException {
         // 1. project에서 code가 동일한 레코드 찾기

@@ -22,6 +22,9 @@ export default {
       let image = document.getElementById("rotate");
       image.style.transform = "rotate(" + this.width / 3 + "deg)";
     },
+    goToSelect() {
+      this.$router.push({ name: "select" });
+    },
 
     login() {
       shell.openExternal(
@@ -35,12 +38,12 @@ export default {
   }),
   mounted() {
     this.getDimensions();
-    let _this = this;
     window.addEventListener("resize", this.getDimensions);
-    window.addEventListener("login-successful", (event) => {
-      event;
-      _this.$router.push({ name: "select" });
-    });
+    window.addEventListener("login-successful", this.goToSelect);
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.getDimensions);
+    window.removeEventListener("login-successful", this.goToSelect);
   },
 };
 </script>

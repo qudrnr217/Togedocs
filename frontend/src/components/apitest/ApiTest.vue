@@ -71,7 +71,7 @@
             >Save</q-btn
           >
         </div>
-        <hr style="border-bottom: 0; border-left: 0" />
+        <hr style="border-bottom: 0; border-left: 0; margin-top: 0.3vh" />
         <div id="TypeURL">
           <select id="RequestType" v-model="methodType">
             <option value="GET">GET</option>
@@ -329,7 +329,7 @@
             </div>
             <hr
               style="
-                margin-top: 11%;
+                margin-top: 1.1vh;
                 border-bottom: 0px;
                 border-left: 0;
                 width: 30vw;
@@ -402,9 +402,9 @@
             </tbody>
           </q-markup-table>
         </q-card-section>
-        <q-card-section align="right"
-          ><q-btn flat label="돌아가기" color="primary" v-close-popup
-        /></q-card-section>
+        <q-card-section align="right">
+          <q-btn flat label="돌아가기" color="primary" v-close-popup />
+        </q-card-section>
       </q-card>
     </q-dialog>
   </div>
@@ -887,6 +887,9 @@ export default {
       let document = data.data;
       this.projectTitle = document.title;
       this.BaseURL = document.baseUrl;
+      if (this.BaseURL == null || this.BaseURL == "null"){
+        this.BaseURL = ""
+      }
       for (let rowId of document.rows) {
         // one -> 이름
         // two -> method
@@ -993,7 +996,7 @@ export default {
   height: 88vh;
 }
 #Maincontainer {
-  width: 99vw;
+  width: 100vw;
   height: 88vh;
   display: flex;
 }
