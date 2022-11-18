@@ -2,7 +2,6 @@
   <div class="container">
     <div class="imgcontainer">
       <img :src="getProjectImg(projectItem.imgNo)" />
-
       <q-btn
         class="router-btn"
         style="bottom: 12vh"
@@ -25,7 +24,31 @@
     </div>
 
     <div class="projectinfo">
-      <div class="title">{{ projectItem.title }}</div>
+      <div class="row" style="width: 100%">
+        <div class="col title q-px-sm">{{ projectItem.title }}</div>
+        <div class="col text-right">
+          <q-btn flat :icon="biGearFill" size="sm">
+            <q-popup-proxy>
+              <q-card>
+                <q-card-actions vertical>
+                  <q-btn flat @click="leaveProjectDialog = true">
+                    <q-icon left :name="fasDoorOpen" size="xs" />
+                    <div>프로젝트 탈퇴</div>
+                  </q-btn>
+                  <q-btn
+                    flat
+                    :disable="checkUserRole()"
+                    @click="deleteProjectDialog = true"
+                  >
+                    <q-icon left :name="fasTrash" size="xs" />
+                    <div>프로젝트 삭제</div>
+                  </q-btn>
+                </q-card-actions>
+              </q-card>
+            </q-popup-proxy></q-btn
+          >
+        </div>
+      </div>
       <div class="title-detail">
         {{ projectItem.desc }}
       </div>
@@ -37,29 +60,67 @@
         </template>
       </div>
     </div>
-    <q-popup-proxy context-menu>
+
+    <q-dialog v-model="leaveProjectDialog" persistent>
       <q-card>
-        <q-card-actions vertical>
-          <q-btn flat>
-            <q-icon left :name="fasDoorOpen" size="xs" />
-            <div>프로젝트 탈퇴</div>
-          </q-btn>
-          <q-btn v-if="projectItem.role == 'ADMIN'" flat>
-            <q-icon left :name="fasTrash" size="xs" />
-            <div>프로젝트 삭제</div>
-          </q-btn>
+        <q-card-section class="row items-center">
+          <q-avatar
+            :icon="biExclamationTriangleFill"
+            color="primary"
+            text-color="white"
+          />
+          <span class="q-ml-sm">
+            {{ projectItem.title }}을 떠나시겠습니까?
+          </span>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="취소" color="primary" v-close-popup />
+          <q-btn
+            label="탈퇴"
+            color="primary"
+            @click="callLeaveProject()"
+            v-close-popup
+          />
         </q-card-actions>
       </q-card>
-    </q-popup-proxy>
+    </q-dialog>
+    <q-dialog v-model="deleteProjectDialog" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar
+            :icon="biExclamationTriangleFill"
+            color="primary"
+            text-color="white"
+          />
+          <span class="q-ml-sm">
+            {{ projectItem.title }}을 삭제하시겠습니까?
+          </span>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="취소" color="primary" v-close-popup />
+          <q-btn
+            label="삭제"
+            color="primary"
+            @click="callDeleteProject()"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 <script>
+import { ref } from "vue";
 import { mapMutations } from "vuex";
+
+import { deleteProject, leaveProject } from "@/api/project.js";
 import {
   biPencilFill,
   biSendFill,
   biTrashFill,
+  biGearFill,
   biEscape,
+  biExclamationTriangleFill,
 } from "@quasar/extras/bootstrap-icons";
 
 import { fasDoorOpen, fasTrash } from "@quasar/extras/fontawesome-v6";
@@ -69,11 +130,17 @@ export default {
   },
   setup() {
     return {
+      projectPopup: ref(false),
+      deleteProjectDialog: ref(false),
+      leaveProjectDialog: ref(false),
+
       // icon
       biPencilFill,
       biSendFill,
       biTrashFill,
+      biGearFill,
       biEscape,
+      biExclamationTriangleFill,
       fasDoorOpen,
       fasTrash,
     };
@@ -94,6 +161,39 @@ export default {
     },
     getProjectImg(imgNo) {
       return require(`@/assets/project/${imgNo}.png`);
+    },
+    checkUserRole() {
+      return this.projectItem.role !== "ADMIN";
+    },
+    callDeleteProject() {
+      deleteProject(
+        {
+          pathVariable: { projectId: this.projectItem.projectId },
+        },
+        (response) => {
+          response;
+          // this.callGetProject();
+          this.$emit("update-projects");
+        },
+        (error) => {
+          console.warn(error);
+        }
+      );
+    },
+    callLeaveProject() {
+      leaveProject(
+        {
+          pathVariable: { projectId: this.projectItem.projectId },
+        },
+        (response) => {
+          response;
+          // this.callGetProject();
+          this.$emit("update-projects");
+        },
+        (error) => {
+          console.warn(error);
+        }
+      );
     },
   },
 };

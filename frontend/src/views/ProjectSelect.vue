@@ -66,7 +66,10 @@
             </div>
             <div class="cards q-gutter-sm">
               <div v-for="(project, idx) in projects" :key="idx" class="card">
-                <project-card :projectItem="project" />
+                <project-card
+                  :projectItem="project"
+                  @update-projects="callGetProject()"
+                />
               </div>
             </div>
           </div>
@@ -209,8 +212,8 @@
             </q-card-actions>
           </q-card>
         </q-dialog>
-        <q-dialog v-model="joinProjectConfirmModal" persistent
-          ><q-card class="modal">
+        <q-dialog v-model="joinProjectConfirmModal" persistent>
+          <q-card class="modal">
             <q-card-section>
               <div class="container">
                 <div class="imgcontainer">
@@ -270,7 +273,6 @@ import {
 } from "@/api/project";
 import jwt_decode from "jwt-decode";
 import { getUserNameAndImgNo, modifyUserInfo, logoutUser } from "@/api/user";
-
 import {
   fasPlus,
   fasRightToBracket,

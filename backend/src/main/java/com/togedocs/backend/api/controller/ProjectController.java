@@ -42,6 +42,21 @@ public class ProjectController {
         return ResponseEntity.status(204).body(response);
     }
 
+    @DeleteMapping("/{projectId}/leave")
+    public ResponseEntity<?> leaveProject(@PathVariable Long projectId, Principal principal){
+        ProjectResponse.Id response;
+        String providerId = principal.getName();
+        try {
+            response = projectService.leaveProject(projectId, providerId);
+        } catch (IdNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Unexpected exception");
+        }
+        return ResponseEntity.status(204).body(response);
+    }
+
     @PostMapping("/join")
     public ResponseEntity<?> joinProject(@RequestBody ProjectRequest.JoinProjectRequest request, Principal principal) {
         ProjectResponse.ProjectUser response;

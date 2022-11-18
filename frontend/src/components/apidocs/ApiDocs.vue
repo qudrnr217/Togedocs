@@ -99,7 +99,7 @@
                       label="멤버 관리"
                       @click="callGetMemberManageInfo()"
                     >
-                      <q-popup-proxy style="min-width: 230px">
+                      <q-popup-proxy style="min-width: 240px">
                         <q-card>
                           <q-card-section>
                             <div class="text-h6">팀원 목록</div>
@@ -112,24 +112,25 @@
                                 <q-item
                                   v-for="(v, i) in memberManage.members"
                                   :key="i"
-                                  style="padding: 8px 10px"
+                                  style="padding: 8px 6px"
                                 >
                                   <q-item-section
                                     avatar
-                                    style="min-width: 40px"
+                                    style="min-width: 35px"
                                   >
                                     <q-avatar size="30px">
                                       <img :src="getUserImg(v.imgNo)" />
                                     </q-avatar>
                                   </q-item-section>
-                                  <q-item-section>{{ v.name }}</q-item-section
-                                  ><q-item-section side>
+                                  <q-item-section>{{ v.name }}</q-item-section>
+                                  <q-item-section side>
                                     <q-btn-dropdown
                                       unelevated
                                       size="sm"
                                       style="padding: 4px 8px"
                                       color="white"
                                       text-color="primary"
+                                      :disable="checkUserRole()"
                                       :label="v.role"
                                       :dropdown-icon="fasCaretDown"
                                     >
@@ -186,10 +187,10 @@
                                       color="primary"
                                       text-color="white"
                                     />
-                                    <span class="q-ml-sm"
-                                      >{{ removeMember.name }}님을
-                                      내보내겠습니까?</span
-                                    >
+                                    <span class="q-ml-sm">
+                                      {{ removeMember.name }}님을
+                                      내보내겠습니까?
+                                    </span>
                                   </q-card-section>
 
                                   <q-card-actions align="right">
@@ -200,15 +201,15 @@
                                       v-close-popup
                                     />
                                     <q-btn
-                                      flat
-                                      label="확인"
+                                      label="내보내기"
                                       color="primary"
                                       @click="callRemoveMember"
                                       v-close-popup
                                     />
                                   </q-card-actions>
-                                </q-card> </q-dialog
-                            ></q-scroll-area>
+                                </q-card>
+                              </q-dialog>
+                            </q-scroll-area>
                           </q-card-section>
                           <q-separator />
                           <q-card-actions vertical align="center">
@@ -410,7 +411,13 @@
                       <div
                         @mouseover="rowActive[index] = true"
                         @mouseleave="rowActive[index] = false"
-                        class="q-pa-sm q-ma-xs text-right cell-no handle-row drag-item"
+                        class="
+                          q-pa-sm q-ma-xs
+                          text-right
+                          cell-no
+                          handle-row
+                          drag-item
+                        "
                       >
                         <template v-if="!rowActive[index]">
                           {{ index + 1 }}
@@ -653,21 +660,19 @@ import {
   updateCol,
   updateCell,
   updateProjectInfo,
-  removeMember,
-  updateMemberRole,
 } from "@/api/apidocs.js";
 
-import { getMemberManageInfo } from "@/api/project.js";
+import {
+  getMemberManageInfo,
+  removeMember,
+  updateMemberRole,
+} from "@/api/project.js";
 
 import {
   biLayoutSidebarInsetReverse,
   biTrash3,
-  biChevronDoubleRight,
-  biArrowReturnLeft,
-  biGripVertical,
   biPlusCircle,
   biAsterisk,
-  biCaretDownFill,
   biExclamationTriangleFill,
 } from "@quasar/extras/bootstrap-icons";
 import {
@@ -675,17 +680,11 @@ import {
   fasAnglesRight,
   fasGripVertical,
   farClipboard,
-  fasArrowRightFromBracket,
-  fasCircleXmark,
   fasCaretDown,
-  fasUserGear,
 } from "@quasar/extras/fontawesome-v6";
 import {
   mdiDragVerticalVariant,
   mdiArrowLeftBottomBold,
-  mdiExitToApp,
-  mdiCloseCircle,
-  mdiAccountBoxMultiple,
   mdiAccountGroup,
 } from "@quasar/extras/mdi-v6";
 
@@ -763,6 +762,7 @@ export default {
 
       editing_content: ref(""),
 
+      myRole: ref(""),
       memberManage: ref({
         code: "",
         members: [],
@@ -781,26 +781,16 @@ export default {
       // icon
       biLayoutSidebarInsetReverse,
       biTrash3,
-      biChevronDoubleRight,
-      biArrowReturnLeft,
-      biGripVertical,
       biPlusCircle,
       biAsterisk,
-      biCaretDownFill,
       biExclamationTriangleFill,
       fasGripLinesVertical,
       fasAnglesRight,
       fasGripVertical,
       farClipboard,
-      fasArrowRightFromBracket,
-      fasCircleXmark,
       fasCaretDown,
-      fasUserGear,
       mdiDragVerticalVariant,
       mdiArrowLeftBottomBold,
-      mdiExitToApp,
-      mdiCloseCircle,
-      mdiAccountBoxMultiple,
       mdiAccountGroup,
     };
   },
@@ -1335,7 +1325,6 @@ export default {
       this.drawer = true;
       this.drawerRowId = rowId;
     },
-
     colWarning() {
       this.msg = "속성 이름을 입력해주세요!";
       this.warningDialog = true;
@@ -1424,6 +1413,13 @@ export default {
         this.warningDialog = true;
       }
     },
+    getMyRole() {
+      this.memberManage.members.forEach((member) => {
+        if (member.id === this.userId) {
+          this.myRole = member.role;
+        }
+      });
+    },
     callGetMemberManageInfo() {
       getMemberManageInfo(
         {
@@ -1433,6 +1429,7 @@ export default {
         },
         (response) => {
           this.memberManage = response.data;
+          this.getMyRole();
         },
         (error) => {
           console.warn(error);
@@ -1449,6 +1446,7 @@ export default {
         },
         (response) => {
           this.memberManage = response.data;
+          this.getMyRole();
         },
         (error) => {
           console.warn(error);
@@ -1466,6 +1464,7 @@ export default {
         },
         (response) => {
           this.memberManage = response.data;
+          this.getMyRole();
         },
         (error) => {
           console.warn(error);
@@ -1474,6 +1473,9 @@ export default {
     },
     getUserImg(imgNo) {
       return require(`@/assets/user/${imgNo}.png`);
+    },
+    checkUserRole() {
+      return this.myRole !== "ADMIN";
     },
   },
 };

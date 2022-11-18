@@ -28,6 +28,15 @@ function deleteProject(payload, success, fail) {
     .catch(fail);
 }
 
+function leaveProject(payload, success, fail) {
+  let accessToken = localStorage.getItem("accessToken")
+  let projectId = payload.pathVariable.projectId;
+  return apiInstanceWithAuthorization(accessToken)
+    .delete(`/project/${projectId}/leave`)
+    .then(success)
+    .catch(fail);
+}
+
 // 초대 코드로 프로젝트 조회
 function getProjectByCode(payload, success, fail) {
   let accessToken = localStorage.getItem("accessToken")
@@ -74,7 +83,7 @@ function updateMemberRole(payload, success, fail) {
   let accessToken = localStorage.getItem("accessToken")
   let projectId = payload.pathVariable.projectId;
   return apiInstanceWithAuthorization(accessToken)
-    .patch(`api/project/${projectId}/member`)
+    .patch(`/project/${projectId}/member`, payload.requestBody)
     .then(success)
     .catch(fail);
 }
@@ -83,6 +92,7 @@ export {
   getProjects,
   createProject,
   deleteProject,
+  leaveProject,
   joinProject,
   getMemberManageInfo,
   removeMember,
