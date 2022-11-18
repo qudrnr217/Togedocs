@@ -402,9 +402,9 @@
             </tbody>
           </q-markup-table>
         </q-card-section>
-        <q-card-section align="right"
-          ><q-btn flat label="돌아가기" color="primary" v-close-popup
-        /></q-card-section>
+        <q-card-section align="right">
+          <q-btn flat label="돌아가기" color="primary" v-close-popup />
+        </q-card-section>
       </q-card>
     </q-dialog>
   </div>

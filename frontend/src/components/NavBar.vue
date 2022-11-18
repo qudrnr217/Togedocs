@@ -9,13 +9,17 @@
           </div></router-link
         >
         <router-link :to="{ name: 'docs' }">
-          <q-icon :name="biPencilFill" size="xs" />
-          <span> API 명세서</span></router-link
-        >
+          <div :class="{ selected: $route.fullPath == '/project/docs' }">
+            <q-icon :name="biPencilFill" size="xs" />
+            <span>API 명세서</span>
+          </div>
+        </router-link>
         <router-link :to="{ name: 'test' }">
-          <q-icon :name="biSendFill" size="xs" />
-          <span> API 테스트</span></router-link
-        >
+          <div :class="{ selected: $route.fullPath == '/project/test' }">
+            <q-icon :name="biSendFill" size="xs" />
+            <span>API 테스트</span>
+          </div>
+        </router-link>
       </div>
       <div class="navbar-users">
         <q-avatar size="30px" class="q-mr-sm">
@@ -87,5 +91,9 @@ export default {
   align-items: center;
 
   justify-content: space-evenly;
+}
+
+.selected {
+  color: var(--coral);
 }
 </style>
