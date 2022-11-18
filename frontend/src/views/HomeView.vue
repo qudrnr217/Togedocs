@@ -5,8 +5,6 @@
       <img src="@/assets/축제해달.png" alt="" id="rotate" class="rotate3" />
       <img src="@/assets/login.png" alt="" class="login" @click="login()" />
     </div>
-
-    <router-link :to="{ name: 'select' }">To test jh</router-link>
   </div>
 </template>
 
@@ -70,8 +68,7 @@ export default {
   align-items: center;
   flex-direction: column;
 }
-.background {
-}
+
 .rotate3 {
   position: fixed;
   width: 40vw;
@@ -87,12 +84,12 @@ export default {
   position: fixed;
   width: 60vw;
   bottom: 15%;
+  animation: blink-effect 4s ease-in-out infinite;
 }
-@keyframes rotate_image4 {
-  100% {
-    transform: rotate(3200deg);
-  }
+.login:hover {
+  transform: scale(1.02);
 }
+
 @keyframes rotate_image3 {
   100% {
     transform: rotate(3200deg);
@@ -101,6 +98,11 @@ export default {
 @keyframes rotate_image2 {
   100% {
     transform: rotate(360deg);
+  }
+}
+@keyframes blink-effect {
+  50% {
+    opacity: 0%;
   }
 }
 </style>

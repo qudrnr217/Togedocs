@@ -15,7 +15,8 @@ const routes = [
     path: "/home",
     name: "home",
     component: HomeView,
-  }, {
+  },
+  {
     path: "/select",
     name: "select",
     component: ProjectSelect,
@@ -25,7 +26,6 @@ const routes = [
     name: "projectview",
     component: ProjectView,
     children: [
-
       {
         path: "docs",
         name: "docs",
@@ -38,15 +38,6 @@ const routes = [
       },
     ],
   },
-  //   {
-  //     path: "/404",
-  //     name: "notfound",
-  //     component: () => import("@/views/NotFound.vue"),
-  //   },
-  //   {
-  //     path: "/:pathMatch(.*)*",
-  //     redirect: "/404",
-  //   },
 ];
 
 const router = createRouter({
