@@ -1,16 +1,13 @@
 package com.togedocs.backend.api.controller;
 
+import com.togedocs.backend.api.dto.Token;
 import com.togedocs.backend.api.dto.UserRequest;
 import com.togedocs.backend.api.dto.UserResponse;
 import com.togedocs.backend.api.exception.IdNotFoundException;
 import com.togedocs.backend.api.service.UserService;
+import com.togedocs.backend.common.security.config.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -19,14 +16,14 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
+    private final TokenService tokenService;
     @Transactional
-    @PatchMapping("/info")
+    @PatchMapping("/user/info")
     public ResponseEntity<?> modifyUser(@RequestBody UserRequest.ModifyUserRequest userRequest, Principal principal) {
         UserResponse.Id response;
         String providerId = principal.getName();
@@ -39,7 +36,7 @@ public class UserController {
         return ResponseEntity.status(200).body(response);
     }
 
-    @GetMapping("/info/{userId}")
+    @GetMapping("/user/info/{userId}")
     public ResponseEntity<?> getUserNameAndImgNo(@PathVariable Long userId) {
         UserResponse.userNameAndImgNo response;
         try {
@@ -53,7 +50,7 @@ public class UserController {
         return ResponseEntity.status(200).body(response);
     }
 
-    @GetMapping("/project")
+    @GetMapping("/user/project")
     public ResponseEntity<?> getProjectInfo(Principal principal) {
         List<UserResponse.Info> response;
         String providerId = principal.getName();
@@ -65,4 +62,17 @@ public class UserController {
         }
         return ResponseEntity.status(200).body(response);
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> getAccessToken(@RequestBody UserRequest.UserInfoRequest userRequest){
+        Token response;
+        try {
+            response=tokenService.generateToken(userRequest.getUserId(),userRequest.getName(),userRequest.getImgNo(),userRequest.getEmail());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(401).body("Unauthorization Token");
+        }
+        return ResponseEntity.status(200).body(response.getToken());
+    }
+
 }

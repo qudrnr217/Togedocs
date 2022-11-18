@@ -19,6 +19,14 @@ public class UserResponse {
     @Builder
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class accessToken{
+        private Token token;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class userNameAndImgNo {
         private String userName;
         private int imgNo;
