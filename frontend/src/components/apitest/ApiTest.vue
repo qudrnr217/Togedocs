@@ -71,7 +71,7 @@
             >Save</q-btn
           >
         </div>
-        <hr style="border-bottom: 0; border-left: 0" />
+        <hr style="margin-top: 0; border-bottom: 0; border-left: 0" />
         <div id="TypeURL">
           <select id="RequestType" v-model="methodType">
             <option value="GET">GET</option>
@@ -881,9 +881,6 @@ export default {
     };
 
     //vuex에 데이터 저장하는 방식 (이후 이 페이지에서는 사라져야 함)
-    this.SET_USERID(0);
-    this.SET_USERNAME("내이름");
-    this.SET_PROJECTID(1);
 
     //var apiListMount = [];
     getDocs({ pathVariable: { projectId: this.projectId } }, (data) => {
