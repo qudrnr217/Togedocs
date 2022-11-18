@@ -1,6 +1,5 @@
 FROM gradle:7.4-jdk-alpine
-WORKDIR /backend
-COPY . .
+
 COPY /src/main/resources/application.yml application.yml
 RUN gradle clean build --no-daemon
 EXPOSE 8081
