@@ -27,6 +27,7 @@ export default {
       shell.openExternal(
         "http://k7a404.p.ssafy.io:8081/oauth2/authorization/google"
       );
+      // shell.openExternal("http://localhost:8081/oauth2/authorization/google");
     },
   },
   data: () => ({

@@ -1,5 +1,5 @@
 "use strict";
-
+import jwt_decode from "jwt-decode";
 import { app, protocol, BrowserWindow } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
@@ -136,6 +136,8 @@ let info2;
 let accesstoken;
 let accesstoken2;
 let refreshtoken;
+let userInfo;
+let exp;
 const gotTheLock = app.requestSingleInstanceLock();
 if (gotTheLock) {
   app.on("second-instance", (e, argv) => {
@@ -186,15 +188,21 @@ function asyncTest(argv) {
     accesstoken = info2[2];
     accesstoken2 = info[1].split("%20refreshToken=");
     refreshtoken = accesstoken2[1].substring(0, accesstoken2[1].length - 1);
+    userInfo = jwt_decode(accesstoken);
+    exp = userInfo.exp;
     win.webContents.executeJavaScript(`console.log(window.location.href)`);
     logEverywhere("accesstoken: " + accesstoken);
     logEverywhere("refreshtoken: " + refreshtoken);
+    logEverywhere("refreshtoken: " + exp);
     win.webContents.executeJavaScript(
       `window.localStorage.setItem('accessToken','${accesstoken}')`
     );
     win.webContents.executeJavaScript(
       `window.localStorage.setItem('refreshToken','${refreshtoken}')`
     );
+    win.webContents.executeJavaScript(
+      `window.localStorage.setItem('exp','${exp}')`
+    )
     win.webContents.executeJavaScript(
       `window.dispatchEvent(new CustomEvent('login-successful'))`
     );
