@@ -53,5 +53,10 @@ public class JwtAuthFilter extends GenericFilterBean {
             ((HttpServletResponse)response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
+        //access Token이 expired 됐을 경우
+//        if(!tokenService.verifyToken(token)){
+//
+//        }
+
     }
 }

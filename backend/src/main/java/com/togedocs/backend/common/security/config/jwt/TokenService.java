@@ -66,6 +66,7 @@ public class TokenService{
         }
     }
     public String getUid(String token) {
+        System.out.println(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody());
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 }
