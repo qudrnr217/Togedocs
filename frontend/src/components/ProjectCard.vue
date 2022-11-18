@@ -66,7 +66,6 @@ export default {
   methods: {
     ...mapMutations("commonStore", ["SET_PROJECTID"]),
     goToDocs(id) {
-      console.log(id);
       this.SET_PROJECTID(id);
       this.$router.push({ name: "docs" });
     },

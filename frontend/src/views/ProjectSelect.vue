@@ -303,9 +303,7 @@ export default {
 
     //logout api
     logout() {
-      logoutUser().then((data) => {
-        console.log("로그아웃!");
-        console.log(data);
+      logoutUser().then(() => {
         this.$router.push({ name: "home" });
       });
     },
@@ -340,7 +338,6 @@ export default {
       getUserNameAndImgNo(
         { pathVariable: { userId: userId } },
         (response) => {
-          console.log("HELLO", response);
           this.SET_USERNAME(response.data.userName);
           this.SET_IMGNO(response.data.imgNo);
         },

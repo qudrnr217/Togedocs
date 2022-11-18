@@ -960,7 +960,6 @@ export default {
   },
   beforeUnmount() {
     // 화면 전환이 일어나거나 창을 종료했을 때 이 함수가 불림
-    console.log("Unmount...");
     this.unLoadEvent();
     window.removeEventListener("beforeunload", this.unLoadEvent);
   },
