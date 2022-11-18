@@ -3,9 +3,21 @@
     <q-page-container>
       <div class="projectheader">
         <div class="buttons q-gutter-sm">
-          <q-btn @click="showModifyUserInfoModal()">회원정보수정</q-btn>
+          <q-btn
+            outline
+            rounded
+            :icon="fasUser"
+            label="프로필 수정"
+            @click="showModifyUserInfoModal()"
+          ></q-btn>
           <!-- logout 함수는 미구현. this.$router.push로 home으로 돌아가게 해야할듯 -->
-          <q-btn @click="logout()">로그아웃</q-btn>
+          <q-btn
+            outline
+            rounded
+            :icon="fasArrowRightFromBracket"
+            label="로그아웃"
+            @click="logout()"
+          ></q-btn>
         </div>
         <div class="header">
           <div class="profileimg">
@@ -73,7 +85,12 @@
                     style="height: 100px; width: 100px; border-radius: 5px"
                   />
                   <div>
-                    <q-btn dense @click="makeImgNo(1)">RESET</q-btn>
+                    <q-btn
+                      dense
+                      round
+                      @click="makeImgNo(1)"
+                      :icon="fasRotate"
+                    />
                   </div>
                 </div>
                 <q-input
@@ -127,7 +144,12 @@
                     style="height: 100px; width: 100px; border-radius: 5px"
                   />
                   <div>
-                    <q-btn dense @click="makeImgNo(2)">RESET</q-btn>
+                    <q-btn
+                      dense
+                      round
+                      @click="makeImgNo(2)"
+                      :icon="fasRotate"
+                    />
                   </div>
                 </div>
                 <q-input
@@ -252,7 +274,13 @@ import {
 import jwt_decode from "jwt-decode";
 import { getUserNameAndImgNo, modifyUserInfo, logoutUser } from "@/api/user";
 
-import { fasPlus, fasRightToBracket } from "@quasar/extras/fontawesome-v6";
+import {
+  fasPlus,
+  fasRightToBracket,
+  fasRotate,
+  fasUser,
+  fasArrowRightFromBracket,
+} from "@quasar/extras/fontawesome-v6";
 
 export default {
   computed: {
@@ -280,8 +308,13 @@ export default {
       warningDialog: ref(false),
 
       projects: ref([]),
+
+      // icon
       fasPlus,
       fasRightToBracket,
+      fasRotate,
+      fasUser,
+      fasArrowRightFromBracket,
     };
   },
   components: {
