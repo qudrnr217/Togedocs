@@ -64,28 +64,3 @@ jwt:
   refresh-token-props:
     expiration-time-milli-sec: '864000000'
     secret: ZqefBscadfsGjaiADFSGaoGHdsjjsDFksjgDskdjgDjgHJmdSlzLfjbhikjaqWSogvjdsjzUEvlkvvhnDFGVnkfa==
----
-# local only
-#spring.config.activate.on-profile: local
-
-# database
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: a404
-    password: k7a4@4r@@t
-    url: jdbc:mysql://k7a404.p.ssafy.io:3306/togedocs?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
-  data:
-    mongodb:
-      uri: mongodb://root:k7a4%404r%40%40t@k7a404.p.ssafy.io:27017/togedocs
-  #security
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: 693779976943-29nocg5vr041lva4a0colrlmm1b813j8.apps.googleusercontent.com
-            client-secret: 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
-            scope:
-              - email
-              - profile
