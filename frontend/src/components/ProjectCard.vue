@@ -1,53 +1,68 @@
 <template>
-  <div>
-    <!-- <router-link
-      :to="{ name: 'docs', params: { projectId: projectItem.projectId } }"
-    > -->
-    <div class="container">
-      <div class="imgcontainer">
-        <img :src="getProjectImg(projectItem.imgNo)" />
+  <div class="container">
+    <div class="imgcontainer">
+      <img :src="getProjectImg(projectItem.imgNo)" />
 
-        <q-btn
-          class="router-btn"
-          style="bottom: 12vh"
-          size="1.5vh"
-          @click="goToDocs(projectItem.projectId)"
-        >
-          <q-icon left :name="biPencilFill" size="xs" />
-          <div>API 명세서</div>
-        </q-btn>
+      <q-btn
+        class="router-btn"
+        style="bottom: 12vh"
+        size="1.5vh"
+        @click="goToDocs(projectItem.projectId)"
+      >
+        <q-icon left :name="biPencilFill" size="xs" />
+        <div>API 명세서</div>
+      </q-btn>
 
-        <q-btn
-          class="router-btn"
-          style="bottom: 6vh"
-          size="1.5vh"
-          @click="goToTest(projectItem.projectId)"
-        >
-          <q-icon left :name="biSendFill" size="xs" />
-          <div>API 테스트</div>
-        </q-btn>
+      <q-btn
+        class="router-btn"
+        style="bottom: 6vh"
+        size="1.5vh"
+        @click="goToTest(projectItem.projectId)"
+      >
+        <q-icon left :name="biSendFill" size="xs" />
+        <div>API 테스트</div>
+      </q-btn>
+    </div>
+
+    <div class="projectinfo">
+      <div class="title">{{ projectItem.title }}</div>
+      <div class="title-detail">
+        {{ projectItem.desc }}
       </div>
-
-      <div class="projectinfo">
-        <div class="title">{{ projectItem.title }}</div>
-        <div class="title-detail">
-          {{ projectItem.desc }}
-        </div>
-        <div class="title-name q-pb-md text-right">
-          <template v-for="name in projectItem.names" :key="name">
-            <span class="q-ma-xs">
-              {{ name }}
-            </span>
-          </template>
-        </div>
+      <div class="title-name q-pb-md text-right">
+        <template v-for="name in projectItem.names" :key="name">
+          <span class="q-ma-xs">
+            {{ name }}
+          </span>
+        </template>
       </div>
     </div>
-    <!-- </router-link> -->
+    <q-popup-proxy context-menu>
+      <q-card>
+        <q-card-actions vertical>
+          <q-btn flat>
+            <q-icon left :name="fasDoorOpen" size="xs" />
+            <div>프로젝트 탈퇴</div>
+          </q-btn>
+          <q-btn v-if="projectItem.role == 'ADMIN'" flat>
+            <q-icon left :name="fasTrash" size="xs" />
+            <div>프로젝트 삭제</div></q-btn
+          >
+        </q-card-actions>
+      </q-card>
+    </q-popup-proxy>
   </div>
 </template>
 <script>
-import { biPencilFill, biSendFill } from "@quasar/extras/bootstrap-icons";
 import { mapMutations } from "vuex";
+import {
+  biPencilFill,
+  biSendFill,
+  biTrashFill,
+  biEscape,
+} from "@quasar/extras/bootstrap-icons";
+
+import { fasDoorOpen, fasTrash } from "@quasar/extras/fontawesome-v6";
 export default {
   data() {
     return {};
@@ -57,6 +72,10 @@ export default {
       // icon
       biPencilFill,
       biSendFill,
+      biTrashFill,
+      biEscape,
+      fasDoorOpen,
+      fasTrash,
     };
   },
 
