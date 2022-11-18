@@ -333,9 +333,14 @@ export default {
 
     //logout api
     logout() {
-      logoutUser().then(() => {
-        this.$router.push({ name: "home" });
-      });
+      logoutUser(
+        () => {
+          this.$router.push({ name: "home" });
+        },
+        (e) => {
+          console.warn(e);
+        }
+      );
     },
 
     //프로젝트 생성 api

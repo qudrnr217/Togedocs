@@ -22,10 +22,26 @@
         </router-link>
       </div>
       <div class="navbar-users">
-        <q-avatar size="30px" class="q-mr-sm">
-          <img :src="getUserImg(imgNo)" />
-        </q-avatar>
-        <div>{{ userName }}</div>
+        <!-- no-caps -->
+        <q-btn-dropdown
+          unelevated
+          rounded
+          color="white"
+          text-color="primary"
+          :dropdown-icon="fasCaretDown"
+        >
+          <template v-slot:label>
+            <q-avatar size="30px" class="q-mr-sm">
+              <img :src="getUserImg(imgNo)" />
+            </q-avatar>
+            <div>{{ userName }}</div>
+          </template>
+          <q-list>
+            <q-item clickable v-close-popup @click="logout()">
+              <q-item-section>로그아웃</q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
       </div>
     </div>
   </q-header>
@@ -38,6 +54,8 @@ import {
   biPencilFill,
   biSendFill,
 } from "@quasar/extras/bootstrap-icons";
+import { fasCaretDown } from "@quasar/extras/fontawesome-v6";
+import { logoutUser } from "@/api/user";
 export default {
   name: "NavBar",
   setup() {
@@ -46,6 +64,7 @@ export default {
       biHouseFill,
       biPencilFill,
       biSendFill,
+      fasCaretDown,
     };
   },
   computed: {
@@ -58,6 +77,16 @@ export default {
     },
     getUserImg(imgNo) {
       return require(`@/assets/user/${imgNo}.png`);
+    },
+    logout() {
+      logoutUser(
+        () => {
+          this.$router.push({ name: "home" });
+        },
+        (e) => {
+          console.warn(e);
+        }
+      );
     },
   },
 };
