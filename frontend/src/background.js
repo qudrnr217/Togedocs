@@ -34,7 +34,7 @@ async function createWindow() {
     win.loadURL("app://./index.html");
   }
 
-  win.setIcon("./src/assets/Cat.png");
+  win.setIcon("./src/assets/thumbnail.png");
 
   // CORS 에러 해결
   win.webContents.session.webRequest.onBeforeSendHeaders(
@@ -101,7 +101,7 @@ app.on("ready", async () => {
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (process.platform === "win32") {
-    process.on("message", (data) => {
+    process.on("message", data => {
       if (data === "graceful-exit") {
         app.quit();
       }
@@ -202,7 +202,7 @@ function asyncTest(argv) {
     );
     win.webContents.executeJavaScript(
       `window.localStorage.setItem('exp','${exp}')`
-    )
+    );
     win.webContents.executeJavaScript(
       `window.dispatchEvent(new CustomEvent('login-successful'))`
     );
