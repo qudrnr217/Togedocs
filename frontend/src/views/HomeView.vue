@@ -1,8 +1,8 @@
 <template>
   <div class="center">
     <div class="clip">
-      <img src="@/assets/placeholder.png" alt="" class="rotate2" />
-      <img src="@/assets/축제해달.png" alt="" id="rotate" class="rotate3" />
+      <img src="@/assets/background.png" alt="" class="rotate2" />
+      <img src="@/assets/togedog.png" alt="" id="rotate" class="rotate3" />
       <img src="@/assets/login.png" alt="" class="login" @click="login()" />
     </div>
   </div>
@@ -48,8 +48,8 @@ export default {
 
 <style scoped>
 .clip {
-  width: 90%;
-  height: 90%;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -72,13 +72,15 @@ export default {
 .rotate3 {
   position: fixed;
   width: 40vw;
-  animation: rotate_image3 180s linear infinite;
+  animation: rotate_image3 240s linear infinite;
   transform-origin: 20% 50%;
 }
 
 .rotate2 {
-  animation: rotate_image2 30s linear infinite;
+  animation: rotate_image2 120s linear infinite;
   transform-origin: 50% 50%;
+  width: 200vw;
+  height: 200vh;
 }
 .login {
   position: fixed;
@@ -88,6 +90,7 @@ export default {
 }
 .login:hover {
   transform: scale(1.02);
+  animation: none;
 }
 
 @keyframes rotate_image3 {

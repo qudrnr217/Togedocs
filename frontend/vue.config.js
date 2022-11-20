@@ -1,21 +1,19 @@
-const { defineConfig } = require('@vue/cli-service')
+const { defineConfig } = require("@vue/cli-service");
 
 module.exports = defineConfig({
-  transpileDependencies: [
-    'quasar'
-  ],
+  transpileDependencies: ["quasar"],
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
         win: {
-          icon: './Cat.png'
-        }
+          icon: "./thumbnail.png",
+        },
       },
-      nodeIntegration: true
+      nodeIntegration: true,
     },
     quasar: {
-      importStrategy: 'kebab',
-      rtlSupport: false
-    }
-  }
-})
+      importStrategy: "kebab",
+      rtlSupport: false,
+    },
+  },
+});
