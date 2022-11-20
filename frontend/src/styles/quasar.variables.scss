@@ -1,0 +1,15 @@
+// It's highly recommended to change the default colors
+// to match your app's branding.
+
+$primary: var(--charcoal);
+$secondary: var(--coral);
+$accent: var(--azure);
+
+$dark: #1d1d1d;
+
+$positive: #21ba45;
+$negative: #c10015;
+$info: var(--cultured);
+$warning: var(--white);
+
+@import "~quasar-variables-styl";

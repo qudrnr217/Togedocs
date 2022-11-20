@@ -1,0 +1,53 @@
+html {
+  width: 100%;
+  color: var(--charcoal);
+
+  overflow-x: hidden;
+}
+body {
+  margin: 0;
+  padding: 0;
+}
+:root {
+  --azure: rgb(8, 0, 253);
+  --coral: #fd8355ff;
+  --cultured: #f9f9f9ff;
+  --white: #ffffffff;
+  --charcoal: #213e51ff;
+  --GET: #56a3f1ff;
+  --POST: #53cd84ff;
+  --PUT: #fdc848ff;
+  --PATCH: #b464d3ff;
+  --DELETE: #ef665eff;
+  --Log2: #53cd84ff;
+  --Log4: #ef665eff;
+  --Log5: #ef665eff;
+  --Log3: #fdc848ff;
+}
+
+/*
+  사용법
+  var(--cultured);
+*/
+@font-face {
+  font-family: "NanumSquare";
+  font-weight: 400;
+  src: url("@/assets/fonts/NanumSquareR.ttf");
+  src: url("@/assets/fonts/NanumSquareR.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NanumSquare";
+  font-weight: 700;
+  src: url("@/assets/fonts/NanumSquareB.ttf");
+  src: url("@/assets/fonts/NanumSquareB.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "NanumSquare";
+  font-weight: 300;
+  src: url("@/assets/fonts/NanumSquareL.ttf");
+  src: url("@/assets/fonts/NanumSquareL.ttf") format("truetype");
+}
+* {
+  font-family: "NanumSquare";
+}
