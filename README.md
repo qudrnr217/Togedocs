@@ -8,7 +8,7 @@
 <hr/>
 
 ## :sparkles: Download
-### [:point_right: :point_right: :point_right: 다운로드 링크 바로가기 :point_left: :point_left: :point_left: ](https://lab.ssafy.com/s07-final/S07P31A404/uploads/a50bbef7672c45fd07a1c0c6de22ef8c/TogeDocs_Setup_0.1.0.exe)
+### [:point_right: :point_right: :point_right: 다운로드 링크 바로가기 :point_left: :point_left: :point_left: ](https://lab.ssafy.com/s07-final/S07P31A404/uploads/d9ac93dd5f1c2351ff3f646cb26f4312/TogeDocs_Setup_0.1.0.exe)
 
 <hr/>
    
