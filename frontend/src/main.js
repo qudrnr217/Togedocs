@@ -11,4 +11,4 @@ createApp(App)
   .use(router)
   .mount("#app");
 
-// window.console.log = function () {};
+window.console.log = function () {};

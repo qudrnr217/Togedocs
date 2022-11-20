@@ -2,12 +2,12 @@
   <q-header>
     <div class="navbar">
       <div class="navbar-pages">
-        <router-link :to="{ name: 'select' }" @click="resetProjectId()">
-          <div>
+        <router-link :to="{ name: 'select' }">
+          <div @click="resetProjectId()">
             <q-icon :name="fasReply" size="sm" color="primary" />
             <q-tooltip>프로젝트 다시 선택하기</q-tooltip>
-          </div></router-link
-        >
+          </div>
+        </router-link>
         <router-link :to="{ name: 'docs' }">
           <div :class="{ selected: $route.fullPath == '/project/docs' }">
             <q-icon :name="biPencilFill" size="xs" />

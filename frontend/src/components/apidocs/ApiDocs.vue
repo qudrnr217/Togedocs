@@ -7,8 +7,8 @@
             <div class="row shadow-1" style="min-width: 700px">
               <div class="q-pl-md q-py-sm col-7">
                 <div class="row title">
-                  {{ document.title
-                  }}<q-popup-edit
+                  {{ document.title }}
+                  <q-popup-edit
                     v-model="document.title"
                     auto-save
                     v-slot="scope"
@@ -411,13 +411,7 @@
                       <div
                         @mouseover="rowActive[index] = true"
                         @mouseleave="rowActive[index] = false"
-                        class="
-                          q-pa-sm q-ma-xs
-                          text-right
-                          cell-no
-                          handle-row
-                          drag-item
-                        "
+                        class="q-pa-sm q-ma-xs text-right cell-no handle-row drag-item"
                       >
                         <template v-if="!rowActive[index]">
                           {{ index + 1 }}
@@ -460,10 +454,11 @@
                           />
                           <div class="hide">
                             <template v-if="cell.focuses.length == 1">
-                              {{ cell.focuses[0] }}
+                              {{ getNameFromId(cell.focuses[0]) }}
                             </template>
                             <template v-else-if="cell.focuses.length > 1">
-                              {{ cell.focuses[0] }}, {{ cell.focuses[1] }}...
+                              {{ getNameFromId(cell.focuses[0]) }},
+                              {{ getNameFromId(cell.focuses[1]) }}...
                             </template>
                           </div>
                         </div>
@@ -604,23 +599,29 @@
                         v-if="focusesLength(drawerRowId, col.uuid) == 1"
                       >
                         {{
-                          rowData[getRowIdxFromRowId(drawerRowId)][
-                            getColIdxFromColId(col.uuid)
-                          ].focuses[0]
+                          getNameFromId(
+                            rowData[getRowIdxFromRowId(drawerRowId)][
+                              getColIdxFromColId(col.uuid)
+                            ].focuses[0]
+                          )
                         }}
                       </template>
                       <template
                         v-else-if="focusesLength(drawerRowId, col.uuid) > 1"
                       >
                         {{
-                          rowData[getRowIdxFromRowId(drawerRowId)][
-                            getColIdxFromColId(col.uuid)
-                          ].focuses[0]
+                          getNameFromId(
+                            rowData[getRowIdxFromRowId(drawerRowId)][
+                              getColIdxFromColId(col.uuid)
+                            ].focuses[0]
+                          )
                         }},
                         {{
-                          rowData[getRowIdxFromRowId(drawerRowId)][
-                            getColIdxFromColId(col.uuid)
-                          ].focuses[1]
+                          getNameFromId(
+                            rowData[getRowIdxFromRowId(drawerRowId)][
+                              getColIdxFromColId(col.uuid)
+                            ].focuses[1]
+                          )
                         }}...
                       </template>
                     </div>
@@ -949,6 +950,9 @@ export default {
     window.removeEventListener("beforeunload", this.unLoadEvent);
   },
   methods: {
+    getNameFromId(id) {
+      return this.users[id].name;
+    },
     unLoadEvent() {
       this.focusReq(2);
       this.stompClient.disconnect();
