@@ -109,12 +109,9 @@ async function checkExp(token){
   let exp = localStorage.getItem("exp");
   let now = new Date().getTime().toString();
   now=now.substring(0,10);
-  console.log(now);
-
   let time = exp - now;
   let userInfo = jwt_decode(token);
   if(time<=60){//1분 미만으로 남았다면
-    console.log("accessToken 다시 줘!");
     var params = {
       imgNo: userInfo.imgNo,
       name:userInfo.name,
@@ -122,7 +119,6 @@ async function checkExp(token){
       userId:userInfo.userId,
     }
     await api.post("/refresh",params).then((data)=>{
-      console.log(data);
       localStorage.setItem("accessToken",data.data);
       userInfo = jwt_decode(data.data);
       localStorage.setItem("exp",userInfo.exp);

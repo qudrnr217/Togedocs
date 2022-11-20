@@ -323,7 +323,6 @@ export default {
     let token = localStorage.getItem("accessToken");
     if (token) {
       let userInfo = jwt_decode(token);
-      console.log("userInfo: ", userInfo);
       this.SET_USERID(userInfo.userId);
       this.callGetUserNameAndImgNo(this.userId);
     }
