@@ -77,7 +77,7 @@ export default {
 }
 
 .rotate2 {
-  animation: rotate_image2 120s linear infinite;
+  animation: rotate_image2 1200s linear infinite;
   transform-origin: 50% 50%;
   width: 200vw;
   height: 200vh;
