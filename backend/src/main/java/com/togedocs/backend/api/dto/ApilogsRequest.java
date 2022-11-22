@@ -4,6 +4,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 
 public class ApilogsRequest {
@@ -20,8 +22,9 @@ public class ApilogsRequest {
         private String url;
         private String requestBody;
 
-        @NotEmpty
-        private int statusCode;
+        @Min(value = 100)
+        @Max(value = 999)
+        private Integer statusCode;
         private String responseBody;
     }
 }

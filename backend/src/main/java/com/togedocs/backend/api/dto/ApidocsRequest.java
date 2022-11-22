@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.PositiveOrZero;
 
 public class ApidocsRequest {
 
@@ -22,7 +23,7 @@ public class ApidocsRequest {
     public static class MoveItemRequest {
         @NotEmpty
         private String fromId;
-        @NotEmpty
+        @PositiveOrZero
         private Integer toIndex;
     }
 
