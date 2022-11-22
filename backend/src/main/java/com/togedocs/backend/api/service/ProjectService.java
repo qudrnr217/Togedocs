@@ -9,7 +9,7 @@ import com.togedocs.backend.domain.entity.*;
 import com.togedocs.backend.domain.repository.ProjectRepository;
 import com.togedocs.backend.domain.repository.ProjectUserRepository;
 import com.togedocs.backend.domain.repository.UserRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -20,15 +20,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ProjectService {
     private final String APIDOCS = "apidocs";
     private final String APILOGS = "apilogs";
     private final int DEFAULT_WIDTH = 100;
-    private UserRepository userRepository;
-    private ProjectRepository projectRepository;
-    private ProjectUserRepository projectUserRepository;
-    private MongoTemplate mongoTemplate;
+    private final UserRepository userRepository;
+    private final ProjectRepository projectRepository;
+    private final ProjectUserRepository projectUserRepository;
+    private final MongoTemplate mongoTemplate;
 
     public Project findById(Long projectId) throws IdNotFoundException {
         return projectRepository.findById(projectId)

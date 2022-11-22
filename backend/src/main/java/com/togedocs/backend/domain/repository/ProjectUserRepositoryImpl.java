@@ -7,7 +7,6 @@ import com.togedocs.backend.api.dto.UserDto;
 import com.togedocs.backend.domain.entity.QProjectUser;
 import com.togedocs.backend.domain.entity.QUser;
 import lombok.RequiredArgsConstructor;
-
 import java.util.List;
 
 @RequiredArgsConstructor

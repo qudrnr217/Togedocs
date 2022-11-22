@@ -2,7 +2,6 @@ package com.togedocs.backend.api.dto;
 
 import com.togedocs.backend.domain.entity.ProjectUserRole;
 import lombok.*;
-
 import java.util.List;
 
 public class ProjectResponse {

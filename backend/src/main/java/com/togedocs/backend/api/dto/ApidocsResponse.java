@@ -3,7 +3,6 @@ package com.togedocs.backend.api.dto;
 import com.togedocs.backend.domain.entity.ColDto;
 import lombok.*;
 import org.bson.types.ObjectId;
-
 import java.util.List;
 import java.util.Map;
 

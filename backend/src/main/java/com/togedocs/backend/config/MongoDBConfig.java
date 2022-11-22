@@ -15,7 +15,6 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 public class MongoDBConfig {
     @Value("${spring.data.mongodb.uri}")
     private String mongodb_uri;
-
     @Bean
     public MongoTemplate mongoTemplate() throws Exception {
         MongoClient mongoClient = MongoClients.create(mongodb_uri);
