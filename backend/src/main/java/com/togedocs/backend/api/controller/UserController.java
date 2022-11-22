@@ -9,7 +9,6 @@ import com.togedocs.backend.common.security.config.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.transaction.Transactional;
 import java.security.Principal;
 import java.util.List;

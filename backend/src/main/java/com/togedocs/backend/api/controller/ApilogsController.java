@@ -4,15 +4,17 @@ import com.togedocs.backend.api.dto.ApilogsRequest;
 import com.togedocs.backend.api.dto.ApilogsResponse;
 import com.togedocs.backend.api.exception.IdNotFoundException;
 import com.togedocs.backend.api.service.ApilogsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/logs")
 public class ApilogsController {
-    @Autowired
-    private ApilogsService apilogsService;
+    private final ApilogsService apilogsService;
 
     @GetMapping("/{projectId}/{rowId}")
     public ResponseEntity<?> getLogs(@PathVariable Long projectId, @PathVariable String rowId) {
@@ -27,7 +29,7 @@ public class ApilogsController {
     }
 
     @PostMapping("/{projectId}/{rowId}")
-    public ResponseEntity<?> addLog(@PathVariable Long projectId, @PathVariable String rowId, @RequestBody ApilogsRequest.LogDto request) {
+    public ResponseEntity<?> addLog(@PathVariable Long projectId, @PathVariable String rowId, @RequestBody @Valid ApilogsRequest.AddLogRequest request) {
         ApilogsResponse.LogIdsAndTime response;
         try {
             response = apilogsService.addLog(projectId, rowId, request);

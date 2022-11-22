@@ -1,6 +1,5 @@
 package com.togedocs.backend.domain.repository;
 
-import com.togedocs.backend.api.dto.UserResponse;
 import com.togedocs.backend.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

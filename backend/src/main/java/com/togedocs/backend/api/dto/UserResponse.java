@@ -1,9 +1,6 @@
 package com.togedocs.backend.api.dto;
 
-import com.togedocs.backend.domain.entity.User;
 import lombok.*;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserResponse {

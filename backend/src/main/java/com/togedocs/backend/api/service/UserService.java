@@ -12,7 +12,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +20,6 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
-
     private final ProjectUserRepository projectUserRepository;
     private final MongoTemplate mongoTemplate;
 
