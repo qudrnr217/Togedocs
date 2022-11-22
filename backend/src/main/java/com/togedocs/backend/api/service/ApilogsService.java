@@ -5,22 +5,21 @@ import com.togedocs.backend.api.dto.ApilogsRequest;
 import com.togedocs.backend.api.dto.ApilogsResponse;
 import com.togedocs.backend.api.exception.IdNotFoundException;
 import com.togedocs.backend.domain.entity.LogDto;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ApilogsService {
 
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
     private final String APILOGS = "apilogs";
 

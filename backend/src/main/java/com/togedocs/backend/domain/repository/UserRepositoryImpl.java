@@ -8,7 +8,6 @@ import com.togedocs.backend.domain.entity.QProjectUser;
 import com.togedocs.backend.domain.entity.QUser;
 import com.togedocs.backend.domain.entity.User;
 import lombok.RequiredArgsConstructor;
-
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -20,17 +19,12 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
 
         QUser user = QUser.user;
 
-
         return jpaQueryFactory.update(user)
                 .where(user.id.eq(userEntity.getId()))
                 .set(user.name,userRequest.getName())
                 .set(user.imgNo,userRequest.getImgNo())
-//                .set(user.email,userEntity.getEmail())
-//                .set(user.provider,userEntity.getProvider())
-//                .set(user.providerId,userEntity.getProviderId())
                 .execute();
     }
-
 
     @Override
     public List<Long> getProjectId(Long user_id) {
@@ -57,7 +51,6 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
                 .on(projectUser.user.id.eq(user.id))
                 .where(projectUser.project.id.eq(projectId))
                 .fetch();
-
         return names;
     }
 
@@ -69,11 +62,6 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
                 .from(project)
                 .where(project.id.eq(projectId))
                 .fetchOne();
-
         return imgNo;
     }
-
-
-    //TODO title
-
 }

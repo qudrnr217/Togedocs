@@ -5,16 +5,16 @@ import com.togedocs.backend.api.dto.ApidocsResponse;
 import com.togedocs.backend.api.exception.NotEnoughArgsException;
 import com.togedocs.backend.api.exception.IdNotFoundException;
 import com.togedocs.backend.api.service.ApidocsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/docs")
 public class ApidocsController {
 
-    @Autowired
-    private ApidocsService apidocsService;
+    private final ApidocsService apidocsService;
 
     @PostMapping("/{projectId}/rows")
     public ResponseEntity<?> addRow(@PathVariable Long projectId) {

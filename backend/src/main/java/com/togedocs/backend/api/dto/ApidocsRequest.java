@@ -1,6 +1,5 @@
 package com.togedocs.backend.api.dto;
 
-import com.togedocs.backend.domain.entity.ColCategory;
 import lombok.*;
 
 public class ApidocsRequest {

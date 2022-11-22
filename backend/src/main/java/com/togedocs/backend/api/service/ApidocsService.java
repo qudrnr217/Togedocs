@@ -8,7 +8,7 @@ import com.togedocs.backend.api.exception.IdNotFoundException;
 import com.togedocs.backend.domain.entity.Apidocs;
 import com.togedocs.backend.domain.entity.ColCategory;
 import com.togedocs.backend.domain.entity.ColDto;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -21,10 +21,10 @@ import java.util.UUID;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ApidocsService {
 
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
     private final String APIDOCS = "apidocs";
 
