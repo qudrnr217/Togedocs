@@ -2,12 +2,13 @@ package com.togedocs.backend.api.controller;
 
 import com.togedocs.backend.api.dto.ApidocsRequest;
 import com.togedocs.backend.api.dto.ApidocsResponse;
-import com.togedocs.backend.api.exception.NotEnoughArgsException;
 import com.togedocs.backend.api.exception.IdNotFoundException;
 import com.togedocs.backend.api.service.ApidocsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,12 +32,10 @@ public class ApidocsController {
     }
 
     @PostMapping("/{projectId}/cols")
-    public ResponseEntity<?> addCol(@PathVariable Long projectId, @RequestBody ApidocsRequest.AddColRequest request) {
+    public ResponseEntity<?> addCol(@PathVariable Long projectId, @RequestBody @Valid ApidocsRequest.AddColRequest request) {
         ApidocsResponse.Ids response;
         try {
             response = apidocsService.addCol(projectId, request);
-        } catch (NotEnoughArgsException e) {
-            return ResponseEntity.status(500).body(request);
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
@@ -47,12 +46,10 @@ public class ApidocsController {
     }
 
     @PatchMapping("/{projectId}/rows")
-    public ResponseEntity<?> moveRow(@PathVariable Long projectId, @RequestBody ApidocsRequest.MoveItemRequest request) {
+    public ResponseEntity<?> moveRow(@PathVariable Long projectId, @RequestBody @Valid ApidocsRequest.MoveItemRequest request) {
         ApidocsResponse.Ids response;
         try {
             response = apidocsService.moveRow(projectId, request);
-        } catch (NotEnoughArgsException e) {
-            return ResponseEntity.status(500).body(request);
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
@@ -63,12 +60,10 @@ public class ApidocsController {
     }
 
     @PatchMapping("/{projectId}/cols")
-    public ResponseEntity<?> moveCol(@PathVariable Long projectId, @RequestBody ApidocsRequest.MoveItemRequest request) {
+    public ResponseEntity<?> moveCol(@PathVariable Long projectId, @RequestBody @Valid ApidocsRequest.MoveItemRequest request) {
         ApidocsResponse.Ids response;
         try {
             response = apidocsService.moveCol(projectId, request);
-        } catch (NotEnoughArgsException e) {
-            return ResponseEntity.status(500).body(request);
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
@@ -107,12 +102,10 @@ public class ApidocsController {
     }
 
     @PatchMapping("/{projectId}/cell")
-    public ResponseEntity<?> updateCell(@PathVariable Long projectId, @RequestBody ApidocsRequest.UpdateCellRequest request) {
+    public ResponseEntity<?> updateCell(@PathVariable Long projectId, @RequestBody @Valid ApidocsRequest.UpdateCellRequest request) {
         ApidocsResponse.Ids response;
         try {
             response = apidocsService.updateCell(projectId, request);
-        } catch (NotEnoughArgsException e) {
-            return ResponseEntity.status(500).body(request);
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
@@ -137,12 +130,10 @@ public class ApidocsController {
     }
 
     @PatchMapping("/{projectId}")
-    public ResponseEntity<?> updateProjectInfo(@PathVariable Long projectId, @RequestBody ApidocsRequest.UpdateProjectInfoRequest request) {
+    public ResponseEntity<?> updateProjectInfo(@PathVariable Long projectId, @RequestBody @Valid ApidocsRequest.UpdateProjectInfoRequest request) {
         ApidocsResponse.ProjectInfo response;
         try {
             response = apidocsService.updateProjectInfo(projectId, request);
-        } catch (NotEnoughArgsException e) {
-            return ResponseEntity.status(500).body(request);
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
@@ -153,12 +144,10 @@ public class ApidocsController {
     }
 
     @PatchMapping("/{projectId}/cols/{colId}")
-    public ResponseEntity<?> updateCol(@PathVariable Long projectId, @PathVariable String colId, @RequestBody ApidocsRequest.UpdateColRequest request) {
+    public ResponseEntity<?> updateCol(@PathVariable Long projectId, @PathVariable String colId, @RequestBody @Valid ApidocsRequest.UpdateColRequest request) {
         ApidocsResponse.Ids response;
         try {
             response = apidocsService.updateCol(projectId, colId, request);
-        } catch (NotEnoughArgsException e) {
-            return ResponseEntity.status(500).body(request);
         } catch (IdNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {

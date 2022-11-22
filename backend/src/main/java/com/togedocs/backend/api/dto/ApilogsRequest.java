@@ -1,21 +1,26 @@
 package com.togedocs.backend.api.dto;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotEmpty;
 
 public class ApilogsRequest {
 
     @Getter
-    @Builder
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class LogDto {
-        // logTime은 service에서 생성
+    public static class AddLogRequest {
+        @NotEmpty
         private String userName;
 
+        @NotEmpty
         private String method;
+        @NotEmpty
         private String url;
         private String requestBody;
 
+        @NotEmpty
         private int statusCode;
         private String responseBody;
     }
