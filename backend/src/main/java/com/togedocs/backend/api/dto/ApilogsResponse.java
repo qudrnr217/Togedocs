@@ -2,6 +2,7 @@ package com.togedocs.backend.api.dto;
 
 import com.togedocs.backend.domain.entity.LogDto;
 import lombok.*;
+
 import java.util.List;
 
 public class ApilogsResponse {
@@ -24,16 +25,14 @@ public class ApilogsResponse {
     @Builder
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class LogIdsAndTime {
+    public static class LogIds {
         private Long projectId;
         private String rowId;
-        private String logTime;
 
-        public static ApilogsResponse.LogIdsAndTime build(Long projectId, String rowId, String logTime) {
-            return LogIdsAndTime.builder()
+        public static ApilogsResponse.LogIds build(Long projectId, String rowId) {
+            return LogIds.builder()
                     .projectId(projectId)
                     .rowId(rowId)
-                    .logTime(logTime)
                     .build();
         }
     }

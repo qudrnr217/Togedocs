@@ -4,7 +4,8 @@ import com.mongodb.client.result.DeleteResult;
 import com.togedocs.backend.api.dto.ProjectRequest;
 import com.togedocs.backend.api.dto.ProjectResponse;
 import com.togedocs.backend.api.dto.UserDto;
-import com.togedocs.backend.api.exception.IdNotFoundException;
+import com.togedocs.backend.common.exception.BusinessException;
+import com.togedocs.backend.common.exception.ErrorCode;
 import com.togedocs.backend.domain.entity.*;
 import com.togedocs.backend.domain.repository.ProjectRepository;
 import com.togedocs.backend.domain.repository.ProjectUserRepository;
@@ -30,14 +31,14 @@ public class ProjectService {
     private final ProjectUserRepository projectUserRepository;
     private final MongoTemplate mongoTemplate;
 
-    public Project findById(Long projectId) throws IdNotFoundException {
+    public Project findById(Long projectId) throws BusinessException {
         return projectRepository.findById(projectId)
-                .orElseThrow(() -> new IdNotFoundException("projectId"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PROJECT_NOT_FOUND));
     }
 
-    public ProjectUser findProjectUser(Long projectId, Long userId) throws IdNotFoundException {
+    public ProjectUser findProjectUser(Long projectId, Long userId) throws BusinessException {
         return projectUserRepository.findByProjectIdAndUserId(projectId, userId)
-                .orElseThrow(() -> new IdNotFoundException("projectId and userId"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PROJECT_USER_NOT_FOUND));
     }
 
     public ProjectResponse.Id createProject(ProjectRequest.CreateProjectRequest projectRequest, String loginUserProviderId) {
@@ -79,7 +80,7 @@ public class ProjectService {
                 .log(new HashMap<String, List<LogDto>>())
                 .build();
 
-        mongoTemplate.insert(apilogs,APILOGS);
+        mongoTemplate.insert(apilogs, APILOGS);
 
         // 4. project_user insert
         // 생성한 사람한테 admin 권한 부여
@@ -98,7 +99,7 @@ public class ProjectService {
 
 
     @Transactional
-    public ProjectResponse.Id deleteProject(Long projectId, String loginUserProviderId) throws IdNotFoundException {
+    public ProjectResponse.Id deleteProject(Long projectId, String loginUserProviderId) throws BusinessException {
         // 1. user 확인 (admin)
         User user = userRepository.findByProviderId(loginUserProviderId);
         ProjectUser loginProjectUser = findProjectUser(projectId, user.getId());
@@ -115,12 +116,12 @@ public class ProjectService {
         Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
         DeleteResult deleteResult = mongoTemplate.remove(query, APIDOCS);
 
-        if (deleteResult.getDeletedCount() == 0) throw new IdNotFoundException("projectId");
+        if (deleteResult.getDeletedCount() == 0) throw new BusinessException(ErrorCode.PROJECT_NOT_FOUND);
         return ProjectResponse.Id.build(projectId);
     }
 
     @Transactional
-    public ProjectResponse.Id leaveProject(Long projectId, String loginUserProviderId) throws IdNotFoundException {
+    public ProjectResponse.Id leaveProject(Long projectId, String loginUserProviderId) throws BusinessException {
         // 1. project_user에서 제거
         User user = userRepository.findByProviderId(loginUserProviderId);
         ProjectUser loginProjectUser = findProjectUser(projectId, user.getId());
@@ -129,10 +130,10 @@ public class ProjectService {
         return ProjectResponse.Id.build(projectId);
     }
 
-    public ProjectResponse.ProjectUser joinProject(ProjectRequest.JoinProjectRequest request, String loginUserProviderId) throws IdNotFoundException {
+    public ProjectResponse.ProjectUser joinProject(ProjectRequest.JoinProjectRequest request, String loginUserProviderId) throws BusinessException {
         // 1. project에서 code가 동일한 레코드 찾기
         Project project = projectRepository.findByCode(request.getCode())
-                .orElseThrow(() -> new IdNotFoundException("project code"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PROJECT_NOT_FOUND));
 
         // 2. user 정보 꺼내기
         User user = userRepository.findByProviderId(loginUserProviderId);
@@ -148,7 +149,7 @@ public class ProjectService {
     }
 
 
-    public ProjectResponse.MemberManageInfo getMemberManagerInfo(Long projectId, String loginUserProviderId) throws IdNotFoundException {
+    public ProjectResponse.MemberManageInfo getMemberManagerInfo(Long projectId, String loginUserProviderId) throws BusinessException {
         // 1. user 확인 (member or admin)
         User user = userRepository.findByProviderId(loginUserProviderId);
         ProjectUser loginProjectUser = findProjectUser(projectId, user.getId());
@@ -161,7 +162,7 @@ public class ProjectService {
         return ProjectResponse.MemberManageInfo.build(projectId, members, code);
     }
 
-    public ProjectResponse.MemberManageInfo removeMember(Long projectId, Long userId, String loginUserProviderId) throws IdNotFoundException {
+    public ProjectResponse.MemberManageInfo removeMember(Long projectId, Long userId, String loginUserProviderId) throws BusinessException {
         // 1. user 확인 (admin)
         User user = userRepository.findByProviderId(loginUserProviderId);
         ProjectUser loginProjectUser = findProjectUser(projectId, user.getId());
@@ -177,7 +178,7 @@ public class ProjectService {
 
 
     @Transactional
-    public ProjectResponse.MemberManageInfo updateMemberRole(Long projectId, ProjectRequest.UpdateMemberRoleRequest request, String loginUserProviderId) throws IdNotFoundException {
+    public ProjectResponse.MemberManageInfo updateMemberRole(Long projectId, ProjectRequest.UpdateMemberRoleRequest request, String loginUserProviderId) throws BusinessException {
         // 1. user 확인 (admin)
         User user = userRepository.findByProviderId(loginUserProviderId);
         ProjectUser loginProjectUser = findProjectUser(projectId, user.getId());
@@ -188,15 +189,15 @@ public class ProjectService {
         // 2. project user role 업데이트
         Long updatedResult = projectUserRepository.updateMemberRole(projectId, request);
         if (updatedResult == 0) {
-            throw new IdNotFoundException("projectId and userId");
+            throw new BusinessException(ErrorCode.PROJECT_USER_NOT_FOUND);
         }
         return getMemberManagerInfo(projectId, loginUserProviderId);
     }
 
-    public ProjectResponse.Project getProjectByCode(String code) throws IdNotFoundException {
+    public ProjectResponse.Project getProjectByCode(String code) throws BusinessException {
         // 1. project에서 code가 동일한 레코드 찾기
         Project project = projectRepository.findByCode(code)
-                .orElseThrow(() -> new IdNotFoundException("project code"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.PROJECT_NOT_FOUND));
 
         // 2. member 이름 리스트
         List<String> names = projectUserRepository.getMemberNames(project.getId());

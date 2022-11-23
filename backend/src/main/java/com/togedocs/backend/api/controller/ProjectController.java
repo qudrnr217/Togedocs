@@ -2,11 +2,12 @@ package com.togedocs.backend.api.controller;
 
 import com.togedocs.backend.api.dto.ProjectRequest;
 import com.togedocs.backend.api.dto.ProjectResponse;
-import com.togedocs.backend.api.exception.IdNotFoundException;
 import com.togedocs.backend.api.service.ProjectService;
+import com.togedocs.backend.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import javax.transaction.Transactional;
 import java.security.Principal;
 
@@ -32,7 +33,7 @@ public class ProjectController {
         String providerId = principal.getName();
         try {
             response = projectService.deleteProject(projectId, providerId);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -42,12 +43,12 @@ public class ProjectController {
     }
 
     @DeleteMapping("/{projectId}/leave")
-    public ResponseEntity<?> leaveProject(@PathVariable Long projectId, Principal principal){
+    public ResponseEntity<?> leaveProject(@PathVariable Long projectId, Principal principal) {
         ProjectResponse.Id response;
         String providerId = principal.getName();
         try {
             response = projectService.leaveProject(projectId, providerId);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,7 +64,7 @@ public class ProjectController {
 
         try {
             response = projectService.joinProject(request, providerId);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -78,7 +79,7 @@ public class ProjectController {
         String providerId = principal.getName();
         try {
             response = projectService.getMemberManagerInfo(projectId, providerId);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -94,7 +95,7 @@ public class ProjectController {
         String providerId = principal.getName();
         try {
             response = projectService.removeMember(projectId, userId, providerId);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,7 +111,7 @@ public class ProjectController {
         String providerId = principal.getName();
         try {
             response = projectService.updateMemberRole(projectId, request, providerId);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,11 +121,11 @@ public class ProjectController {
     }
 
     @GetMapping("/code/{code}")
-    public ResponseEntity<?> getProjectByCode(@PathVariable String code, Principal principal){
+    public ResponseEntity<?> getProjectByCode(@PathVariable String code, Principal principal) {
         ProjectResponse.Project response;
-        try{
+        try {
             response = projectService.getProjectByCode(code);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();

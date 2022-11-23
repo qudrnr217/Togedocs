@@ -2,8 +2,8 @@ package com.togedocs.backend.api.controller;
 
 import com.togedocs.backend.api.dto.ApidocsRequest;
 import com.togedocs.backend.api.dto.ApidocsResponse;
-import com.togedocs.backend.api.exception.IdNotFoundException;
 import com.togedocs.backend.api.service.ApidocsService;
+import com.togedocs.backend.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,7 @@ public class ApidocsController {
         ApidocsResponse.Ids response;
         try {
             response = apidocsService.addRow(projectId);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -36,7 +36,7 @@ public class ApidocsController {
         ApidocsResponse.Ids response;
         try {
             response = apidocsService.addCol(projectId, request);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -50,7 +50,7 @@ public class ApidocsController {
         ApidocsResponse.Ids response;
         try {
             response = apidocsService.moveRow(projectId, request);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,7 +64,7 @@ public class ApidocsController {
         ApidocsResponse.Ids response;
         try {
             response = apidocsService.moveCol(projectId, request);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -78,7 +78,7 @@ public class ApidocsController {
         ApidocsResponse.Ids response;
         try {
             response = apidocsService.deleteRow(projectId, rowId);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,7 +92,7 @@ public class ApidocsController {
         ApidocsResponse.Ids response;
         try {
             response = apidocsService.deleteCol(projectId, colId);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -106,7 +106,7 @@ public class ApidocsController {
         ApidocsResponse.Ids response;
         try {
             response = apidocsService.updateCell(projectId, request);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,7 +120,7 @@ public class ApidocsController {
         ApidocsResponse.Apidocs response;
         try {
             response = apidocsService.getDocs(projectId);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -134,7 +134,7 @@ public class ApidocsController {
         ApidocsResponse.ProjectInfo response;
         try {
             response = apidocsService.updateProjectInfo(projectId, request);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -148,7 +148,7 @@ public class ApidocsController {
         ApidocsResponse.Ids response;
         try {
             response = apidocsService.updateCol(projectId, colId, request);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
