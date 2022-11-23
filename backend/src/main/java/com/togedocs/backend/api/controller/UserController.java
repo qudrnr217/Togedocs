@@ -3,8 +3,8 @@ package com.togedocs.backend.api.controller;
 import com.togedocs.backend.api.dto.Token;
 import com.togedocs.backend.api.dto.UserRequest;
 import com.togedocs.backend.api.dto.UserResponse;
-import com.togedocs.backend.api.exception.IdNotFoundException;
 import com.togedocs.backend.api.service.UserService;
+import com.togedocs.backend.common.exception.BusinessException;
 import com.togedocs.backend.common.security.config.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +40,7 @@ public class UserController {
         UserResponse.userNameAndImgNo response;
         try {
             response = userService.getUserNameAndImgNo(userId);
-        } catch (IdNotFoundException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();

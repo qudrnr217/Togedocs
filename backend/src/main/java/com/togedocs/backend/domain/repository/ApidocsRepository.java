@@ -2,28 +2,33 @@ package com.togedocs.backend.domain.repository;
 
 
 import com.togedocs.backend.api.dto.ApidocsRequest;
-import com.togedocs.backend.api.dto.ApidocsResponse;
-import com.togedocs.backend.api.exception.IdNotFoundException;
+import com.togedocs.backend.api.dto.ProjectRequest;
+import com.togedocs.backend.domain.entity.Apidocs;
 
 public interface ApidocsRepository {
+    boolean existsByProjectId(Long projectId);
 
-    ApidocsResponse.Ids addRow(Long projectId) throws IdNotFoundException;
+    void createApidocs(ProjectRequest.CreateProjectRequest request, Long projectId);
 
-    ApidocsResponse.Ids addCol(Long projectId, ApidocsRequest.AddColRequest request) throws IdNotFoundException;
+    void deleteApidocs(Long projectId);
 
-    ApidocsResponse.Ids moveRow(Long projectId, ApidocsRequest.MoveItemRequest request) throws IdNotFoundException;
+    boolean addRow(Long projectId);
 
-    ApidocsResponse.Ids moveCol(Long projectId, ApidocsRequest.MoveItemRequest request) throws IdNotFoundException;
+    boolean addCol(Long projectId, ApidocsRequest.AddColRequest request);
 
-    ApidocsResponse.Ids deleteRow(Long projectId, String rowId) throws IdNotFoundException;
+    boolean moveRow(Long projectId, ApidocsRequest.MoveItemRequest request);
 
-    ApidocsResponse.Ids deleteCol(Long projectId, String colId) throws IdNotFoundException;
+    boolean moveCol(Long projectId, ApidocsRequest.MoveItemRequest request);
 
-    ApidocsResponse.Ids updateCell(Long projectId, ApidocsRequest.UpdateCellRequest request) throws IdNotFoundException;
+    boolean deleteRow(Long projectId, String rowId);
 
-    ApidocsResponse.Apidocs getDocs(Long projectId) throws IdNotFoundException;
+    boolean deleteCol(Long projectId, String colId);
 
-    ApidocsResponse.ProjectInfo updateProjectInfo(Long projectId, ApidocsRequest.UpdateProjectInfoRequest request) throws IdNotFoundException;
+    boolean updateCell(Long projectId, ApidocsRequest.UpdateCellRequest request);
 
-    ApidocsResponse.Ids updateCol(Long projectId, String colId, ApidocsRequest.UpdateColRequest request) throws IdNotFoundException;
+    Apidocs getDocs(Long projectId);
+
+    boolean updateProjectInfo(Long projectId, ApidocsRequest.UpdateProjectInfoRequest request);
+
+    boolean updateCol(Long projectId, String colId, ApidocsRequest.UpdateColRequest request);
 }

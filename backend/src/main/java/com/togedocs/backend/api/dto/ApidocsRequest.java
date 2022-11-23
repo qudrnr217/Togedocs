@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
 public class ApidocsRequest {
@@ -53,7 +54,7 @@ public class ApidocsRequest {
         private String name;
         @NotEmpty
         private String type;
-        @NotEmpty
+        @Positive
         private Integer width;
     }
 }
