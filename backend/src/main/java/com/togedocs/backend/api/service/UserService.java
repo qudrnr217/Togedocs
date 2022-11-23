@@ -2,7 +2,8 @@ package com.togedocs.backend.api.service;
 
 import com.togedocs.backend.api.dto.UserRequest;
 import com.togedocs.backend.api.dto.UserResponse;
-import com.togedocs.backend.api.exception.IdNotFoundException;
+import com.togedocs.backend.common.exception.BusinessException;
+import com.togedocs.backend.common.exception.ErrorCode;
 import com.togedocs.backend.domain.entity.Apidocs;
 import com.togedocs.backend.domain.entity.User;
 import com.togedocs.backend.domain.repository.ProjectUserRepository;
@@ -31,10 +32,10 @@ public class UserService {
         return UserResponse.Id.builder().id((int) num).build();
     }
 
-    public UserResponse.userNameAndImgNo getUserNameAndImgNo(Long userId) throws IdNotFoundException {
+    public UserResponse.userNameAndImgNo getUserNameAndImgNo(Long userId) throws BusinessException {
         User user = userRepository.findById(userId).orElse(null);
         if (user == null)
-            throw new IdNotFoundException("userId");
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         return UserResponse.userNameAndImgNo.build(user.getName(), user.getImgNo());
     }
 
