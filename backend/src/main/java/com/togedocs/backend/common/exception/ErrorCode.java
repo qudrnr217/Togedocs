@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @AllArgsConstructor
@@ -13,6 +12,8 @@ public enum ErrorCode {
     // 400 BAD_REQUEST
 
     // 401 UNAUTHORIZED
+    USER_NOT_ADMIN(UNAUTHORIZED, "권한이 없습니다."),
+
 
     // 404 NOT_FOUND
     PROJECT_NOT_FOUND(NOT_FOUND, "프로젝트를 찾을 수 없습니다."),

@@ -1,10 +1,16 @@
 package com.togedocs.backend.domain.repository;
 
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.togedocs.backend.api.dto.ApidocsRequest;
+import com.togedocs.backend.api.dto.ApidocsResponse;
+import com.togedocs.backend.api.dto.ProjectRequest;
+import com.togedocs.backend.common.exception.BusinessException;
+import com.togedocs.backend.common.exception.ErrorCode;
 import com.togedocs.backend.domain.entity.Apidocs;
 import com.togedocs.backend.domain.entity.ColCategory;
 import com.togedocs.backend.domain.entity.ColDto;
+import com.togedocs.backend.domain.entity.Project;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -13,8 +19,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,6 +37,34 @@ public class ApidocsRepositoryImpl implements ApidocsRepository {
     public boolean existsByProjectId(Long projectId) {
         Query query = new Query().addCriteria(Criteria.where(PROJECT_ID).is(projectId));
         return mongoTemplate.exists(query, APIDOCS);
+    }
+
+    @Override
+    public void createApidocs(ProjectRequest.CreateProjectRequest request, Long projectId) {
+        List<ColDto> cols = new ArrayList<>();
+        cols.add(new ColDto("one", "Name", "text", DEFAULT_WIDTH, ColCategory.REQUIRED));
+        cols.add(new ColDto("two", "Method", "text", DEFAULT_WIDTH, ColCategory.REQUIRED));
+        cols.add(new ColDto("three", "URL", "text", DEFAULT_WIDTH, ColCategory.REQUIRED));
+        cols.add(new ColDto("d-one", "Query Params", "text", 1, ColCategory.PAYLOAD));
+        cols.add(new ColDto("d-two", "Request Body", "text", 1, ColCategory.PAYLOAD));
+        cols.add(new ColDto("d-three", "Response Body", "text", 1, ColCategory.PAYLOAD));
+
+        Apidocs apidocs = Apidocs.builder()
+                .projectId(projectId)
+                .title(request.getTitle())
+                .desc(request.getDesc())
+                .rows(new ArrayList<String>())
+                .cols(cols)
+                .data(new HashMap<String, Map<String, String>>())
+                .build();
+
+        mongoTemplate.insert(apidocs, APIDOCS);
+    }
+
+    @Override
+    public void deleteApidocs(Long projectId){
+        Query query = new Query().addCriteria(Criteria.where(PROJECT_ID).is(projectId));
+        mongoTemplate.remove(query, APIDOCS);
     }
 
     @Override
