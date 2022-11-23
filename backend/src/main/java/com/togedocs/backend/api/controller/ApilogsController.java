@@ -16,13 +16,13 @@ public class ApilogsController {
     private final ApilogsService apilogsService;
 
     @GetMapping("/{projectId}/{rowId}")
-    public ResponseEntity<?> getLogs(@PathVariable Long projectId, @PathVariable String rowId) {
+    public ResponseEntity<ApilogsResponse.Logs> getLogs(@PathVariable Long projectId, @PathVariable String rowId) {
         ApilogsResponse.Logs response = apilogsService.getLogs(projectId, rowId);
         return ResponseEntity.status(200).body(response);
     }
 
     @PostMapping("/{projectId}/{rowId}")
-    public ResponseEntity<?> addLog(@PathVariable Long projectId, @PathVariable String rowId, @RequestBody @Valid ApilogsRequest.AddLogRequest request) {
+    public ResponseEntity<String> addLog(@PathVariable Long projectId, @PathVariable String rowId, @RequestBody @Valid ApilogsRequest.AddLogRequest request) {
         apilogsService.addLog(projectId, rowId, request);
         return ResponseEntity.status(201).body("Add Log Successfully!");
     }

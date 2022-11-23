@@ -28,12 +28,12 @@ public class ApilogsRepositoryImpl implements ApilogsRepository {
     }
 
     @Override
-    public ApilogsResponse.Logs getLogs(Long projectId, String rowId) {
+    public List<LogDto> getLogs(Long projectId, String rowId) {
 
         Query query = new Query().addCriteria(Criteria.where(PROJECT_ID).is(projectId));
         List<LogDto> logDtos = mongoTemplate.findDistinct(query, "log." + rowId, APILOGS, LogDto.class);
 
-        return ApilogsResponse.Logs.build(logDtos);
+        return logDtos;
     }
 
     @Override

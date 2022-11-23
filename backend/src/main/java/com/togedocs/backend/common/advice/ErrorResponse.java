@@ -2,18 +2,20 @@ package com.togedocs.backend.common.advice;
 
 import com.togedocs.backend.common.exception.ErrorCode;
 import lombok.Builder;
-import org.springframework.http.HttpStatus;
+import lombok.Getter;
+import org.springframework.http.ResponseEntity;
 
 
+@Getter
 @Builder
 public class ErrorResponse {
-    private final HttpStatus status;
-    private final String msg;
+    private final String message;
 
-    public static ErrorResponse build(ErrorCode errorCode) {
-        return ErrorResponse.builder()
-                .status(errorCode.getStatus())
-                .msg(errorCode.getMsg())
-                .build();
+    public static ResponseEntity<ErrorResponse> toResponseEntity(ErrorCode errorCode) {
+        return ResponseEntity.status(errorCode.getStatus()).body(
+                ErrorResponse.builder()
+                        .message(errorCode.getMessage())
+                        .build()
+        );
     }
 }

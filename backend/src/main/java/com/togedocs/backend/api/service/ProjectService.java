@@ -116,7 +116,9 @@ public class ProjectService {
         Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
         DeleteResult deleteResult = mongoTemplate.remove(query, APIDOCS);
 
-        if (deleteResult.getDeletedCount() == 0) throw new BusinessException(ErrorCode.PROJECT_NOT_FOUND);
+        if (deleteResult.getDeletedCount() == 0) {
+            throw new BusinessException(ErrorCode.PROJECT_NOT_FOUND);
+        }
         return ProjectResponse.Id.build(projectId);
     }
 

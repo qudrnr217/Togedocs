@@ -19,22 +19,4 @@ public class ApilogsResponse {
                     .logs(logDtos).build();
         }
     }
-
-
-    @Getter
-    @Builder
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class LogIds {
-        private Long projectId;
-        private String rowId;
-
-        public static ApilogsResponse.LogIds build(Long projectId, String rowId) {
-            return LogIds.builder()
-                    .projectId(projectId)
-                    .rowId(rowId)
-                    .build();
-        }
-    }
-
 }

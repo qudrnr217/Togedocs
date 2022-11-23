@@ -3,7 +3,6 @@ package com.togedocs.backend.api.controller;
 import com.togedocs.backend.api.dto.ApidocsRequest;
 import com.togedocs.backend.api.dto.ApidocsResponse;
 import com.togedocs.backend.api.service.ApidocsService;
-import com.togedocs.backend.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,142 +17,62 @@ public class ApidocsController {
     private final ApidocsService apidocsService;
 
     @PostMapping("/{projectId}/rows")
-    public ResponseEntity<?> addRow(@PathVariable Long projectId) {
-        ApidocsResponse.Ids response;
-        try {
-            response = apidocsService.addRow(projectId);
-        } catch (BusinessException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Unexpected exception");
-        }
-        return ResponseEntity.status(201).body(response);
+    public ResponseEntity<String> addRow(@PathVariable Long projectId) {
+        apidocsService.addRow(projectId);
+        return ResponseEntity.status(201).body("성공적으로 행을 추가했습니다!");
     }
 
     @PostMapping("/{projectId}/cols")
-    public ResponseEntity<?> addCol(@PathVariable Long projectId, @RequestBody @Valid ApidocsRequest.AddColRequest request) {
-        ApidocsResponse.Ids response;
-        try {
-            response = apidocsService.addCol(projectId, request);
-        } catch (BusinessException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Unexpected exception");
-        }
-        return ResponseEntity.status(201).body(response);
+    public ResponseEntity<String> addCol(@PathVariable Long projectId, @RequestBody @Valid ApidocsRequest.AddColRequest request) {
+        apidocsService.addCol(projectId, request);
+        return ResponseEntity.status(201).body("성공적으로 열을 추가했습니다!");
     }
 
     @PatchMapping("/{projectId}/rows")
-    public ResponseEntity<?> moveRow(@PathVariable Long projectId, @RequestBody @Valid ApidocsRequest.MoveItemRequest request) {
-        ApidocsResponse.Ids response;
-        try {
-            response = apidocsService.moveRow(projectId, request);
-        } catch (BusinessException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Unexpected exception");
-        }
-        return ResponseEntity.status(200).body(response);
+    public ResponseEntity<String> moveRow(@PathVariable Long projectId, @RequestBody @Valid ApidocsRequest.MoveItemRequest request) {
+        apidocsService.moveRow(projectId, request);
+        return ResponseEntity.status(200).body("성공적으로 행을 이동했습니다!");
     }
 
     @PatchMapping("/{projectId}/cols")
-    public ResponseEntity<?> moveCol(@PathVariable Long projectId, @RequestBody @Valid ApidocsRequest.MoveItemRequest request) {
-        ApidocsResponse.Ids response;
-        try {
-            response = apidocsService.moveCol(projectId, request);
-        } catch (BusinessException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Unexpected exception");
-        }
-        return ResponseEntity.status(200).body(response);
+    public ResponseEntity<String> moveCol(@PathVariable Long projectId, @RequestBody @Valid ApidocsRequest.MoveItemRequest request) {
+        apidocsService.moveCol(projectId, request);
+        return ResponseEntity.status(200).body("성공적으로 열을 이동했습니다!");
     }
 
     @DeleteMapping("/{projectId}/rows/{rowId}")
-    public ResponseEntity<?> deleteRow(@PathVariable Long projectId, @PathVariable String rowId) {
-        ApidocsResponse.Ids response;
-        try {
-            response = apidocsService.deleteRow(projectId, rowId);
-        } catch (BusinessException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Unexpected exception");
-        }
-        return ResponseEntity.status(204).body(response);
+    public ResponseEntity<String> deleteRow(@PathVariable Long projectId, @PathVariable String rowId) {
+        apidocsService.deleteRow(projectId, rowId);
+        return ResponseEntity.status(204).body("성공적으로 행을 삭제했습니다!");
     }
 
     @DeleteMapping("/{projectId}/cols/{colId}")
-    public ResponseEntity<?> deleteCol(@PathVariable Long projectId, @PathVariable String colId) {
-        ApidocsResponse.Ids response;
-        try {
-            response = apidocsService.deleteCol(projectId, colId);
-        } catch (BusinessException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Unexpected exception");
-        }
-        return ResponseEntity.status(204).body(response);
+    public ResponseEntity<String> deleteCol(@PathVariable Long projectId, @PathVariable String colId) {
+        apidocsService.deleteCol(projectId, colId);
+        return ResponseEntity.status(204).body("성공적으로 열을 삭제했습니다!");
     }
 
     @PatchMapping("/{projectId}/cell")
-    public ResponseEntity<?> updateCell(@PathVariable Long projectId, @RequestBody @Valid ApidocsRequest.UpdateCellRequest request) {
-        ApidocsResponse.Ids response;
-        try {
-            response = apidocsService.updateCell(projectId, request);
-        } catch (BusinessException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Unexpected exception");
-        }
-        return ResponseEntity.status(200).body(response);
+    public ResponseEntity<String> updateCell(@PathVariable Long projectId, @RequestBody @Valid ApidocsRequest.UpdateCellRequest request) {
+        apidocsService.updateCell(projectId, request);
+        return ResponseEntity.status(200).body("성공적으로 셀을 수정했습니다!");
     }
 
     @GetMapping("/{projectId}")
-    public ResponseEntity<?> getDocs(@PathVariable Long projectId) {
-        ApidocsResponse.Apidocs response;
-        try {
-            response = apidocsService.getDocs(projectId);
-        } catch (BusinessException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Unexpected exception");
-        }
+    public ResponseEntity<ApidocsResponse.Apidocs> getDocs(@PathVariable Long projectId) {
+        ApidocsResponse.Apidocs response = apidocsService.getDocs(projectId);
         return ResponseEntity.status(200).body(response);
     }
 
     @PatchMapping("/{projectId}")
-    public ResponseEntity<?> updateProjectInfo(@PathVariable Long projectId, @RequestBody @Valid ApidocsRequest.UpdateProjectInfoRequest request) {
-        ApidocsResponse.ProjectInfo response;
-        try {
-            response = apidocsService.updateProjectInfo(projectId, request);
-        } catch (BusinessException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Unexpected exception");
-        }
-        return ResponseEntity.status(200).body(response);
+    public ResponseEntity<String> updateProjectInfo(@PathVariable Long projectId, @RequestBody @Valid ApidocsRequest.UpdateProjectInfoRequest request) {
+        apidocsService.updateProjectInfo(projectId, request);
+        return ResponseEntity.status(200).body("성공적으로 프로젝트 정보를 수정했습니다!");
     }
 
     @PatchMapping("/{projectId}/cols/{colId}")
-    public ResponseEntity<?> updateCol(@PathVariable Long projectId, @PathVariable String colId, @RequestBody @Valid ApidocsRequest.UpdateColRequest request) {
-        ApidocsResponse.Ids response;
-        try {
-            response = apidocsService.updateCol(projectId, colId, request);
-        } catch (BusinessException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Unexpected exception");
-        }
-        return ResponseEntity.status(200).body(response);
+    public ResponseEntity<String> updateCol(@PathVariable Long projectId, @PathVariable String colId, @RequestBody @Valid ApidocsRequest.UpdateColRequest request) {
+        apidocsService.updateCol(projectId, colId, request);
+        return ResponseEntity.status(200).body("성공적으로 열 정보를 수정했습니다!");
     }
 }

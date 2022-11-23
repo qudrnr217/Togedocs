@@ -14,12 +14,16 @@ public class ApilogsService {
     private final ApilogsRepository apilogsRepository;
 
     public ApilogsResponse.Logs getLogs(Long projectId, String rowId) {
-        if (!apilogsRepository.existsByProjectId(projectId)) throw new BusinessException(ErrorCode.PROJECT_NOT_FOUND);
-        return apilogsRepository.getLogs(projectId, rowId);
+        if (!apilogsRepository.existsByProjectId(projectId)) {
+            throw new BusinessException(ErrorCode.PROJECT_NOT_FOUND);
+        }
+        return ApilogsResponse.Logs.build(apilogsRepository.getLogs(projectId, rowId));
     }
 
     public void addLog(Long projectId, String rowId, ApilogsRequest.AddLogRequest request) {
         boolean result = apilogsRepository.addLog(projectId, rowId, request);
-        if (!result) throw new BusinessException(ErrorCode.PROJECT_NOT_FOUND);
+        if (!result) {
+            throw new BusinessException(ErrorCode.PROJECT_NOT_FOUND);
+        }
     }
 }
