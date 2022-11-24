@@ -6,13 +6,12 @@ import com.togedocs.backend.common.exception.BusinessException;
 import com.togedocs.backend.common.exception.ErrorCode;
 import com.togedocs.backend.domain.entity.Apidocs;
 import com.togedocs.backend.domain.entity.User;
+import com.togedocs.backend.domain.repository.ApidocsRepository;
 import com.togedocs.backend.domain.repository.ProjectUserRepository;
 import com.togedocs.backend.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,56 +21,53 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ProjectUserRepository projectUserRepository;
-    private final MongoTemplate mongoTemplate;
+    //    private final MongoTemplate mongoTemplate;
+    private final ApidocsRepository apidocsRepository;
 
-    public User findUserByProviderId(String providerId){
+    public User findUserByProviderId(String providerId) {
         return userRepository.findByProviderId(providerId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
-    public void modifyUserInfo(UserRequest.ModifyUserRequest userRequest, String providerId) {
-        User userEntity = findUserByProviderId(providerId);
-
-        boolean result = userRepository.updateUserInfo(userEntity, userRequest);
-        if(!result) {
+    public void updateUserInfo(UserRequest.ModifyUserRequest userRequest, String providerId) {
+        User user = findUserByProviderId(providerId);
+        boolean result = userRepository.updateUserInfo(user, userRequest);
+        if (!result) {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
     }
 
-    public UserResponse.userNameAndImgNo getUserNameAndImgNo(Long userId) throws BusinessException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-        if (user == null)
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
-        return UserResponse.userNameAndImgNo.build(user.getName(), user.getImgNo());
+    public UserResponse.UserInfo getUserInfo(String providerId) throws BusinessException {
+        User user = findUserByProviderId(providerId);
+        return UserResponse.UserInfo.build(user);
     }
 
-    public List<UserResponse.Info> getUserInfo(String providerId) {
-        User userEntity = findUserByProviderId(providerId);
+    public List<UserResponse.ProjectInfo> getProjectInfoList(String providerId) {
+        User user = findUserByProviderId(providerId);
 //        Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
         //user가 참여하고있는 프로젝트 id
-        List<Long> projectIds = userRepository.getProjectId(userEntity.getId());
+        List<Long> projectIds = userRepository.getProjectId(user.getId());
 
-        List<UserResponse.Info> list = new ArrayList<>();
+        List<UserResponse.ProjectInfo> projectInfoList = new ArrayList<>();
         for (Long projectId : projectIds) {
-            //자신의 이름
-            String myname = userEntity.getName();
             //프로젝트 권한
-            String role = projectUserRepository.getMyRole(userEntity.getId(), projectId);
+            String role = projectUserRepository.getMyRole(user.getId(), projectId);
             //이름, imgNo
-            List<String> names = userRepository.getNames(projectId, userEntity.getId());
-            int imgNos = userRepository.getImgNo(projectId);
-            //title
-            Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
-            Apidocs apidocs = mongoTemplate.findOne(query, Apidocs.class, "apidocs");
-            String title = apidocs.getTitle();
-            //desc
-            String desc = apidocs.getDesc();
+//            List<String> names = userRepository.getNames(projectId, user.getId());
+            List<String> names = projectUserRepository.getMemberNames(projectId);
+            int imgNo = userRepository.getImgNo(projectId);
+
+            Apidocs apidocs = apidocsRepository.getDocs(projectId);
+
             //Info 정보 넣기
-            list.add(UserResponse.Info.build(myname, role, projectId, title, desc, names, imgNos));
+            // project_user : role -> select pu.role, p.imgNo from pu join project on pu.projectId = p.id where pu.user_id = {userId} and p.id = {projectId}
+            // user : names -> select user.name from user join project_user on pu.userId = user.id where pu.projectId = {projectId}
+            // project : imgNo -> select project.imgNo from project where project.id = {projectId}
+            projectInfoList.add(UserResponse.ProjectInfo.build(projectId, role, apidocs.getTitle(), apidocs.getDesc(), names, imgNo));
 //            return UserResponse.Info.build(projectId,names,imgNos);
         }
 
 //        return UserResponse.Info.build(userInfo,projectInfo);
-        return list;
+        return projectInfoList;
 
     }
 

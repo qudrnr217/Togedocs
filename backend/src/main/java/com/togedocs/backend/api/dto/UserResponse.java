@@ -1,10 +1,12 @@
 package com.togedocs.backend.api.dto;
 
+import com.togedocs.backend.domain.entity.User;
 import lombok.*;
+
 import java.util.List;
 
 public class UserResponse {
-    @Data
+    @Getter
     @Builder
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -12,48 +14,46 @@ public class UserResponse {
         private int id;
     }
 
-    @Data
+    @Getter
     @Builder
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class accessToken{
+    public static class accessToken {
         private Token token;
     }
 
-    @Data
+    @Getter
     @Builder
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class userNameAndImgNo {
+    public static class UserInfo {
         private String userName;
         private int imgNo;
 
-        public static UserResponse.userNameAndImgNo build(String userName,int imgNo) {
-            return userNameAndImgNo.builder()
-                    .userName(userName)
-                    .imgNo(imgNo)
+        public static UserResponse.UserInfo build(User user) {
+            return UserInfo.builder()
+                    .userName(user.getName())
+                    .imgNo(user.getImgNo())
                     .build();
         }
     }
 
-    @Data
+    @Getter
     @Builder
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class Info {
-        private String myname;
+    public static class ProjectInfo {
+        private Long projectId;
         private String role;
-        private long projectId;
         private String title;
         private String desc;
-        private List<String> names ;
+        private List<String> names;
         private int imgNo;
 
-        public static UserResponse.Info build(String myname, String role, Long projectId,String title, String desc,List<String> names, int imgNo) {
-            return Info.builder()
-                    .myname(myname)
-                    .role(role)
+        public static UserResponse.ProjectInfo build(Long projectId, String role, String title, String desc, List<String> names, int imgNo) {
+            return ProjectInfo.builder()
                     .projectId(projectId)
+                    .role(role)
                     .title(title)
                     .desc(desc)
                     .imgNo(imgNo)

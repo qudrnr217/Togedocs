@@ -1,17 +1,17 @@
 package com.togedocs.backend.domain.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import com.togedocs.backend.api.dto.UserRequest;
 import com.togedocs.backend.domain.entity.QProject;
 import com.togedocs.backend.domain.entity.QProjectUser;
 import com.togedocs.backend.domain.entity.QUser;
 import com.togedocs.backend.domain.entity.User;
 import lombok.RequiredArgsConstructor;
+
 import java.util.List;
 
 @RequiredArgsConstructor
-public class UserRepositoryImpl implements UserRepositoryCustom{
+public class UserRepositoryImpl implements UserRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
@@ -21,8 +21,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
 
         long num = jpaQueryFactory.update(user)
                 .where(user.id.eq(userEntity.getId()))
-                .set(user.name,userRequest.getName())
-                .set(user.imgNo,userRequest.getImgNo())
+                .set(user.name, userRequest.getName())
+                .set(user.imgNo, userRequest.getImgNo())
                 .execute();
         return num > 0;
     }
@@ -42,22 +42,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
     }
 
     @Override
-    public List<String> getNames(Long projectId, Long id) {
-        QProjectUser projectUser = QProjectUser.projectUser;
-        QUser user = QUser.user;
-
-        List<String> names = jpaQueryFactory.select(user.name)
-                .from(projectUser)
-                .join(user)
-                .on(projectUser.user.id.eq(user.id))
-                .where(projectUser.project.id.eq(projectId))
-                .fetch();
-        return names;
-    }
-
-    @Override
     public int getImgNo(Long projectId) {
-        QProject project =QProject.project;
+        QProject project = QProject.project;
 
         int imgNo = jpaQueryFactory.select(project.imgNo)
                 .from(project)
@@ -65,4 +51,5 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
                 .fetchOne();
         return imgNo;
     }
+
 }

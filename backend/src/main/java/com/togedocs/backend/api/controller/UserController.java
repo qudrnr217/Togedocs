@@ -29,16 +29,16 @@ public class UserController {
     @PatchMapping("/user/info")
     public ResponseEntity<String> updateUserInfo(@RequestBody UserRequest.ModifyUserRequest userRequest, Principal principal) {
         String providerId = principal.getName();
-        userService.modifyUserInfo(userRequest, providerId);
+        userService.updateUserInfo(userRequest, providerId);
 
         return ResponseEntity.status(HttpStatus.OK).body("성공적으로 프로필을 수정했습니다!");
     }
 
-    @GetMapping("/user/info/{userId}")
-    public ResponseEntity<?> getUserInfo(@PathVariable Long userId) {
-        UserResponse.userNameAndImgNo response;
+    @GetMapping("/user/info/{providerId}")
+    public ResponseEntity<?> getUserInfo(@PathVariable String providerId) {
+        UserResponse.UserInfo response;
         try {
-            response = userService.getUserNameAndImgNo(userId);
+            response = userService.getUserInfo(providerId);
         } catch (BusinessException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
@@ -49,11 +49,11 @@ public class UserController {
     }
 
     @GetMapping("/user/project")
-    public ResponseEntity<?> getProjectInfo(Principal principal) {
-        List<UserResponse.Info> response;
+    public ResponseEntity<?> getProjectList(Principal principal) {
+        List<UserResponse.ProjectInfo> response;
         String providerId = principal.getName();
         try {
-            response = userService.getUserInfo(providerId);
+            response = userService.getProjectInfoList(providerId);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Unexpected exception");

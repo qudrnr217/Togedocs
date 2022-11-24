@@ -7,10 +7,11 @@ import com.togedocs.backend.api.dto.UserDto;
 import com.togedocs.backend.domain.entity.QProjectUser;
 import com.togedocs.backend.domain.entity.QUser;
 import lombok.RequiredArgsConstructor;
+
 import java.util.List;
 
 @RequiredArgsConstructor
- public class ProjectUserRepositoryImpl implements ProjectUserRepositoryCustom {
+public class ProjectUserRepositoryImpl implements ProjectUserRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -41,7 +42,7 @@ import java.util.List;
     }
 
     @Override
-    public String getMyRole(Long user_id,Long project_id) {
+    public String getMyRole(Long user_id, Long project_id) {
         QUser user = QUser.user;
         QProjectUser projectUser = QProjectUser.projectUser;
 
