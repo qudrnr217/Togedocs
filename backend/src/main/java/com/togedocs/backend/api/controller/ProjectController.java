@@ -51,7 +51,7 @@ public class ProjectController {
         ProjectResponse.MemberManageInfo response;
         String providerId = principal.getName();
         response = projectService.getMemberManagerInfo(projectId, providerId);
-        return ResponseEntity.status(200).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/{projectId}/member/{userId}")
@@ -72,7 +72,7 @@ public class ProjectController {
     @GetMapping("/code/{code}")
     public ResponseEntity<ProjectResponse.Project> getProjectByCode(@PathVariable String code, Principal principal) {
         ProjectResponse.Project response = projectService.getProjectByCode(code);
-        return ResponseEntity.status(200).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }
