@@ -24,23 +24,28 @@ public class UserService {
     private final ProjectUserRepository projectUserRepository;
     private final MongoTemplate mongoTemplate;
 
-    public UserResponse.Id modifyUser(UserRequest.ModifyUserRequest userRequest, String providerId) {
-        User userEntity = userRepository.findByProviderId(providerId);
+    public User findUserByProviderId(String providerId){
+        return userRepository.findByProviderId(providerId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    }
 
-        long num = userRepository.updateByUserInfo(userEntity, userRequest);
+    public void modifyUserInfo(UserRequest.ModifyUserRequest userRequest, String providerId) {
+        User userEntity = findUserByProviderId(providerId);
 
-        return UserResponse.Id.builder().id((int) num).build();
+        boolean result = userRepository.updateUserInfo(userEntity, userRequest);
+        if(!result) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
     }
 
     public UserResponse.userNameAndImgNo getUserNameAndImgNo(Long userId) throws BusinessException {
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         if (user == null)
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         return UserResponse.userNameAndImgNo.build(user.getName(), user.getImgNo());
     }
 
     public List<UserResponse.Info> getUserInfo(String providerId) {
-        User userEntity = userRepository.findByProviderId(providerId);
+        User userEntity = findUserByProviderId(providerId);
 //        Query query = new Query().addCriteria(Criteria.where("projectId").is(projectId));
         //user가 참여하고있는 프로젝트 id
         List<Long> projectIds = userRepository.getProjectId(userEntity.getId());

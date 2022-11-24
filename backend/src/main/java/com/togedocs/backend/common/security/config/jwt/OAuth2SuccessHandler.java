@@ -33,14 +33,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String email = (String) oAuth2User.getAttributes().get("email");
         String name = (String) oAuth2User.getAttributes().get("name");
 
-        User user_id=userRepository.findByEmail(email);
+        User userEntity = userRepository.findByEmail(email);
 
         log.info("Principal에서 꺼낸 OAuth2User = {}", oAuth2User);
         // 최초 로그인이라면 회원가입 처리를 한다.
         String targetUrl;
         log.info("토큰 발행 시작");
 
-        Token token = tokenService.generateToken(user_id.getId(),user_id.getName(),user_id.getImgNo(), email);
+        Token token = tokenService.generateToken(userEntity.getProviderId(),userEntity.getName(),userEntity.getImgNo(), email);
         log.info("{}", token);
 //        targetUrl = UriComponentsBuilder.fromUriString("/api/user/getToken")
         targetUrl = UriComponentsBuilder.fromUriString("myapp://")

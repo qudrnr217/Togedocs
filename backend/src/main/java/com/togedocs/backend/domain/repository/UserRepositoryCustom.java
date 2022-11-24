@@ -5,7 +5,7 @@ import com.togedocs.backend.domain.entity.User;
 import java.util.List;
 
 public interface UserRepositoryCustom {
-    long updateByUserInfo(User userEntity, UserRequest.ModifyUserRequest userRequest);
+    boolean updateUserInfo(User userEntity, UserRequest.ModifyUserRequest userRequest);
 
     List<Long> getProjectId(Long id);
 

@@ -12,6 +12,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
@@ -40,16 +42,16 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
 
 
-        User userEntity = userRepository.findByProviderId(providerId);
-        if(userEntity == null){
-            userEntity = User.builder()
+        Optional<User> userEntity = userRepository.findByProviderId(providerId);
+        if(!userEntity.isPresent()){
+            User user = User.builder()
                     .imgNo(imgNo)
                     .providerId(providerId)
                     .email(email)
                     .provider(provider)
                     .name(name)
                     .build();
-            userRepository.save(userEntity);
+            userRepository.save(user);
 
         }
 
@@ -59,6 +61,6 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         //Map<String,Object>
         //Oauth2User 타입은 PrincipalDetails에 상속받았기 때문에 return으로 PrincipalDetails를 해도된다.
-        return new PrincipalDetails(userEntity,oauth2User.getAttributes());
+        return new PrincipalDetails(userEntity.get(),oauth2User.getAttributes());
     }
 }

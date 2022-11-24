@@ -4,15 +4,12 @@ import com.togedocs.backend.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
+    Optional<User> findByProviderId(String providerId);
 
-    //findBy 규칙 -> Username 문법
-    //Select * from user where username = 1? 이게 호출이 된다.
-    User findByProviderId(String providerId); //Jpa Query methods라고 검색해보면 알 수 있다.
+    Optional<User> findByEmail(String email);
 
-    User findByEmail(String email);
-
-    //select * from user where email=?
-//    public User findByEmail();
 }

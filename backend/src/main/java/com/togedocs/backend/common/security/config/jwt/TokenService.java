@@ -29,13 +29,13 @@ public class TokenService{
 
 
 //    @Override
-    public Token generateToken(Long userId, String name, int imgNo, String email) {
+    public Token generateToken(String providerId, String name, int imgNo, String email) {
         long tokenPeriod = 1000L * 60L * 30L;
-//        long tokenPeriod = 1000L * 60L * 10L;
         long refreshPeriod = 1000L * 60L * 60L * 24L * 30L * 3L;
+
         Claims claims = Jwts.claims().setSubject(email);
+        claims.put("providerId", providerId);
         claims.put("name",name);
-        claims.put("userId",userId);
         claims.put("imgNo",imgNo);
 
         Date now = new Date();
@@ -54,10 +54,6 @@ public class TokenService{
                         .compact());
         return token;
     }
-
-//
-
-
 
     public boolean verifyToken(String token) {
         try {
