@@ -10,9 +10,10 @@ import static org.springframework.http.HttpStatus.*;
 @AllArgsConstructor
 public enum ErrorCode {
     // 400 BAD_REQUEST
+    USER_INFO_UPDATE_BAD_REQUEST(BAD_REQUEST, "사용자 정보 수정에 실패했습니다."),
 
     // 401 UNAUTHORIZED
-    LOGIN_FAILURE(UNAUTHORIZED, "로그인에 실패했습니다"),
+    LOGIN_FAILURE(UNAUTHORIZED, "로그인 정보가 없습니다? 실패했습니다?"),
 
     // 403 FORBIDDEN
     USER_NOT_ADMIN(FORBIDDEN, "권한이 없습니다."),

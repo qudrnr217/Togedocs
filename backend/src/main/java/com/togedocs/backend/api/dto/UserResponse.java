@@ -1,5 +1,6 @@
 package com.togedocs.backend.api.dto;
 
+import com.togedocs.backend.domain.entity.ProjectUserRole;
 import com.togedocs.backend.domain.entity.User;
 import lombok.*;
 
@@ -40,23 +41,34 @@ public class UserResponse {
 
     @Getter
     @Builder
+    @ToString
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class ProjectInfo {
         private Long projectId;
-        private String role;
+        private int imgNo;
+        private ProjectUserRole role;
+        @Setter
         private String title;
+        @Setter
         private String desc;
         private List<String> names;
-        private int imgNo;
-
-        public static UserResponse.ProjectInfo build(Long projectId, String role, String title, String desc, List<String> names, int imgNo) {
+        public static UserResponse.ProjectInfo build(Long projectId, int imgNo, ProjectUserRole role, List<String> names){
             return ProjectInfo.builder()
                     .projectId(projectId)
+                    .imgNo(imgNo)
+                    .role(role)
+                    .names(names)
+                    .build();
+        }
+
+        public static UserResponse.ProjectInfo build(Long projectId, int imgNo, ProjectUserRole role, String title, String desc, List<String> names) {
+            return ProjectInfo.builder()
+                    .projectId(projectId)
+                    .imgNo(imgNo)
                     .role(role)
                     .title(title)
                     .desc(desc)
-                    .imgNo(imgNo)
                     .names(names)
                     .build();
         }

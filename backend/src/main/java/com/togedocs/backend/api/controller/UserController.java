@@ -53,7 +53,7 @@ public class UserController {
         List<UserResponse.ProjectInfo> response;
         String providerId = principal.getName();
         try {
-            response = userService.getProjectInfoList(providerId);
+            response = userService.getProjectList(providerId);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Unexpected exception");

@@ -33,7 +33,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String email = (String) oAuth2User.getAttributes().get("email");
         String name = (String) oAuth2User.getAttributes().get("name");
 
-        User userEntity = userRepository.findByEmail(email);
+        // TODO
+        User userEntity = userRepository.findByEmail(email).get();
 
         log.info("Principal에서 꺼낸 OAuth2User = {}", oAuth2User);
         // 최초 로그인이라면 회원가입 처리를 한다.

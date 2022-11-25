@@ -10,7 +10,5 @@ public interface ProjectUserRepositoryCustom {
 
     Long updateMemberRole(Long projectId, ProjectRequest.UpdateMemberRoleRequest request);
 
-    String getMyRole(Long user_id, Long project_id);
-
     List<String> getMemberNames(Long projectId);
 }

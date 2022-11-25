@@ -40,7 +40,8 @@ public class JwtAuthFilter extends GenericFilterBean {
         token = token.replace("Bearer ","");
         if (token != null && tokenService.verifyToken(token)) {
             String email = tokenService.getUid(token);
-            User userEntity = userRepository.findByEmail(email);
+            // TODO
+            User userEntity = userRepository.findByEmail(email).get();
 
             PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
 
