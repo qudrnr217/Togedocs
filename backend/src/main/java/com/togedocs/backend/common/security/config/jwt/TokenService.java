@@ -29,12 +29,12 @@ public class TokenService{
 
 
 //    @Override
-    public Token generateToken(String providerId, String name, int imgNo, String email) {
+    public Token generateToken(String email, String uuid, String name, int imgNo) {
         long tokenPeriod = 1000L * 60L * 30L;
         long refreshPeriod = 1000L * 60L * 60L * 24L * 30L * 3L;
 
         Claims claims = Jwts.claims().setSubject(email);
-        claims.put("providerId", providerId);
+        claims.put("uuid", uuid);
         claims.put("name",name);
         claims.put("imgNo",imgNo);
 

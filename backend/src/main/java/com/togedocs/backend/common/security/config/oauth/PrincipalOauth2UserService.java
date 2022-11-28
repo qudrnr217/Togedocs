@@ -17,8 +17,6 @@ import java.util.Optional;
 @Service
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
-    private BCryptPasswordEncoder bCryptPasswordEncoder =new BCryptPasswordEncoder();
-
     @Autowired
     private UserRepository userRepository;
 
@@ -33,20 +31,19 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
 
         //회원가입을 강제로 진행해볼 예정.
-        String provider=userRequest.getClientRegistration().getRegistrationId(); //google
+        String provider = userRequest.getClientRegistration().getRegistrationId(); //google
         String sub = oauth2User.getAttribute("sub");
-        String providerId = provider+"_"+sub; //google_103823801447068230340
+        String uuid = provider + "_" + sub; //google_103823801447068230340
         String email = oauth2User.getAttribute("email");
         String name = oauth2User.getAttribute("name");
         int imgNo = 1;
 
 
-
-        Optional<User> userEntity = userRepository.findByProviderId(providerId);
-        if(!userEntity.isPresent()){
+        Optional<User> userEntity = userRepository.findByUuid(uuid);
+        if (!userEntity.isPresent()) {
             User user = User.builder()
                     .imgNo(imgNo)
-                    .providerId(providerId)
+                    .uuid(uuid)
                     .email(email)
                     .provider(provider)
                     .name(name)
@@ -61,6 +58,6 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         //Map<String,Object>
         //Oauth2User 타입은 PrincipalDetails에 상속받았기 때문에 return으로 PrincipalDetails를 해도된다.
-        return new PrincipalDetails(userEntity.get(),oauth2User.getAttributes());
+        return new PrincipalDetails(userEntity.get(), oauth2User.getAttributes());
     }
 }

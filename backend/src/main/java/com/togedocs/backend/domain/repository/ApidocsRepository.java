@@ -4,6 +4,7 @@ package com.togedocs.backend.domain.repository;
 import com.togedocs.backend.api.dto.ApidocsRequest;
 import com.togedocs.backend.api.dto.ProjectRequest;
 import com.togedocs.backend.domain.entity.Apidocs;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface ApidocsRepository {
     boolean existsByProjectId(Long projectId);

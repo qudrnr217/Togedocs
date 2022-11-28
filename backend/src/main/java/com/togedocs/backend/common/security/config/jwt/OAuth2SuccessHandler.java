@@ -22,7 +22,6 @@ import java.io.IOException;
 @Component
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final TokenService tokenService;
-
     private final UserRepository userRepository;
 
 
@@ -41,9 +40,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String targetUrl;
         log.info("토큰 발행 시작");
 
-        Token token = tokenService.generateToken(userEntity.getProviderId(),userEntity.getName(),userEntity.getImgNo(), email);
+        Token token = tokenService.generateToken(email, userEntity.getUuid(),userEntity.getName(),userEntity.getImgNo());
         log.info("{}", token);
-//        targetUrl = UriComponentsBuilder.fromUriString("/api/user/getToken")
         targetUrl = UriComponentsBuilder.fromUriString("myapp://")
                 .queryParam("token", token)
                 .build().toUriString();

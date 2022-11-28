@@ -22,25 +22,27 @@ public class UserService {
     private final UserRepository userRepository;
     private final ApidocsRepository apidocsRepository;
 
-    public User findUserByProviderId(String providerId) {
-        return userRepository.findByProviderId(providerId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    public User findUserByUuid(String uuid) {
+        return userRepository.findByUuid(uuid)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
-    public void updateUserInfo(UserRequest.ModifyUserRequest userRequest, String providerId) {
-        User user = findUserByProviderId(providerId);
-        boolean result = userRepository.updateUserInfo(user, userRequest);
+    public void updateUserInfo(String uuid, UserRequest.ModifyUserRequest userRequest) {
+        User user = findUserByUuid(uuid);
+        boolean result = userRepository.updateUserInfo(user.getId(), userRequest);
         if (!result) {
             throw new BusinessException(ErrorCode.USER_INFO_UPDATE_BAD_REQUEST);
         }
     }
 
-    public UserResponse.UserInfo getUserInfo(String providerId) throws BusinessException {
-        User user = findUserByProviderId(providerId);
+    public UserResponse.UserInfo getUserInfo(String uuid) throws BusinessException {
+        User user = findUserByUuid(uuid);
         return UserResponse.UserInfo.build(user);
     }
 
-    public List<UserResponse.ProjectInfo> getProjectList(String providerId) {
-        User user = findUserByProviderId(providerId);
+    // TODO Exception?
+    public List<UserResponse.ProjectInfo> getProjectList(String uuid) {
+        User user = findUserByUuid(uuid);
         List<UserResponse.ProjectInfo> projectList = userRepository.getProjectList(user.getId());
 
         Apidocs apidocs = null;

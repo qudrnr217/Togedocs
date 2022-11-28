@@ -20,7 +20,7 @@ public class ProjectUserRepositoryImpl implements ProjectUserRepositoryCustom {
         QUser user = QUser.user;
         QProjectUser projectUser = QProjectUser.projectUser;
 
-        List<UserDto> members = jpaQueryFactory.select(new QUserDto(user.id, user.name, user.imgNo, projectUser.role))
+        List<UserDto> members = jpaQueryFactory.select(new QUserDto(user.providerId, user.name, user.imgNo, projectUser.role))
                 .from(user)
                 .rightJoin(projectUser)
                 .on(user.id.eq(projectUser.user.id))

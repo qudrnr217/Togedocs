@@ -21,17 +21,17 @@ public class User {
     private String email;
     private String name;
     private String provider;
-    private String providerId;
+    private String uuid;
     @CreationTimestamp
     private Timestamp createDate;
 
     @Builder
-    public User(int imgNo, String email, String name,String provider, String providerId, Timestamp createDate) {
+    public User(int imgNo, String email, String name,String provider, String uuid, Timestamp createDate) {
         this.imgNo = imgNo;
         this.email = email;
         this.name = name;
         this.provider = provider;
-        this.providerId = providerId;
+        this.uuid = uuid;
         this.createDate = createDate;
     }
 }

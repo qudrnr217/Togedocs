@@ -20,16 +20,12 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 public class JwtAuthFilter extends GenericFilterBean {
-
     private final TokenService tokenService;
     private final UserRepository userRepository;
-
-
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String token = ((HttpServletRequest)request).getHeader("Authorization");
-
 
         //JWT 토큰을 검증을해서 정상적인 사용자인지 확인
         if(token == null || !token.startsWith("Bearer")){
@@ -40,6 +36,7 @@ public class JwtAuthFilter extends GenericFilterBean {
         token = token.replace("Bearer ","");
         if (token != null && tokenService.verifyToken(token)) {
             String email = tokenService.getUid(token);
+
             // TODO
             User userEntity = userRepository.findByEmail(email).get();
 

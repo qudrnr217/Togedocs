@@ -47,7 +47,7 @@ public class ProjectService {
         apidocsRepository.createApidocs(request, project.getId());
         apilogsRepository.createApilogs(project);
 
-        User user = userService.findUserByProviderId(loginUserProviderId);
+        User user = userService.findUserByUuid(loginUserProviderId);
         ProjectUser projectUser = ProjectUser.builder()
                 .project(project)
                 .user(user)
@@ -58,7 +58,7 @@ public class ProjectService {
 
     @Transactional
     public void deleteProject(Long projectId, String loginUserProviderId) {
-        User user = userService.findUserByProviderId(loginUserProviderId);
+        User user = userService.findUserByUuid(loginUserProviderId);
         ProjectUser loginProjectUser = findProjectUser(projectId, user.getId());
         if (loginProjectUser.getRole() != ProjectUserRole.ADMIN) {
             throw new BusinessException(ErrorCode.USER_NOT_ADMIN);
@@ -74,7 +74,7 @@ public class ProjectService {
 
     @Transactional
     public void leaveProject(Long projectId, String loginUserProviderId) {
-        User user = userService.findUserByProviderId(loginUserProviderId);
+        User user = userService.findUserByUuid(loginUserProviderId);
         ProjectUser loginProjectUser = findProjectUser(projectId, user.getId());
         projectUserRepository.deleteById(loginProjectUser.getId());
     }
@@ -82,7 +82,7 @@ public class ProjectService {
     public void joinProject(ProjectRequest.JoinProjectRequest request, String loginUserProviderId) {
         Project project = projectRepository.findByCode(request.getCode())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PROJECT_NOT_FOUND));
-        User user = userService.findUserByProviderId(loginUserProviderId);
+        User user = userService.findUserByUuid(loginUserProviderId);
         ProjectUser projectUser = ProjectUser.builder()
                 .project(project)
                 .user(user)
@@ -93,7 +93,7 @@ public class ProjectService {
 
 
     public ProjectResponse.MemberManageInfo getMemberManagerInfo(Long projectId, String loginUserProviderId) {
-        User user = userService.findUserByProviderId(loginUserProviderId);
+        User user = userService.findUserByUuid(loginUserProviderId);
         findProjectUser(projectId, user.getId());
 
         List<UserDto> members = projectUserRepository.getMembers(projectId);
@@ -102,7 +102,7 @@ public class ProjectService {
     }
 
     public void removeMember(Long projectId, Long userId, String loginUserProviderId) {
-        User user = userService.findUserByProviderId(loginUserProviderId);
+        User user = userService.findUserByUuid(loginUserProviderId);
         ProjectUser loginProjectUser = findProjectUser(projectId, user.getId());
         if (loginProjectUser.getRole() != ProjectUserRole.ADMIN) {
             throw new BusinessException(ErrorCode.USER_NOT_ADMIN);
@@ -115,7 +115,7 @@ public class ProjectService {
 
     @Transactional
     public ProjectResponse.MemberManageInfo updateMemberRole(Long projectId, ProjectRequest.UpdateMemberRoleRequest request, String loginUserProviderId) {
-        User user = userService.findUserByProviderId(loginUserProviderId);
+        User user = userService.findUserByUuid(loginUserProviderId);
         ProjectUser loginProjectUser = findProjectUser(projectId, user.getId());
         if (loginProjectUser.getRole() != ProjectUserRole.ADMIN) {
             throw new BusinessException(ErrorCode.USER_NOT_ADMIN);

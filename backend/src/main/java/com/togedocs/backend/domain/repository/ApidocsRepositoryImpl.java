@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -69,7 +70,6 @@ public class ApidocsRepositoryImpl implements ApidocsRepository {
 
     @Override
     public boolean addRow(Long projectId) {
-
         Query query = new Query().addCriteria(Criteria.where(PROJECT_ID).is(projectId));
         Update update = new Update();
         String rowId = UUID.randomUUID().toString();
@@ -200,10 +200,11 @@ public class ApidocsRepositoryImpl implements ApidocsRepository {
 
     @Override
     public Apidocs getDocs(Long projectId) {
-
         Query query = new Query().addCriteria(Criteria.where(PROJECT_ID).is(projectId));
         Apidocs apidocs = mongoTemplate.findOne(query, Apidocs.class, APIDOCS);
-
+        if(apidocs == null){
+            throw new BusinessException(ErrorCode.PROJECT_NOT_FOUND);
+        }
         return apidocs;
     }
 

@@ -28,12 +28,12 @@ public class UserResponse {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class UserInfo {
-        private String userName;
+        private String name;
         private int imgNo;
 
         public static UserResponse.UserInfo build(User user) {
             return UserInfo.builder()
-                    .userName(user.getName())
+                    .name(user.getName())
                     .imgNo(user.getImgNo())
                     .build();
         }

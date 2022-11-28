@@ -18,10 +18,10 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public boolean updateUserInfo(User userEntity, UserRequest.ModifyUserRequest userRequest) {
+    public boolean updateUserInfo(Long userId, UserRequest.ModifyUserRequest userRequest) {
         QUser user = QUser.user;
         long num = jpaQueryFactory.update(user)
-                .where(user.id.eq(userEntity.getId()))
+                .where(user.id.eq(userId))
                 .set(user.name, userRequest.getName())
                 .set(user.imgNo, userRequest.getImgNo())
                 .execute();

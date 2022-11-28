@@ -50,7 +50,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getUsername() {
-        return user.getProviderId();
+        return user.getUuid();
     }
 
     //계정이 만료 되었는지.

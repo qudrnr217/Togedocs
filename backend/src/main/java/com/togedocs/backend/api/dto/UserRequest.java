@@ -19,7 +19,7 @@ public class UserRequest {
     public static class UserInfoRequest{
         // TODO : FE에서 Req를 바꿔야함.
         private String email;
-        private String providerId;
+        private String uuid;
         private int imgNo;
         private String name;
     }

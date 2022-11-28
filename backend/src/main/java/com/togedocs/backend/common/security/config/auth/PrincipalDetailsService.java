@@ -21,9 +21,9 @@ public class PrincipalDetailsService implements UserDetailsService {
 
     //시큐리티 세션(내부 Authentication(내부 UserDetails))
     @Override
-    public UserDetails loadUserByUsername(String providerId) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String uuid) throws UsernameNotFoundException {
 
-        Optional<User> userEntitiy = userRepository.findByProviderId(providerId);
+        Optional<User> userEntitiy = userRepository.findByUuid(uuid);
         //리턴이 되면 Authentication(내부에 UserDetails 객체가 들어감)
         //그러면 세션내부에는 Authentication객체가 들어가게 됨.
         return userEntitiy.map(PrincipalDetails::new)

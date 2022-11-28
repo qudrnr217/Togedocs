@@ -29,43 +29,28 @@ public class UserController {
     @PatchMapping("/user/info")
     public ResponseEntity<String> updateUserInfo(@RequestBody UserRequest.ModifyUserRequest userRequest, Principal principal) {
         String providerId = principal.getName();
-        userService.updateUserInfo(userRequest, providerId);
-
+        userService.updateUserInfo(providerId, userRequest);
         return ResponseEntity.status(HttpStatus.OK).body("성공적으로 프로필을 수정했습니다!");
     }
 
     @GetMapping("/user/info/{providerId}")
-    public ResponseEntity<?> getUserInfo(@PathVariable String providerId) {
-        UserResponse.UserInfo response;
-        try {
-            response = userService.getUserInfo(providerId);
-        } catch (BusinessException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Unexpected exception");
-        }
-        return ResponseEntity.status(200).body(response);
+    public ResponseEntity<UserResponse.UserInfo> getUserInfo(@PathVariable String providerId) {
+        UserResponse.UserInfo response = userService.getUserInfo(providerId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/user/project")
-    public ResponseEntity<?> getProjectList(Principal principal) {
-        List<UserResponse.ProjectInfo> response;
+    public ResponseEntity<List<UserResponse.ProjectInfo>> getProjectList(Principal principal) {
         String providerId = principal.getName();
-        try {
-            response = userService.getProjectList(providerId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Unexpected exception");
-        }
-        return ResponseEntity.status(200).body(response);
+        List<UserResponse.ProjectInfo> response = userService.getProjectList(providerId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<?> getAccessToken(@RequestBody UserRequest.UserInfoRequest userRequest) {
         Token response;
         try {
-            response = tokenService.generateToken(userRequest.getProviderId(), userRequest.getName(), userRequest.getImgNo(), userRequest.getEmail());
+            response = tokenService.generateToken( userRequest.getEmail(), userRequest.getUuid(), userRequest.getName(), userRequest.getImgNo());
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorCode.LOGIN_FAILURE);
